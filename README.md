@@ -137,11 +137,11 @@ Where for TV Shows:
  * `ZZ`  is the last episode number
 
 For example, if the original filename of a movie is:
-
-	`WALL-E_t00.mkv`
+```
+WALL-E_t00.mkv
+```
 the transcoded movie filename is:
-
-	`Wall-E (2008).m4v`
+	```Wall-E (2008).m4v```
 Similarly, if the original filename of a TV show is:
 	`ANIMANIACS_S2E11_t01.mkv`
 where season/episode are indicated by S2E11, the transcoded TV show filename is:
