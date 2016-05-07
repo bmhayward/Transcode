@@ -257,7 +257,9 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
 ```
 ## Preparing Media for Transcoding
+
 Don Melton’s four rules for preparing media for transcoding:
+
 1.Use [MakeMKV](www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
 2. Rip each selected video as a single Matroska format `.mkv` file.
 3. Look for forced subtitles and isolate them in their own track.
