@@ -260,10 +260,11 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 
 Don Melton’s four rules for preparing media for transcoding:
 
-1.Use [MakeMKV](www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
+1. Use [MakeMKV](www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
 2. Rip each selected video as a single Matroska format `.mkv` file.
 3. Look for forced subtitles and isolate them in their own track.
 4. Convert lossless audio tracks to [FLAC format](https://en.wikipedia.org/wiki/FLAC).
+
 For additional details, see this discussion of the [rationale](https://github.com/donmelton/video_transcoding#rationale) of video transcoding.
 
 ### Preferences
@@ -323,8 +324,8 @@ Force decomb filter: +ICE_AGE#Behind The Scenes-Making Of
 ```
 Verify a movie or TV show title:
 ```
-	Movies: go to [TheMovieDB](https://www.themoviedb.org) website
-	TV Shows: go to [TheTVDB](thetvdb.com) website
+Movies: go to [TheMovieDB](https://www.themoviedb.org) website
+TV Shows: go to [TheTVDB](thetvdb.com) website
 ```
 To FLAC encode audio:
 ```
