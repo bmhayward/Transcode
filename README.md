@@ -137,29 +137,18 @@ Where for TV Shows:
  * `ZZ`  is the last episode number
 
 For example, if the original filename of a movie is:
-
 	`WALL-E_t00.mkv`
-  
 the transcoded movie filename is:
-
 	`Wall-E (2008).m4v`
-	
 Similarly, if the original filename of a TV show is:
-
 	`ANIMANIACS_S2E11_t01.mkv`
-	
 where season/episode are indicated by S2E11, the transcoded TV show filename is:
-
 	`Animaniacs - s02e011 - Critical Condition.m4v`
-	
 In the case of a multi-episode TV show, if the original filename is:
-
 	`TWIN_PEAKS_S1E1E8_t00.mkv`
-
 where the season/episodes are indicated by S1E1E8, the transcoded multi-episode TV show filename is:
-
 	`Twin Peaks - s01e01-e08.m4v`
-	
+
 Auto-renaming can be modified via Transcode’s preferences. 
 
 For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
