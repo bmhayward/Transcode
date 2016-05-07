@@ -31,7 +31,6 @@ Launch Transcode Setup Assistant:
 ```
 Select the location for the Transcode folder
 ```
-
 One installer and the Terminal will launch:
 ```
 1. Complete the installation of the Xcode command-line tools
@@ -48,12 +47,16 @@ Drop `.mkv` files into:
 ```
 /Transcode/Convert
 ```
-to automatically batch convert video files. Transcoding will start after all content has been copied to the Convert folder.
+to automatically batch convert video files.
+
+Transcoding will start after all content has been copied to the Convert folder.
 
 ### Batch Transcoding
 
 Transcode uses a batch queue mechanism to manage content for transcoding. As content is added to the Convert folder, a ```watchFolder``` LaunchAgent waits for the Convert folder size to stabilize.
+
 Once the Convert folder has stabilized, ```watchFolder``` launches ```batch.command``` from the Transcode folder to begin transcoding.
+
 Depending upon how content is being added to the Convert folder, `watchFolder` will wait:
 ```
 a minimum of 20 seconds after folder stabilization to start transcoding
@@ -134,17 +137,29 @@ Where for TV Shows:
  * `ZZ`  is the last episode number
 
 For example, if the original filename of a movie is:
-	 `WALL-E_t00.mkv`
+
+	`WALL-E_t00.mkv`
+  
 the transcoded movie filename is:
-	 `Wall-E (2008).m4v` 
+
+	`Wall-E (2008).m4v`
+	
 Similarly, if the original filename of a TV show is:
-	 `ANIMANIACS_S2E11_t01.mkv` 
+
+	`ANIMANIACS_S2E11_t01.mkv`
+	
 where season/episode are indicated by S2E11, the transcoded TV show filename is:
-	 `Animaniacs - s02e011 - Critical Condition.m4v` 
+
+	`Animaniacs - s02e011 - Critical Condition.m4v`
+	
 In the case of a multi-episode TV show, if the original filename is:
-	 `TWIN_PEAKS_S1E1E8_t00.mkv` 
+
+	`TWIN_PEAKS_S1E1E8_t00.mkv`
+
 where the season/episodes are indicated by S1E1E8, the transcoded multi-episode TV show filename is:
-	 `Twin Peaks - s01e01-e08.m4v` 
+
+	`Twin Peaks - s01e01-e08.m4v`
+	
 Auto-renaming can be modified via Transcode’s preferences. 
 
 For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
