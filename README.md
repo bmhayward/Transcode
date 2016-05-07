@@ -270,6 +270,8 @@ For additional details, see this discussion of the [rationale](https://github.co
 ### Preferences
 
 Transcode’s preferences can be modified to tailor your workflow. The preference file is a plain text file located in `/Transcode/Prefs.txt`.
+
+The preference file contains the following:
 ```
 The preference file contains the following:
 Transcoded file extension, default: m4v can also be mkv or mp4
