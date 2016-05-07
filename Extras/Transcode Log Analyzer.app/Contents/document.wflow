@@ -1,0 +1,1186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMApplicationBuild</key>
+	<string>419</string>
+	<key>AMApplicationVersion</key>
+	<string>2.6</string>
+	<key>AMDocumentVersion</key>
+	<string>2</string>
+	<key>actions</key>
+	<array>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run AppleScript.action</string>
+				<key>ActionName</key>
+				<string>Run AppleScript</string>
+				<key>ActionNameComment</key>
+				<string>Determine how to process the log files</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>source</key>
+					<string>-- version 1.0.3
+-- Copyright (c) 2016 Brent Haywardon run {input, parameters}	if input is {} then		-- no file dropped onto the app, need to determine how to continue processing		set asPath to POSIX path of (path to application support from user domain) &amp; "Transcode/Transcode alias"		tell application "Finder"			if not (exists asPath as POSIX file) or not (exists "/usr/local/bin/aliasPath" as POSIX file) then				-- Transcode workflow is not in place, ask the user to select log files or a folder of log files				activate me								set input to (choose folder with prompt "Select a folder of log documents:" default location (path to desktop folder))			end if					end tell	end if		return inputend run</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.RunScript</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunScriptAction</string>
+				<key>InputUUID</key>
+				<string>9805D778-0FA0-4C0C-A325-A306723658C4</string>
+				<key>Keywords</key>
+				<array>
+					<string>Run</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>1BF9D8E4-0ACD-416F-B853-8E43D112D57F</string>
+				<key>UUID</key>
+				<string>6C281D32-6746-459E-8E48-7B803EEA948F</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string>on run {input, parameters}
+	
+	(* Your script goes here *)
+	
+	return input
+end run</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<true/>
+				<key>location</key>
+				<string>668.500000:316.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run AppleScript.action</string>
+				<key>ActionName</key>
+				<string>Run AppleScript</string>
+				<key>ActionNameComment</key>
+				<string>Notification - Preparing data</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>source</key>
+					<string>on run {input, parameters}		display notification "Preparing log data..." with title "Transcode Log Analysis"		return inputend run</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.RunScript</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunScriptAction</string>
+				<key>InputUUID</key>
+				<string>9A2A42C1-4BC8-4AF8-B55D-C349AAFA42E1</string>
+				<key>Keywords</key>
+				<array>
+					<string>Run</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>F6CE8504-923D-4115-8B24-B0573E854591</string>
+				<key>UUID</key>
+				<string>F56A601C-EAA9-4D5B-B61E-B02EB49513D3</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string>on run {input, parameters}
+	
+	(* Your script goes here *)
+	
+	return input
+end run</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:358.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>2.0.3</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<dict/>
+					<key>CheckedForUserDefaultShell</key>
+					<dict/>
+					<key>inputMethod</key>
+					<dict/>
+					<key>shell</key>
+					<dict/>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run Shell Script.action</string>
+				<key>ActionName</key>
+				<string>Run Shell Script</string>
+				<key>ActionNameComment</key>
+				<string>Prepare log data</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<string>PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export PATH
+
+# set -xv ; exec 1&gt;&gt;/private/tmp/transcodeLogAnalysis1TraceLog 2&gt;&amp;1
+
+
+#----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
+
+function define_Constants () {
+	local versStamp="Version 1.0.6, 04-30-2016"
+	
+	readonly libDir="${HOME}/Library"
+	
+	if [ -e "/usr/local/bin/aliasPath" ]; then
+		readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
+	else
+		readonly workDir=""
+	fi
+	
+	readonly logsPath=$(mktemp -d "/tmp/transcodeLogAnalysis_XXXXXXXXXXXX")										# create a temp directory to hold the analysis
+	readonly icnsPath="${scriptDir}/AutomatorApplet.icns"
+}
+
+function echo_Msg () {
+	# ${1}: message to echo
+	# ${2}: flag to suppress echo
+	
+	if [ $# -eq 1 ]; then
+		echo "${1}"												# echo to the Terminal
+	fi
+    echo "${1}" 2&gt;&amp;1 | logger -t transcode.logAnalysis			# echo to syslog
+}
+
+function if_Error () {
+	# ${1}: last line of error occurence
+	# ${2}: error code of last command
+	
+	local lastLine="${1}"
+	local lastErr="${2}"
+																		# if lastErr &gt; 0 then echo error msg and log
+	if [[ ${lastErr} -eq 0 ]]; then
+		echo_Msg ""
+		echo_Msg "Something went awry :-("
+		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
+		echo_Msg "Exiting..."
+		
+		exit 1
+	fi
+}
+
+function analyzeLogs () {
+	# ${1}: log directory
+	
+	local datePath="${logsPath}/dateCreated.txt"
+
+	echo_Msg "" ""
+	declare -a convertFiles
+	convertFiles=( "${1}"/* )													 		# get a list of filenames with path to convert
+
+	cd "${1}"																			# move to the /Transcode/Logs
+
+	echo_Msg "Preparing log data..." ""
+	for i in "${convertFiles[@]}"; do 													# get a list of the log files
+		fileInfo=$(GetFileInfo -d "${i}")												# get the date/time created
+		
+		i="${i%.*}"																		# strip .log off the filename
+		echo "${fileInfo}"" ""${i##*/}" &gt;&gt; "${datePath}"								# write out the file
+	done
+}
+
+#-------------------------------------------------------------MAIN-------------------------------------------------------------------
+
+trap 'if_Error ${LINENO} $?' ERR														# trap errors
+
+define_Constants
+
+path2Process=""
+	
+if [ "$#" -ne 0 ]; then
+	for f in "${@}"; do
+		searchPath="${f}" 																# get the path passed by Automator
+
+		if [ -d "${searchPath}" ] &amp;&amp; [ "$#" -eq 1 ]; then
+																						# directory
+			path2Process="${searchPath}"
+													
+		else
+																						# single files, copy to temp directory
+			if [ -z "${path2Process}" ]; then
+				path2Process=$(mktemp -d "/tmp/logs2Analyze_XXXXXXXXXXXX")
+			fi																			
+																						# copy the file to the a temp directory to hold for analysis
+			cp -a -- "${searchPath}" "${path2Process}/${searchPath##*/}"
+		fi
+
+		echo_Msg "" ""
+	done
+else
+	path2Process="${workDir}/Logs"
+fi
+
+analyzeLogs "${path2Process}"
+																						# return the log path
+echo "${logsPath}#${path2Process}"</string>
+					<key>CheckedForUserDefaultShell</key>
+					<true/>
+					<key>inputMethod</key>
+					<integer>1</integer>
+					<key>shell</key>
+					<string>/bin/bash</string>
+					<key>source</key>
+					<string></string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.RunShellScript</string>
+				<key>CFBundleVersion</key>
+				<string>2.0.3</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunShellScriptAction</string>
+				<key>IgnoresInput</key>
+				<false/>
+				<key>InputUUID</key>
+				<string>973C7212-8809-415E-889D-1E7A29DA0D74</string>
+				<key>Keywords</key>
+				<array>
+					<string>Shell</string>
+					<string>Script</string>
+					<string>Command</string>
+					<string>Run</string>
+					<string>Unix</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>8DE7DCEF-002A-40D5-BF7A-8331333BA6E5</string>
+				<key>UUID</key>
+				<string>FFDB0061-EC86-4743-8632-68D1A5AF3E9C</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<integer>0</integer>
+						<key>name</key>
+						<string>inputMethod</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+					<key>1</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>1</string>
+					</dict>
+					<key>2</key>
+					<dict>
+						<key>default value</key>
+						<false/>
+						<key>name</key>
+						<string>CheckedForUserDefaultShell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>2</string>
+					</dict>
+					<key>3</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>COMMAND_STRING</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>3</string>
+					</dict>
+					<key>4</key>
+					<dict>
+						<key>default value</key>
+						<string>/bin/sh</string>
+						<key>name</key>
+						<string>shell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>4</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:400.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/English.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<false/>
+					<key>Types</key>
+					<array>
+						<string>*</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>v.1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>variableUUID</key>
+					<dict>
+						<key>isPathPopUp</key>
+						<false/>
+						<key>selectedVariableUUID</key>
+						<string>25192D70-9430-4B48-A4A2-7C04DC69E190</string>
+					</dict>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>*</string>
+					</array>
+				</dict>
+				<key>AMRequiredResources</key>
+				<array/>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Set Value of Variable.action</string>
+				<key>ActionName</key>
+				<string>Set Value of Variable</string>
+				<key>ActionNameComment</key>
+				<string>Set value of variable (logsPath)</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>variableUUID</key>
+					<string>25192D70-9430-4B48-A4A2-7C04DC69E190</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.Set_Value_of_Variable</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<true/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>Set_Value_of_Variable</string>
+				<key>InputUUID</key>
+				<string>4025432A-36DF-48EA-B1FC-66C56E27BFE0</string>
+				<key>Keywords</key>
+				<array>
+					<string>variable</string>
+					<string>binding</string>
+					<string>input</string>
+					<string>output</string>
+					<string>storage</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>EB284044-B137-456A-8BB8-873192C44F29</string>
+				<key>UUID</key>
+				<string>A2B6C1D9-D5B6-4689-B0AD-280771BB826E</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>variableUUID</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:442.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run AppleScript.action</string>
+				<key>ActionName</key>
+				<string>Run AppleScript</string>
+				<key>ActionNameComment</key>
+				<string>Notification - Analyzing log data</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>source</key>
+					<string>on run {input, parameters}		display notification "Analyzing log data..." with title "Transcode Log Analysis"		return inputend run</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.RunScript</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunScriptAction</string>
+				<key>IgnoresInput</key>
+				<true/>
+				<key>InputUUID</key>
+				<string>B2AB8548-5BCB-4C7E-9953-A545C787E912</string>
+				<key>Keywords</key>
+				<array>
+					<string>Run</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>5DF51F40-A1D6-4F13-80D8-C5AF1A78FD51</string>
+				<key>UUID</key>
+				<string>DF1085AC-59E3-422B-A4E8-BFC623DCB40B</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string>on run {input, parameters}
+	
+	(* Your script goes here *)
+	
+	return input
+end run</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:484.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>*</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>v.1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>variableUUID</key>
+					<dict>
+						<key>isPathPopUp</key>
+						<false/>
+						<key>selectedVariableUUID</key>
+						<string>25192D70-9430-4B48-A4A2-7C04DC69E190</string>
+					</dict>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>*</string>
+					</array>
+				</dict>
+				<key>AMRequiredResources</key>
+				<array/>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Get Value of Variable.action</string>
+				<key>ActionName</key>
+				<string>Get Value of Variable</string>
+				<key>ActionNameComment</key>
+				<string>Get Value of Variable (logsPath)</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>variableUUID</key>
+					<string>25192D70-9430-4B48-A4A2-7C04DC69E190</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.Get_Value_of_Variable</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>Get_Value_of_Variable</string>
+				<key>IgnoresInput</key>
+				<true/>
+				<key>InputUUID</key>
+				<string>1828F665-FB35-4410-AC3D-903B78586E3A</string>
+				<key>Keywords</key>
+				<array>
+					<string>variable</string>
+					<string>binding</string>
+					<string>input</string>
+					<string>output</string>
+					<string>storage</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>7A92182B-D332-4FAB-A3CF-656CEBC5081F</string>
+				<key>UUID</key>
+				<string>618C4125-2376-4807-90F7-682DF755A680</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>variableUUID</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:526.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Get Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>2.0.3</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<dict/>
+					<key>CheckedForUserDefaultShell</key>
+					<dict/>
+					<key>inputMethod</key>
+					<dict/>
+					<key>shell</key>
+					<dict/>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run Shell Script.action</string>
+				<key>ActionName</key>
+				<string>Run Shell Script</string>
+				<key>ActionNameComment</key>
+				<string>Analyze logs</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<string>PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export PATH
+
+# set -xv ; exec 1&gt;&gt;/private/tmp/transcodeLogAnalysis2TraceLog 2&gt;&amp;1
+
+
+#----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
+
+function define_Constants () {
+	local versStamp="Version 1.0.7, 05-03-2016"
+	
+	readonly libDir="${HOME}/Library"
+}
+
+function echo_Msg () {
+	# ${1}: message to echo
+	# ${2}: flag to suppress echo
+	
+	if [ $# -eq 1 ]; then
+		echo "${1}"									# echo to the Terminal
+	fi
+    echo "${1}" 2&gt;&amp;1 | logger -t transcode.logAnalysis			# echo to syslog
+}
+
+function if_Error () {
+	# ${1}: last line of error occurence
+	# ${2}: error code of last command
+	
+	local lastLine="${1}"
+	local lastErr="${2}"
+																		# if lastErr &gt; 0 then echo error msg and log
+	if [[ ${lastErr} -eq 0 ]]; then
+		echo_Msg ""
+		echo_Msg "Something went awry :-("
+		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
+		echo_Msg "Exiting..."
+		
+		exit 1
+	fi
+}
+
+function analyzeLogs () {
+	# ${1}: log directory
+	
+	local TAB=$'\t'
+	local fileInfo=""
+	
+	local timePath="${logsPath}/time.txt"
+	local speedPath="${logsPath}/speed.txt"
+	local bitratePath="${logsPath}/bitrate.txt"
+	local ratePath="${logsPath}/rate.txt"
+	local datePath="${logsPath}/dateCreated.txt"
+	
+	local speedCols="${logsPath}/speedCols.txt"
+	local bitrateCols="${logsPath}/bitrateCols.txt"
+	local rateCols="${logsPath}/rateCols.txt"
+	local dateCols="${logsPath}/dateCols.txt"
+	local timeCreatedCols="${logsPath}/timeCreatedCols.txt"
+	
+	local timeSorted="${logsPath}/timeSorted.txt"
+	local speedSorted="${logsPath}/speedSorted.txt"
+	local bitrateSorted="${logsPath}/bitrateSorted.txt"
+	local rateSorted="${logsPath}/rateSorted.txt"
+	local dateSorted="${logsPath}/dateSorted.txt"
+	local timeCreatedSorted="${logsPath}/timeCreatedSorted.txt"
+	
+	local timeTab="${logsPath}/timeTab.txt"
+	local speedTab="${logsPath}/speedTab.txt"
+	local bitrateTab="${logsPath}/bitrateTab.txt"
+	local rateTab="${logsPath}/rateTab.txt"
+	local dateTab="${logsPath}/dateTab.txt"
+	local timeCreatedTab="${logsPath}/timeCreatedTab.txt"
+	
+	local dateTimeJoined="${logsPath}/dateTimeJoined.txt"
+	local dateTimeTimeJoined="${logsPath}/dateTimeTimeJoined.txt"
+	local dateTimeTimeSpeedJoined="${logsPath}/dateTimeTimeSpeedJoined.txt"
+	local dateTimeTimeSpeedBitrateJoined="${logsPath}/dateTimeTimeSpeedBitrateJoined.txt"
+	
+	local logAnalysis="${logsPath}/transcodeLogAnalysis.txt"
+																							# analyze the logs
+	echo_Msg "Analyzing logs..."
+	export LC_ALL="en_US.UTF-8"
+	query-handbrake-log t --tabular "${1}" &gt; "${timePath}"
+	query-handbrake-log s --tabular "${1}" &gt; "${speedPath}"
+	query-handbrake-log b --tabular "${1}" &gt; "${bitratePath}"
+	query-handbrake-log r --tabular "${1}" &gt; "${ratePath}"	
+																							# remove unneccessary columns
+	echo_Msg "Deleting column data"
+	cut -d " " -f 1,3- "${datePath}" &gt; "${dateCols}"
+	cut -d " " -f 2,3- "${datePath}" &gt; "${timeCreatedCols}"
+																							# sort by video title in ascending order
+	echo_Msg "Sorting by video title"
+	sort -k2 "${timePath}" &gt; "${timeSorted}"
+	sort -k2 "${speedPath}" &gt; "${speedSorted}"
+	sort -k2 "${bitratePath}" &gt; "${bitrateSorted}"
+	sort -k2 "${ratePath}" &gt; "${rateSorted}"
+	sort -k2 "${dateCols}" &gt; "${dateSorted}"
+	sort -k2 "${timeCreatedCols}" &gt; "${timeCreatedSorted}"
+																							# replace column delimiters with tabs	
+	echo_Msg "Replacing column delimiters"
+	cat "${dateSorted}" | sed 's/[[:space:]]/'"${TAB}"'/1' &gt; "${dateTab}"
+	cat "${timeCreatedSorted}" | sed 's/[[:space:]]/'"${TAB}"'/1' &gt; "${timeCreatedTab}"
+																							# merge the tab files into a single file
+	echo_Msg "Merging files"
+	join  -t "${TAB}" -1 2 -2 2 "${dateTab}" "${timeCreatedTab}" &gt; "${dateTimeJoined}"
+	join  -t "${TAB}" -1 1 -2 2 "${dateTimeJoined}" "${timeSorted}" &gt; "${dateTimeTimeJoined}"
+	join  -t "${TAB}" -1 1 -2 2 "${dateTimeTimeJoined}" "${speedSorted}" &gt; "${dateTimeTimeSpeedJoined}"
+	join  -t "${TAB}" -1 1 -2 2 "${dateTimeTimeSpeedJoined}" "${bitrateSorted}" &gt; "${dateTimeTimeSpeedBitrateJoined}"
+	join  -t "${TAB}" -1 1 -2 2 "${dateTimeTimeSpeedBitrateJoined}" "${rateSorted}" &gt; "${logAnalysis}"
+																							# put a header on the file
+	echo 'Title'"${TAB}"'Created'"${TAB}"'@'"${TAB}"'time'"${TAB}"'speed (fps)'"${TAB}"'bitrate (kbps)'"${TAB}"'ratefactor' | cat - "${logAnalysis}" &gt; temp &amp;&amp; mv temp "${logAnalysis}"
+	
+	open -a Numbers.app "${logAnalysis}"
+}
+
+#-------------------------------------------------------------MAIN-------------------------------------------------------------------
+
+trap 'if_Error ${LINENO} $?' ERR															# trap errors
+
+define_Constants
+
+logsPath="${1%%#*}"
+path2Process="${1##*#}"
+
+analyzeLogs "${path2Process}"
+
+exit 0</string>
+					<key>CheckedForUserDefaultShell</key>
+					<true/>
+					<key>inputMethod</key>
+					<integer>1</integer>
+					<key>shell</key>
+					<string>/bin/bash</string>
+					<key>source</key>
+					<string></string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.RunShellScript</string>
+				<key>CFBundleVersion</key>
+				<string>2.0.3</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunShellScriptAction</string>
+				<key>IgnoresInput</key>
+				<false/>
+				<key>InputUUID</key>
+				<string>67EC5446-3BB7-48AE-9D76-91FF27ED8E2C</string>
+				<key>Keywords</key>
+				<array>
+					<string>Shell</string>
+					<string>Script</string>
+					<string>Command</string>
+					<string>Run</string>
+					<string>Unix</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>9BE4934D-C569-44B4-8A85-7F8A96178819</string>
+				<key>UUID</key>
+				<string>937A85D5-2B29-40B2-B5D7-D5973E3CCB92</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<integer>0</integer>
+						<key>name</key>
+						<string>inputMethod</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+					<key>1</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>1</string>
+					</dict>
+					<key>2</key>
+					<dict>
+						<key>default value</key>
+						<false/>
+						<key>name</key>
+						<string>CheckedForUserDefaultShell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>2</string>
+					</dict>
+					<key>3</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>COMMAND_STRING</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>3</string>
+					</dict>
+					<key>4</key>
+					<dict>
+						<key>default value</key>
+						<string>/bin/sh</string>
+						<key>name</key>
+						<string>shell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>4</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<false/>
+				<key>location</key>
+				<string>668.500000:568.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/English.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<false/>
+		</dict>
+	</array>
+	<key>connectors</key>
+	<dict>
+		<key>6BB2A04B-972E-4C6C-90A7-C7415FB8B659</key>
+		<dict>
+			<key>from</key>
+			<string>A2B6C1D9-D5B6-4689-B0AD-280771BB826E - A2B6C1D9-D5B6-4689-B0AD-280771BB826E</string>
+			<key>to</key>
+			<string>DF1085AC-59E3-422B-A4E8-BFC623DCB40B - DF1085AC-59E3-422B-A4E8-BFC623DCB40B</string>
+		</dict>
+		<key>A62E1038-5888-4F00-8901-5A895440941F</key>
+		<dict>
+			<key>from</key>
+			<string>F56A601C-EAA9-4D5B-B61E-B02EB49513D3 - F56A601C-EAA9-4D5B-B61E-B02EB49513D3</string>
+			<key>to</key>
+			<string>FFDB0061-EC86-4743-8632-68D1A5AF3E9C - FFDB0061-EC86-4743-8632-68D1A5AF3E9C</string>
+		</dict>
+		<key>AC0D7E4A-EECA-44F0-884D-93E6A124A2D3</key>
+		<dict>
+			<key>from</key>
+			<string>6C281D32-6746-459E-8E48-7B803EEA948F - 6C281D32-6746-459E-8E48-7B803EEA948F</string>
+			<key>to</key>
+			<string>F56A601C-EAA9-4D5B-B61E-B02EB49513D3 - F56A601C-EAA9-4D5B-B61E-B02EB49513D3</string>
+		</dict>
+		<key>BD711E97-0485-447C-AD20-93FC7026AE22</key>
+		<dict>
+			<key>from</key>
+			<string>618C4125-2376-4807-90F7-682DF755A680 - 618C4125-2376-4807-90F7-682DF755A680</string>
+			<key>to</key>
+			<string>937A85D5-2B29-40B2-B5D7-D5973E3CCB92 - 937A85D5-2B29-40B2-B5D7-D5973E3CCB92</string>
+		</dict>
+		<key>BF73B220-9EB1-4568-873A-12D36B9EF8DF</key>
+		<dict>
+			<key>from</key>
+			<string>FFDB0061-EC86-4743-8632-68D1A5AF3E9C - FFDB0061-EC86-4743-8632-68D1A5AF3E9C</string>
+			<key>to</key>
+			<string>A2B6C1D9-D5B6-4689-B0AD-280771BB826E - A2B6C1D9-D5B6-4689-B0AD-280771BB826E</string>
+		</dict>
+		<key>C7ADCA5C-27D0-4E7A-88D7-EC830B2B6BC1</key>
+		<dict>
+			<key>from</key>
+			<string>DF1085AC-59E3-422B-A4E8-BFC623DCB40B - DF1085AC-59E3-422B-A4E8-BFC623DCB40B</string>
+			<key>to</key>
+			<string>618C4125-2376-4807-90F7-682DF755A680 - 618C4125-2376-4807-90F7-682DF755A680</string>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<array>
+		<dict>
+			<key>UUID</key>
+			<string>25192D70-9430-4B48-A4A2-7C04DC69E190</string>
+			<key>identifier</key>
+			<string>com.apple.Automator.Variable.Storage</string>
+			<key>name</key>
+			<string>logsPath</string>
+		</dict>
+	</array>
+	<key>workflowMetaData</key>
+	<dict>
+		<key>workflowTypeIdentifier</key>
+		<string>com.apple.Automator.application</string>
+	</dict>
+</dict>
+</plist>
