@@ -356,14 +356,14 @@ For example, this default selection rule:
 ```
 invokes the following:
 ```
--sel:all	->	deselect all tracks
+-sel:all		->	deselect all tracks
 +sel:audio&(eng)	->	select all audio tracks in English
 -sel:(havemulti)	->	Deselect all mono/stereo tracks which a multi-channel track in same language
--sel:mvcvideo	    ->	Deselect 3D multi-view videos
--sel:subtitle	    ->	Deselect all subtitle tracks
--sel:special	    ->	Deselect all special tracks (director’s comments etc.)
+-sel:mvcvideo	    	->	Deselect 3D multi-view videos
+-sel:subtitle	    	->	Deselect all subtitle tracks
+-sel:special	    	->	Deselect all special tracks (director’s comments etc.)
 =100:all	        ->	set output weight 100 to all tracks
--10:eng	          ->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
+-10:eng	          	->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
 ```
 The tokens and operators used by the default selection rule are:
 ```
@@ -390,8 +390,7 @@ audio tracks, special tracks never match:
   mono		- matches if mono
   stereo	- matches if stereo
   multi		- matches if multi-channel
-  havemulti	- matches if track is mono/stereo and there is a multi-channel track in
-		  same language
+  havemulti	- matches if track is mono/stereo and there is a multi-channel track in same language
   lossy		- matches if non-lossless
   lossless	- matches if lossless
   havelossless	- matches if non-lossless track, but there is a lossless track in same language
@@ -409,33 +408,33 @@ operators:
   * 		- alias for "&", logical and
 ```
 
-##Transcode Workflows
-Out-of-Box
+## Transcode Workflows
+### Out-of-Box
 
 This scenario makes use of:
-default transcode destination /Transcode/Completed 
-default ingest location /Transcode/Convert 
-default FLAC audio encoding
-default rename formatting
-default Finder tagging
+* default transcode destination `/Transcode/Completed` 
+* default ingest location `/Transcode/Convert` 
+* default FLAC audio encoding
+* default rename formatting
+* default Finder tagging
 
-Setup
+### Setup
 
 Open Transcode Setup Assistant to install Transcode
-Download MakeMKV
-Download VLC
+Download [MakeMKV](www.makemkv.com/download/)
+Download [VLC](www.videolan.org/index.html)
 Open MakeMKV
-Select MakeMKV>Preferences>Video>Custom 
-Click Set output folder 
-Select /Transcode/Convert
-Select MakeMKV>Preferences>General
-Check Expert mode 
-Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Click Apply
- Click OK
+Select `MakeMKV>Preferences>Video>Custom` 
+Click `Set output folder` 
+Select `/Transcode/Convert`
+Select `MakeMKV>Preferences>General`
+Check `Expert mode` 
+Select `MakeMKV>Preferences>Advanced` 
+Select `Default profile: FLAC` 
+Click Apply
+Click OK
 
-Use
+### Use
 
 Insert a Blu-ray or DVD disc
 Open MakeMKV or have it open automatically
