@@ -7,7 +7,9 @@ Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a sma
 ## Requirements
 OS X 10.11 or later.
 
-Most of the tools in this package require other software to function properly. Transcode Setup Assistant will install these command line programs:
+Most of the tools in this package require other software to function properly.
+
+Transcode Setup Assistant will install these command line programs:
 
 * `aliasPath`
 * `atomicparsely`
