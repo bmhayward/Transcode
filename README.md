@@ -650,4 +650,4 @@ This scenario makes use of:
 7. Goto Step 1
 
 ## Acknowledgements
-A huge “thank you” to @Don Melton and the developers of the other tools used by this package.
+A huge “thank you” to @donmelton and the developers of the other tools used by this package.
