@@ -383,38 +383,38 @@ invokes the following:
 ```
 The tokens and operators used by the default selection rule are:
 ```
-  +sel		- select track
-  -sel		- unselect track
-  +N		  - add decimal value N to track weight
-  -N		  - subtract decimal value N from track weight
-  =N		  - set track weight to decimal value N	
+  +sel      - select track
+  -sel      - unselect track
+  +N        - add decimal value N to track weight
+  -N        - subtract decimal value N from track weight
+  =N        - set track weight to decimal value N	
 
 default selection tokens:
-  all		    - always matches
-  xxx		    - matches specific language (ISO 639-2B/T code - eng,fra,etc...)
-  N		      - matches if Nth (or bigger) track of the same type and language
-  favlang	  - matches favorite languages, always matches if no favorite language is set
-  special	  - matches if track is special (directors comments, childrens, etc)
-  video		  - matches if track is video
-  audio		  - matches if track is audio
-  subtitle	- matches if track is subtitle
+  all       - always matches
+  xxx       - matches specific language (ISO 639-2B/T code - eng,fra,etc...)
+  N         - matches if Nth (or bigger) track of the same type and language
+  favlang   - matches favorite languages, always matches if no favorite language is set
+  special   - matches if track is special (directors comments, childrens, etc)
+  video     - matches if track is video
+  audio     - matches if track is audio
+  subtitle  - matches if track is subtitle
 
 video tracks:
-  mvcvideo	- matches if track is a 3D multi-view video
+  mvcvideo  - matches if track is a 3D multi-view video
   
 audio tracks, special tracks never match:
-  mono		      - matches if mono
-  stereo	      - matches if stereo
-  multi		      - matches if multi-channel
-  havemulti	    - matches if track is mono/stereo and there is a multi-channel track in same language
-  lossy		      - matches if non-lossless
-  lossless	    - matches if lossless
-  havelossless	- matches if non-lossless track, but there is a lossless track in same language
-  core		      - matches if this track is core audio, logical part of hd track
-  havecore	    - matches if this track is hd track with core audio
+  mono          - matches if mono
+  stereo        - matches if stereo
+  multi         - matches if multi-channel
+  havemulti     - matches if track is mono/stereo and there is a multi-channel track in same language
+  lossy         - matches if non-lossless
+  lossless      - matches if lossless
+  havelossless  - matches if non-lossless track, but there is a lossless track in same language
+  core          - matches if this track is core audio, logical part of hd track
+  havecore      - matches if this track is hd track with core audio
 
 subtitle tracks:
-  forced	- matches if track is forced
+  forced  - matches if track is forced
 
 operators:
   | 		- logical or
@@ -650,4 +650,4 @@ This scenario makes use of:
 7. Goto Step 1
 
 ## Acknowledgements
-A huge “thank you” to Don Melton and the developers of the other tools used by this package.
+A huge “thank you” to @Don Melton and the developers of the other tools used by this package.
