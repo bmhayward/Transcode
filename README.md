@@ -372,14 +372,14 @@ For example, this default selection rule:
 ```
 invokes the following:
 ```
--sel:all		        ->	deselect all tracks
-+sel:audio&(eng)  	->	select all audio tracks in English
--sel:(havemulti)	  ->	Deselect all mono/stereo tracks which a multi-channel track in same language
--sel:mvcvideo	    	->	Deselect 3D multi-view videos
--sel:subtitle	    	->	Deselect all subtitle tracks
--sel:special	    	->	Deselect all special tracks (director’s comments etc.)
-=100:all	          ->	set output weight 100 to all tracks
--10:eng	          	->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
+-sel:all            ->	deselect all tracks
++sel:audio&(eng)    ->	select all audio tracks in English
+-sel:(havemulti)    ->	Deselect all mono/stereo tracks which a multi-channel track in same language
+-sel:mvcvideo       ->	Deselect 3D multi-view videos
+-sel:subtitle       ->	Deselect all subtitle tracks
+-sel:special        ->	Deselect all special tracks (director’s comments etc.)
+=100:all            ->	set output weight 100 to all tracks
+-10:eng             ->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
 ```
 The tokens and operators used by the default selection rule are:
 ```
@@ -436,29 +436,29 @@ This scenario makes use of:
 
 #### Setup
 
-Open Transcode Setup Assistant to install Transcode
-Download [MakeMKV](www.makemkv.com/download/)
-Download [VLC](www.videolan.org/index.html)
-Open MakeMKV
-Select `MakeMKV>Preferences>Video>Custom` 
-Click `Set output folder` 
-Select `/Transcode/Convert`
-Select `MakeMKV>Preferences>General`
-Check `Expert mode` 
-Select `MakeMKV>Preferences>Advanced` 
-Select `Default profile: FLAC` 
-Click Apply
-Click OK
+1. Open Transcode Setup Assistant to install Transcode
+2. Download [MakeMKV](www.makemkv.com/download/)
+3. Download [VLC](www.videolan.org/index.html)
+4. Open MakeMKV
+5. Select `MakeMKV>Preferences>Video>Custom` 
+6. Click `Set output folder` 
+7. Select `/Transcode/Convert`
+8. Select `MakeMKV>Preferences>General`
+9. Check `Expert mode` 
+10. Select `MakeMKV>Preferences>Advanced` 
+11. Select `Default profile: FLAC` 
+12. Click Apply
+13. Click OK
 
 #### Use
 
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click `Open DVD disc` icon 
-Uncheck the title(s) **NOT** to rip
-Provide a name for the checked title(s)
-Click `Save selected titles` 
-Goto Step 1
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
 
 ### Custom Destination
 
@@ -471,183 +471,183 @@ This scenario makes use of:
 
 #### Setup
 
-Open Transcode Setup Assistant to install Transcode
-Download MakeMKV
-Download VLC
-Open MakeMKV
-Select MakeMKV>Preferences>Video>Custom 
-Click Set output folder 
-Select /Transcode/Convert 
-Select MakeMKV>Preferences>General 
-Check Expert mode 
- Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Click Apply
- Click OK
- Control-click the transcode destination folder in the Finder and select Transcode • Set Output Destination from the Finder Services menu
+1. Open Transcode Setup Assistant to install Transcode
+2. Download [MakeMKV](www.makemkv.com/download/)
+3. Download [VLC](www.videolan.org/index.html)
+4. Open MakeMKV
+5. Select `MakeMKV>Preferences>Video>Custom` 
+6. Click `Set output folder` 
+7. Select `/Transcode/Convert`
+8. Select `MakeMKV>Preferences>General`
+9. Check `Expert mode` 
+10. Select `MakeMKV>Preferences>Advanced` 
+11. Select `Default profile: FLAC` 
+12. Click Apply
+13. Click OK
+14. `Control-click` the transcode destination folder in the Finder and select `Transcode • Set Output Destination` from the Finder Services menu
 
-Use
+#### Use
 
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
-Provide a name for the checked title(s)
-Click Save selected titles 
-Goto Step 1
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
 
-Multi-volume Ingest
-
-This scenario makes use of:
-default transcode destination /Transcode/Completed 
-multi-volume ingest
-default FLAC audio encoding
-default rename formatting
-default Finder tagging
-
-Setup
-
-Open Transcode Setup Assistant to install Transcode
-Create an ingest folder on the secondary volume
-Control-click the ingest folder in the Finder and select Transcode • Set Ingest Path from the Finder Services menu
-Download MakeMKV
-Download VLC
-Open MakeMKV
-Select MakeMKV>Preferences>General 
-Check Expert mode 
- Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Click Apply
- Click OK
-
-Use
-
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
-Provide a name for the checked title(s)
-Click Save selected titles 
-Goto Step 1
-
-Remote Transcode
+### Multi-volume Ingest
 
 This scenario makes use of:
-remote transcode
-default ingest location /Transcode/Convert 
-default FLAC audio encoding
-default rename formatting
-default Finder tagging
+* default transcode destination /Transcode/Completed 
+* multi-volume ingest
+* default FLAC audio encoding
+* default rename formatting
+* default Finder tagging
 
-Setup
+#### Setup
 
-Open Transcode Setup Assistant to install Transcode on the destination
-Double-click sshDestination.command in /Transcode/ Extras on the Transcode destination
-Open Transcode Setup Assistant to install Transcode on the source
-Double-click sshSource.command in /Transcode/Extras on the Transcode source
-Download MakeMKV
-Download VLC
-Open MakeMKV
-Select MakeMKV>Preferences>Video>Custom 
-Click Set output folder 
- Select /Transcode/Convert on both the source and destination
- Select MakeMKV>Preferences>General 
- Check Expert mode 
- Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Click Apply
- Click OK
+1. Open Transcode Setup Assistant to install Transcode
+2. Create an ingest folder on the secondary volume
+3. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
+4. Download [MakeMKV](www.makemkv.com/download/)
+5. Download [VLC](www.videolan.org/index.html)
+6. Open MakeMKV
+7. Select `MakeMKV>Preferences>General`
+8. Check `Expert mode` 
+9. Select `MakeMKV>Preferences>Advanced` 
+10. Select `Default profile: FLAC` 
+11. Click Apply
+12. Click OK
 
-Use
+#### Use
 
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
-Provide a name for the checked title(s)
-Click Save selected titles 
-Goto Step 1
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
 
-Extras
+### Remote Transcode
 
 This scenario makes use of:
-‘extras tag’ file naming
-default transcode destination /Transcode/Completed 
-default ingest location /Transcode/Convert 
-default FLAC audio encoding
-default rename formatting
-default Finder tagging
+* remote transcode
+* default ingest location `/Transcode/Convert`
+* default FLAC audio encoding
+* default rename formatting
+* default Finder tagging
 
-Setup
+#### Setup
 
-Open Transcode Setup Assistant to install Transcode
-Download MakeMKV
-Download VLC
-Open MakeMKV
-Select MakeMKV>Preferences>Video>Custom 
-Click Set output folder 
-Select /Transcode/Convert
-Select MakeMKV>Preferences>General
-Check Expert mode 
-Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Click Apply
- Click OK
+1. Open Transcode Setup Assistant to install Transcode on the destination
+2. Double-click `setupDestinationAutoConnect.command` in `/Transcode/Extras` on the Transcode `destination`
+3. Open Transcode Setup Assistant to install Transcode on the source
+4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode `source`
+5. Download [MakeMKV](www.makemkv.com/download/)
+6. Download [VLC](www.videolan.org/index.html)
+7. Open MakeMKV
+8. Select `MakeMKV>Preferences>Video>Custom` 
+9. Click `Set output folder` 
+10. Select `/Transcode/Convert` on both the source and destination
+11. Select `MakeMKV>Preferences>General` 
+12. Check `Expert mode` 
+13. Select `MakeMKV>Preferences>Advanced` 
+14. Select `Default profile: FLAC` 
+15. Click Apply
+16. Click OK
 
-Use
+#### Use
 
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
-Name the checked title(s) {title name}#{extras tag}-{descriptive name} 
-Click Save selected titles 
-Goto Step 1
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
 
-The Whole Enchilada
+### Extras
 
 This scenario makes use of:
-remote transcode
-multi-volume ingest
-Plex or iTunes as the transcode output destination
-default FLAC audio encoding
-English language pre-selection of titles
-no subtitles pre-selection
-default rename formatting
-default Finder tagging
+* ‘extras tag’ file naming
+* default transcode destination /Transcode/Completed 
+* default ingest location /Transcode/Convert 
+* default FLAC audio encoding
+* default rename formatting
+* default Finder tagging
 
-Setup
+#### Setup
 
-Open Transcode Setup Assistant to install Transcode on the destination
-Double-click sshDestination.command in /Transcode/ Extras on the Transcode destination
-Open Transcode Setup Assistant to install Transcode on the source
-Double-click sshSource.command in /Transcode/Extras on the Transcode source
-Create an ingest folder on the secondary volume of a Transcode source and/or destination. Both source and destination can be used for ingest.
-Control-click the ingest folder in the Finder and select Transcode • Set Ingest Path from the Finder Services menu
-Download MakeMKV
-Download VLC
-Open MakeMKV
- Select MakeMKV>Preferences>Language 
- Select Interface language: eng: English 
- Select Preferred language: eng: English 
- Select MakeMKV>Preferences>General 
- Check Expert mode 
- Select MakeMKV>Preferences>Advanced 
- Select Default profile: FLAC 
- Add -sel:subtitle to the Default selection rule. It should now look like: sel:all,+sel:(favlang|nolang|single),-sel:(havemulti|havecore),-sel:mvcvideo,-sel:subtitle,=100:all,-10:favlang 
- Click Apply
- Click OK
- Control-click the destination folder, on the Transcode destination and in the Finder select Transcode • Set Output Destination from the Finder Services menu
+1. Open Transcode Setup Assistant to install Transcode
+2. Download [MakeMKV](www.makemkv.com/download/)
+3. Download [VLC](www.videolan.org/index.html)
+4. Open MakeMKV
+5. Select `MakeMKV>Preferences>Video>Custom` 
+6. Click `Set output folder` 
+7. Select `/Transcode/Convert`
+8. Select `MakeMKV>Preferences>General`
+9. Check `Expert mode` 
+10. Select `MakeMKV>Preferences>Advanced` 
+11. Select `Default profile: FLAC` 
+12. Click Apply
+13. Click OK
 
-Use
+#### Use
 
-Insert a Blu-ray or DVD disc
-Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
-Provide a name for the checked title(s)
-Click Save selected titles 
-Goto Step 1
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
 
-Acknowledgements
+### The Whole Enchilada
+
+This scenario makes use of:
+* remote transcode
+* multi-volume ingest
+* Plex or iTunes as the transcode output destination
+* default FLAC audio encoding
+* English language pre-selection of titles
+* no subtitles pre-selection
+* default rename formatting
+* default Finder tagging
+
+#### Setup
+
+1. Open Transcode Setup Assistant to install Transcode on the `destination`
+2. Double-click `setupDestinationAutoConnect.command` in `/Transcode/Extras` on the Transcode destination
+3. Open Transcode Setup Assistant to install Transcode on the `source`
+4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode source
+5. Create an ingest folder on the secondary volume of a Transcode source and/or destination. Both source and destination can be used for ingest.
+6. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
+7. Download [MakeMKV](www.makemkv.com/download/)
+8. Download [VLC](www.videolan.org/index.html)
+9. Open MakeMKV
+10. Select `MakeMKV>Preferences>Language`
+11. Select `Interface language: eng: English` 
+12. Select `Preferred language: eng: English` 
+13. Select `MakeMKV>Preferences>General` 
+14. Check `Expert mode`
+15. Select `MakeMKV>Preferences>Advanced`
+16. Select `Default profile: FLAC`
+17. Add `-sel:subtitle` to the Default selection rule. It should now look like: `sel:all,+sel:(favlang|nolang|single),-sel:(havemulti|havecore),-sel:mvcvideo,-sel:subtitle,=100:all,-10:favlang` 
+18. Click Apply
+19. Click OK
+20. `Control-click` the destination folder, on the Transcode destination and in the Finder select `Transcode • Set Output Destination` from the Finder Services menu
+
+#### Use
+
+1. Insert a Blu-ray or DVD disc
+2. Open MakeMKV or have it open automatically
+3. Click `Open DVD disc` icon 
+4. Uncheck the title(s) **NOT** to rip
+5. Provide a name for the checked title(s)
+6. Click `Save selected titles` 
+7. Goto Step 1
+
+## Acknowledgements
 A huge “thank you” to Don Melton and the developers of the other tools used by this package.
