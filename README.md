@@ -341,8 +341,8 @@ Force decomb filter: +ICE_AGE#Behind The Scenes-Making Of
 ```
 Verify a movie or TV show title:
 ```
-Movies: go to [TheMovieDB](https://www.themoviedb.org) website
-TV Shows: go to [TheTVDB](thetvdb.com) website
+Movies: go to TheMovieDB (https://www.themoviedb.org) website
+TV Shows: go to TheTVDB (thetvdb.com) website
 ```
 To FLAC encode audio:
 ```
@@ -372,46 +372,46 @@ For example, this default selection rule:
 ```
 invokes the following:
 ```
--sel:all		->	deselect all tracks
-+sel:audio&(eng)	->	select all audio tracks in English
--sel:(havemulti)	->	Deselect all mono/stereo tracks which a multi-channel track in same language
+-sel:all		        ->	deselect all tracks
++sel:audio&(eng)  	->	select all audio tracks in English
+-sel:(havemulti)	  ->	Deselect all mono/stereo tracks which a multi-channel track in same language
 -sel:mvcvideo	    	->	Deselect 3D multi-view videos
 -sel:subtitle	    	->	Deselect all subtitle tracks
 -sel:special	    	->	Deselect all special tracks (director’s comments etc.)
-=100:all	        ->	set output weight 100 to all tracks
+=100:all	          ->	set output weight 100 to all tracks
 -10:eng	          	->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
 ```
 The tokens and operators used by the default selection rule are:
 ```
   +sel		- select track
   -sel		- unselect track
-  +N		- add decimal value N to track weight
-  -N		- subtract decimal value N from track weight
-  =N		- set track weight to decimal value N	
+  +N		  - add decimal value N to track weight
+  -N		  - subtract decimal value N from track weight
+  =N		  - set track weight to decimal value N	
 
 default selection tokens:
-  all		- always matches
-  xxx		- matches specific language (ISO 639-2B/T code - eng,fra,etc...)
-  N		- matches if Nth (or bigger) track of the same type and language
-  favlang	- matches favorite languages, always matches if no favorite language is set
-  special	- matches if track is special (directors comments, childrens, etc)
-  video		- matches if track is video
-  audio		- matches if track is audio
+  all		    - always matches
+  xxx		    - matches specific language (ISO 639-2B/T code - eng,fra,etc...)
+  N		      - matches if Nth (or bigger) track of the same type and language
+  favlang	  - matches favorite languages, always matches if no favorite language is set
+  special	  - matches if track is special (directors comments, childrens, etc)
+  video		  - matches if track is video
+  audio		  - matches if track is audio
   subtitle	- matches if track is subtitle
 
 video tracks:
   mvcvideo	- matches if track is a 3D multi-view video
   
 audio tracks, special tracks never match:
-  mono		- matches if mono
-  stereo	- matches if stereo
-  multi		- matches if multi-channel
-  havemulti	- matches if track is mono/stereo and there is a multi-channel track in same language
-  lossy		- matches if non-lossless
-  lossless	- matches if lossless
+  mono		      - matches if mono
+  stereo	      - matches if stereo
+  multi		      - matches if multi-channel
+  havemulti	    - matches if track is mono/stereo and there is a multi-channel track in same language
+  lossy		      - matches if non-lossless
+  lossless	    - matches if lossless
   havelossless	- matches if non-lossless track, but there is a lossless track in same language
-  core		- matches if this track is core audio, logical part of hd track
-  havecore	- matches if this track is hd track with core audio
+  core		      - matches if this track is core audio, logical part of hd track
+  havecore	    - matches if this track is hd track with core audio
 
 subtitle tracks:
   forced	- matches if track is forced
@@ -434,7 +434,7 @@ This scenario makes use of:
 * default rename formatting
 * default Finder tagging
 
-### Setup
+#### Setup
 
 Open Transcode Setup Assistant to install Transcode
 Download [MakeMKV](www.makemkv.com/download/)
@@ -450,26 +450,26 @@ Select `Default profile: FLAC`
 Click Apply
 Click OK
 
-### Use
+#### Use
 
 Insert a Blu-ray or DVD disc
 Open MakeMKV or have it open automatically
-Click Open DVD disc icon 
-Uncheck the title(s) NOT to rip
+Click `Open DVD disc` icon 
+Uncheck the title(s) **NOT** to rip
 Provide a name for the checked title(s)
-Click Save selected titles 
+Click `Save selected titles` 
 Goto Step 1
 
-Custom Destination
+### Custom Destination
 
 This scenario makes use of:
-Plex or iTunes as the transcode output destination
-default ingest location /Transcode/Convert 
-default FLAC audio encoding
-default rename formatting
-default Finder tagging
+* Plex or iTunes as the transcode output destination
+* default ingest location /Transcode/Convert 
+* default FLAC audio encoding
+* default rename formatting
+* default Finder tagging
 
-Setup
+#### Setup
 
 Open Transcode Setup Assistant to install Transcode
 Download MakeMKV
