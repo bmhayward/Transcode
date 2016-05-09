@@ -10,6 +10,7 @@ Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a sma
 * [Usage](#usage)
 * [Guide](#guide)
 * [Workflows](#workflows)
+* [Acknowledgements](#acknowledgements)
 
 ## Requirements
 OS X 10.11 or later.
