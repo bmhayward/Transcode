@@ -4,6 +4,13 @@ Tools to batch transcode and process videos
 ## About
 Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. Transcode is a wrapper that builds upon Don Melton’s exceptional video transcoding toolset.
 
+* [About](#about)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Guide](#guide)
+* [Workflows](#workflows)
+
 ## Requirements
 OS X 10.11 or later.
 
@@ -30,7 +37,7 @@ Transcode Setup Assistant will install these command line programs:
 In addition, a Blu-ray or DVD [reader](www.amazon.com/Samsung-External-Blu-ray-SE-506CB-RSBD/dp/B00JJGFRIQ/ref=pd_sim_147_4?ie=UTF8&dpID=21l0PtOb6GL&dpSrc=sims&preST=_AC_UL160_SR160,160_&refRID=02K1BF563A1RE2C79GV5) is recommended.
 
 ## Installation
-Download the [latest release](https://github.com/bmhayward/Transcode/releases) of Transcode.
+To get started, download the [latest release](https://github.com/bmhayward/Transcode/releases) and install Transcode by running the Transcode Setup Assistant.
 
 Launch Transcode Setup Assistant:
 ```
@@ -277,7 +284,10 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 1. Double-click /Transcode/Extras/setupDestinationAutoConnect.command on the Transcode destination
 2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
 ```
-## Preparing Media for Transcoding
+
+## Guide
+
+### Preparing Media for Transcoding
 
 Don Melton’s four rules for preparing media for transcoding:
 
@@ -429,7 +439,7 @@ operators:
   * 		- alias for "&", logical and
 ```
 
-## Transcode Workflows
+## Workflows
 ### Out-of-Box
 
 This scenario makes use of:
