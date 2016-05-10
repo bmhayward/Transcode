@@ -10,10 +10,11 @@ Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a sma
 * [Usage](#usage)
 * [Guide](#guide)
 * [Workflows](#workflows)
+* [History](#history)
 * [Acknowledgements](#acknowledgements)
 
 ## Requirements
-OS X 10.11 or later.
+OS X 10.11 El Capitan or later.
 
 Most of the tools in this package require other software to function properly.
 
@@ -664,6 +665,9 @@ This scenario makes use of:
 5. Provide a name for the checked title(s)
 6. Click `Save selected titles` 
 7. Goto Step 1
+
+## History
+
 
 ## Acknowledgements
 A huge “thank you” to [Don Melton](@donmelton) and the developers of the other tools used by this package.
