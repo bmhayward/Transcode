@@ -287,6 +287,12 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
 ```
 
+### Auto-Update
+
+Transcode automatically maintains updates of all installed brew formulas, brew casks and Ruby gems. Transcode checks everyday at 3 a.m. and updates any brew or brew cask. If a gem update is found, an update dialog will be presented asking to proceed with the specific gem update.
+
+To see a list of applied updates, open the Console and search for ‘brew.’ or ‘gem.’.
+
 ## Guide
 
 ### Preparing Media for Transcoding
