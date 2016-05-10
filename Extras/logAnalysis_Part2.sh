@@ -15,13 +15,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 05-10-2016"
+	local versStamp="Version 1.0.7, 05-03-2016"
 	
 	readonly libDir="${HOME}/Library"
-	
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-	
-	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
 }
 
 function echo_Msg () {
@@ -47,15 +43,6 @@ function if_Error () {
 		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
 		echo_Msg "Exiting..."
 		
-		exit 1
-	fi
-}
-
-function read_Prefs () {
-	if [ -e "${prefPath}" ]; then
-		. "${sh_readPrefs}" "${prefPath}"								# read in the preferences from Prefs.txt
-	else
-		echo_Msg "Pref.txt is missing, exiting..."
 		exit 1
 	fi
 }
@@ -131,7 +118,7 @@ function analyzeLogs () {
 																							# put a header on the file
 	echo 'Title'"${TAB}"'Created'"${TAB}"'@'"${TAB}"'time'"${TAB}"'speed (fps)'"${TAB}"'bitrate (kbps)'"${TAB}"'ratefactor' | cat - "${logAnalysis}" > temp && mv temp "${logAnalysis}"
 	
-	open -a "${tlaHelper}" "${logAnalysis}"
+	open -a Numbers.app "${logAnalysis}"
 }
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
@@ -139,8 +126,6 @@ function analyzeLogs () {
 trap 'if_Error ${LINENO} $?' ERR															# trap errors
 
 define_Constants
-
-read_Prefs
 
 logsPath="${1%%#*}"
 path2Process="${1##*#}"

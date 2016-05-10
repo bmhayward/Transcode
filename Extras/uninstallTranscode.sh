@@ -18,7 +18,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.0.4, 05-10-2017"
+	local versStamp="Version 1.0.3, 05-07-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 																				# get the paths
 	readonly libDir="${HOME}/Library"
@@ -166,7 +166,6 @@ function uninstall_brewPkgs () {
 	removeThis[4]="mplayer"
 	removeThis[5]="rsync"
 	removeThis[6]="tag"
-	removeThis[7]="ssh-copy-id"
 	
 	# brew, remove if in place
 	for i in "${removeThis[@]}"; do

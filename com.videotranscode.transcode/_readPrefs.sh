@@ -24,13 +24,11 @@ function read_Prefs () {
 	done < "${1}"
 
 	readonly outExt="${prefs[0]}"												# get the transcode file extension
-	
 	if [ "${outExt}" == "mkv" ]; then
 		readonly outExtOption=""		
 	else
 		readonly outExtOption="--${outExt}"
 	fi
-	
 	readonly deleteWhenDone="${prefs[1]}"										# what to do with the original files when done
 	readonly movieTag="${prefs[2]}"												# Finder tags for movie files
 	readonly tvTag="${prefs[3]}"												# Finder tags for TV show files
@@ -44,14 +42,6 @@ function read_Prefs () {
 	readonly ingestPath="${prefs[11]}"											# get the path to the ingest directory
 	readonly extrasTag="${prefs[12]}"											# Finder tags for Extra show files
 	readonly outQuality="${prefs[13]}"											# Output quality setting to use
-	readonly tlaApp="${prefs[14]}"												# Transcode Log Analyzer helper app
-	
-	if [ "${tlaApp##*.}" = "app" ]; then
-		readonly tlaHelper="${tlaApp}"
-	else
-		readonly tlaHelper="${tlaApp}.app"
-	fi
-	
 	if [ -z "${outQuality}" ]; then
 		readonly outQualityOption=""		
 	else
@@ -65,6 +55,6 @@ function __main__ () {
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 05-10-2016
+# Version 1.0.1, 04-07-2016
 
 __main__ "${@}"

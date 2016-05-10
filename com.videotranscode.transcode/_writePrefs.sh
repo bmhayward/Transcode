@@ -32,7 +32,6 @@ function write_Prefs () {
 	local ingestPathPref=""														# get the path to the ingest directory
 	local extrasTagPref="yellow,Extra,VT"										# Finder tags for Extra show files
 	local outQualityPref=""														# Output quality setting to use
-	local tlaHelper="Numbers.app"												# Transcode Log Analyzer helper app
 	
 	if [ ${#passedArgs[@]} -gt 1 ]; then
 								# new values were passed
@@ -50,10 +49,9 @@ function write_Prefs () {
 		ingestPathPref="${passedArgs[12]}"										# get the path to the ingest directory
 		extrasTagPref="${passedArgs[13]}"										# Finder tags for Extra show files
 		outQualityPref="${passedArgs[14]}"										# Output quality setting to use
-		tlaHelper="${passedArgs[15]}"											# Transcode Log Analyzer helper app
 	fi
 	
-	printf "${outExtPref}\n${deleteWhenDonePref}\n${movieTagPref}\n${tvTagPref}\n${convertedTagPref}\n${renameFilePref}\n${movieFormatPref}\n${tvShowFormatPref}\n${plexPathPref}\n${sshUserPref}\n${rsyncPathPref}\n${ingestPathPref}\n${extrasTagPref}\n${outQualityPref}\n${tlaHelper}" >> "${passedArgs[0]}"
+	printf "${outExtPref}\n${deleteWhenDonePref}\n${movieTagPref}\n${tvTagPref}\n${convertedTagPref}\n${renameFilePref}\n${movieFormatPref}\n${tvShowFormatPref}\n${plexPathPref}\n${sshUserPref}\n${rsyncPathPref}\n${ingestPathPref}\n${extrasTagPref}\n${outQualityPref}" >> "${passedArgs[0]}"
 }
 
 function __main__ () {
@@ -62,6 +60,6 @@ function __main__ () {
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 05-10-2016
+# Version 1.0.1, 04-07-2016
 
 __main__ "${@}"

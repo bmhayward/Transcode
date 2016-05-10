@@ -29,10 +29,10 @@ brew upgrade 2>&1 | logger -t brew.upgrade
 brew cleanup 2>&1 | logger -t brew.cleanup
 
 # update brew-casks
-brew cask update 2>&1 | logger -t brew.caskUpdate
+brew cask update 2>&1 | logger -t brewcask.update
 
 # keep brew-casks clean
-brew cask cleanup 2>&1 | logger -t brew.caskCleanup
+brew cask cleanup 2>&1 | logger -t brewcask.cleanup
 
 # upgrade gems
 . "${appScriptsPath}/updateTranscode.sh"
