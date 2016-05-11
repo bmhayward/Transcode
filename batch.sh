@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.4.5, 04-27-2016"
+	local versStamp="Version 1.4.6, 05-10-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -462,7 +462,7 @@ function move_Original () {
 				movieTitle=$(echo ${movieTitle} | awk '{print tolower($0)}') 										# lowercase the original text
 				movieTitle=$(echo ${movieTitle} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
 				
-				local movieFldrPath="${moviesDir}/${movieTitle}"				# create the movie titles directory
+				local movieFldrPath="${extMovePath}/${movieTitle%_*}"			# create the movie titles directory
 				if [ ! -d "${movieFldrPath}" ]; then
 					mkdir -p "${movieFldrPath}"
 				fi
