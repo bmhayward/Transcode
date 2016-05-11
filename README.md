@@ -680,7 +680,10 @@ This scenario makes use of:
 Tuesday, May 10, 2016
 
 * Fixed handling of original content tagged as 'movie'
+  * After transcoding completes, original content is to be moved to /Transcode/Originals/{movieTitle}. However, the original content 
+    was not being moved, so transcoding would start again and continue on indefinitely. Corrected path to /Transcode/Originals/{movieTitle}.
 * Added Transcode Log Analyzer preference for the helper app
+  * You can now specify any app to open the final tab-delimited report
 
 Sunday, May 8, 2016
 
