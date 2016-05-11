@@ -1,4 +1,6 @@
+[![Join the chat at https://gitter.im/bmhayward/Transcode](https://badges.gitter.im/bmhayward/Transcode.svg)](https://gitter.im/bmhayward/Transcode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 # Transcode
+
 Tools to batch transcode and process videos
 
 ## About
