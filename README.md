@@ -328,6 +328,7 @@ Transcode remote folder path, default: blank
 Transcode ingest folder path, default: blank
 Extras Finder tags, comma separated, default: yellow,Extra,VT
 Output quality, default: blank
+Transcode Log Analyzer helper app, default: Numbers.app
 ```
 
 ### MakeMKV
