@@ -683,7 +683,7 @@ Tuesday, May 10, 2016
 
 Sunday, May 8, 2016
 
-* Initial project version.
+* Initial project version
 
 ## Acknowledgements
 A huge “thank you” to [Don Melton](@donmelton) and the developers of the other tools used by this package.
