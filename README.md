@@ -681,6 +681,7 @@ Thursday, May 12, 2016
 * Fixed handling of original content folder naming
   * After transcoding completes, original content is to be moved to /Transcode/Originals/{contentTitle}. In some instances, the 
     contentTitle was not being set correctly.
+* Added chmod +x for all scripts during initial install with Transcode Setup Assistant.
 
 Tuesday, May 10, 2016
 
