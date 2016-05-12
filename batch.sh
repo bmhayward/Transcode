@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.4.6, 05-10-2016"
+	local versStamp="Version 1.4.7, 05-11-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -458,11 +458,13 @@ function move_Original () {
 			;;
 
 			movie )					
-				local movieTitle="${fileName%.*}"
+				local movieTitle="${fileName%.*}"								# get the title without extension
+				movieTitle="${movieTitle//_/ }"									# replace all underscores with spaces
+				
 				movieTitle=$(echo ${movieTitle} | awk '{print tolower($0)}') 										# lowercase the original text
 				movieTitle=$(echo ${movieTitle} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
 				
-				local movieFldrPath="${extMovePath}/${movieTitle%_*}"			# create the movie titles directory
+				local movieFldrPath="${extMovePath}/${movieTitle}"				# create the movie titles directory
 				if [ ! -d "${movieFldrPath}" ]; then
 					mkdir -p "${movieFldrPath}"
 				fi
@@ -488,7 +490,8 @@ function move_Original () {
 				
 				showTitle="${showTitle%${matchVal}*}"							# remove the matched value from the showTitle
 				showTitle="${showTitle#*+}"										# remove any plus characters from the front of the string
-				showTitle="${showTitle%_*}"
+				showTitle="${showTitle//_/ }"									# replace all underscores with spaces
+				
 				showTitle=$(echo ${showTitle} | awk '{print tolower($0)}') 											# lowercase the original text
 				showTitle=$(echo ${showTitle} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')		# capitalize the original text			
 			
@@ -509,6 +512,7 @@ function move_Original () {
 				local tempName="${fileName%%#*}"							 	# get the title
 				tempName="${tempName#*+}"										# remove any plus characters from the front of the string
 				tempName="${tempName//_/ }"										# replace all underscores with a space
+				
 				local labelInfo="${fileName#*#}"								# get the extras label
 				local extrasType="${labelInfo%%-*}"								# get the extras type
 				local extraTitle="${labelInfo#*-}"								# get the extras title
@@ -547,8 +551,9 @@ function move_Original () {
 		
 				showTitle="${showTitle%${matchVal}*}"							# remove the matched value from the showTitle
 				showTitle="${showTitle#*+}"										# remove any plus characters from the front of the string
-				showTitle="${showTitle%_*}"										# remove any underscores
-				showTitle=$(echo ${showTitle} | awk '{print tolower($0)}') 											# lowercase the original text
+				showTitle="${showTitle//_/ }"									# replace all underscores with spaces
+				
+				showTitle=$(echo ${showTitle} | awk '{print tolower($0)}') 										# lowercase the original text
 				showTitle=$(echo ${showTitle} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text			
 	
 				showDir="${tvDir}/${showTitle}"									# create the show's title directory if it does not exist
