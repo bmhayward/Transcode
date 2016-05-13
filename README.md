@@ -195,6 +195,29 @@ Auto-renaming can be modified via Transcode’s preferences.
 
 For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
 
+### Ingest
+
+Transcode accepts content to be converted by dropping `.mkv` files into:
+```
+/Transcode/Convert
+```
+
+#### Multi-volume ingest
+
+Transcode can use separate volumes on the same system to ingest and transcode content.
+
+To set an ingest folder on a secondary volume, `control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu.
+
+#### Remote transcode
+
+Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
+
+To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode destination:
+```
+1. Double-click /Transcode/Extras/setupDestinationAutoConnect.command on the Transcode destination
+2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
+```
+
 ### File Moving
 
 #### Default transcode destination
@@ -270,22 +293,6 @@ FUTURAMA_S00E1#Interview with Matt Groening.mkv
 The transcoded title will be placed in:
 ```
 /root/TV Shows/Futurama/Specials/Futurama s00e01 - Interview with Matt Groening.m4v 
-```
-
-#### Multi-volume ingest
-
-Transcode can use separate volumes on the same system to ingest and transcode content.
-
-To set an ingest folder on a secondary volume, `control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu.
-
-#### Remote transcode
-
-Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
-
-To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode destination:
-```
-1. Double-click /Transcode/Extras/setupDestinationAutoConnect.command on the Transcode destination
-2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
 ```
 
 ### Finder Tags
