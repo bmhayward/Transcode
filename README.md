@@ -195,21 +195,6 @@ Auto-renaming can be modified via Transcode’s preferences.
 
 For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
 
-### Finder Tags
-
-Transcode applies Finder tags to both the original files (`.mkv`) and the transcoded files (`.mkv`, `.m4v` or `.mp4`). This makes it easy to locate any file touched by Transcode.
-
-By default, the following Finder tags are applied:
-```
-Originals: Blue and Converted
-Movies: Purple, Movie and VT
-TV Shows: Orange, TV Show and VT
-Extras/Specials: Yellow, Extra and VT
-```
-Finder tags and ‘title’ metadata tags can be set in bulk with the `Transcode • Update Finder Info` Finder Service. This provides individual or mass file tagging via the Finder’s Services menu.
-
-Tag definitions can be added, edited or deleted in Transcode’s preferences.
-
 ### File Moving
 
 #### Default transcode destination
@@ -302,6 +287,21 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 1. Double-click /Transcode/Extras/setupDestinationAutoConnect.command on the Transcode destination
 2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
 ```
+
+### Finder Tags
+
+Transcode applies Finder tags to both the original files (`.mkv`) and the transcoded files (`.mkv`, `.m4v` or `.mp4`). This makes it easy to locate any file touched by Transcode.
+
+By default, the following Finder tags are applied:
+```
+Originals: Blue and Converted
+Movies: Purple, Movie and VT
+TV Shows: Orange, TV Show and VT
+Extras/Specials: Yellow, Extra and VT
+```
+Finder tags and ‘title’ metadata tags can be set in bulk with the `Transcode • Update Finder Info` Finder Service. This provides individual or mass file tagging via the Finder’s Services menu.
+
+Tag definitions can be added, edited or deleted in Transcode’s preferences.
 
 ### Auto-Update
 
