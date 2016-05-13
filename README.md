@@ -139,7 +139,7 @@ For additional details, see this discussion about [understanding audio](https://
 
 ### File Naming
 
-Title originating content using the following conventions:
+Title originating content to be Transcoded, using these conventions:
 ```
 Movies: title e.g. WALL-E
 TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
