@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.4.7, 05-11-2016"
+	local versStamp="Version 1.4.8, 05-13-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -206,11 +206,11 @@ function rename_File () {
 		;;
 
 		tvshow* )
-			capturedOutput=$(filebot -rename --order "dvd" --db "${3}" --format "${2}" "${outDir}/${1}.${outExt}")
+			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict --order "dvd" --db "${3}" --format "${2}")
 		;;
 
 		movie )
-			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}")
+			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict)
 		;;
 
 		extra )
@@ -220,9 +220,9 @@ function rename_File () {
 			labelInfo="${labelInfo%%_*}"																						# strip off any trailing _tXX
 			
 			if [ -z "${2}" ]; then
-				capturedOutput=$(filebot -rename -non-strict "${outDir}/${tempName}.${outExt}")									# movie
+				capturedOutput=$(filebot -rename "${outDir}/${tempName}.${outExt}" -non-strict)									# movie
 			else
-				capturedOutput=$(filebot -rename -non-strict --db "${3}" --format "${2}" "${outDir}/${tempName}.${outExt}")		# TV show
+				capturedOutput=$(filebot -rename "${outDir}/${tempName}.${outExt}" -non-strict --db "${3}" --format "${2}")		# TV show
 			fi
 			
 			local fileBotName="${capturedOutput##*[}"																			# delete the longest match of "[" from the front of capturedOutput 
@@ -458,7 +458,7 @@ function move_Original () {
 			;;
 
 			movie )					
-				local movieTitle="${fileName%.*}"								# get the title without extension
+				local movieTitle="${fileName%_*}"								# get the title without extension
 				movieTitle="${movieTitle//_/ }"									# replace all underscores with spaces
 				
 				movieTitle=$(echo ${movieTitle} | awk '{print tolower($0)}') 										# lowercase the original text
