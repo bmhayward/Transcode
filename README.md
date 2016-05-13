@@ -698,6 +698,9 @@ This scenario makes use of:
 
 ## History
 
+Friday, May 13, 2016
+* Enabled opportunistic name matching in Filebot
+
 Thursday, May 12, 2016
 * Fixed handling of original content folder naming
   * After transcoding completes, original content is to be moved to /Transcode/Originals/{contentTitle}. In some instances, the 
