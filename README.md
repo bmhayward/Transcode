@@ -165,7 +165,7 @@ Movies: Name (Year of Release).ext
 TV Shows: Name - sXXeYY - Episode Name.ext
 Multi-Episode TV Shows: Name - sXXeYY-eZZ.ext
 Movie Extras: Descriptive Name.ext
-TV Show Specials: Descriptive Name.ext
+TV Specials: Descriptive Name.ext
 ```
 
 For example, if the original filename of a movie is:
