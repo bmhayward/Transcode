@@ -137,7 +137,25 @@ The `transcode-video` tool selects the first audio track in the input as the mai
 
 For additional details, see this discussion about [understanding audio](https://github.com/donmelton/video_transcoding#understanding-audio).
 
-### Auto-Renaming
+### File Naming
+
+Title originating content using the following conventions:
+```
+Movies: title e.g. WALL-E
+TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
+Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
+Movie Extras: title_(date)#extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney
+TV Show Specials: title_S00EYY#descriptive name e.g. FUTURAMA_S00E1#Interview with Matt Groening
+Skip renaming & auto-move: @title e.g. @CAPTAIN_AMERICA_THE_FIRST_AVENGER
+Force decomb filter: +title e.g. +FUTURAMA_S2E10
+```
+
+Where for TV Shows:
+ * `XX`  is the season number
+ * `YY`  is the episode number
+ * `ZZ`  is the last episode number
+ 
+### Auto-Renaming 
 
 Transcode auto-renames transcoded files based on matches from the [TheMovieDB](https://www.themoviedb.org) and the [TheTVDB](thetvdb.com). A transcoded files ‘title’ metadata tag is also set to the renamed movie or TV show.
 
@@ -146,11 +164,9 @@ Transcode auto-renames transcoded files using these formats:
 Movies: Name (Year of Release).ext
 TV Shows: Name - sXXeYY - Episode Name.ext
 Multi-Episode TV Shows: Name - sXXeYY-eZZ.ext
+Movie Extras: Descriptive Name.ext
+TV Show Specials: Descriptive Name.ext
 ```
-Where for TV Shows:
- * `XX`  is the season number
- * `YY`  is the episode number
- * `ZZ`  is the last episode number
 
 For example, if the original filename of a movie is:
 ```
@@ -176,7 +192,6 @@ where the season/episodes are indicated by S1E1E8, the transcoded multi-episode 
 ```
 Twin Peaks - s01e01-e08.m4v
 ```
-
 Auto-renaming can be modified via Transcode’s preferences. 
 
 For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
