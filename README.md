@@ -164,8 +164,7 @@ Transcode auto-renames transcoded files using these formats:
 Movies: Name (Year of Release).ext
 TV Shows: Name - sXXeYY - Episode Name.ext
 Multi-Episode TV Shows: Name - sXXeYY-eZZ.ext
-Movie Extras: Descriptive Name.ext
-TV Specials: Descriptive Name.ext
+Extras/Specials: Descriptive Name.ext
 ```
 
 For example, if the original filename of a movie is:
