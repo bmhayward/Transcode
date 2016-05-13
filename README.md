@@ -150,7 +150,7 @@ Skip renaming & auto-move: @title e.g. @CAPTAIN_AMERICA_THE_FIRST_AVENGER
 Force decomb filter: +title e.g. +FUTURAMA_S2E10
 ```
 
-Where for TV Shows:
+Where for TV Shows/Specials:
  * `XX`  is the season number
  * `YY`  is the episode number
  * `ZZ`  is the last episode number
