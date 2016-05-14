@@ -147,7 +147,7 @@ Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
 Movie Extras: title_(date)#extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney
 TV Specials: title_S00EYY#descriptive name e.g. FUTURAMA_S00E1#Interview with Matt Groening
 Skip renaming & auto-move: @title e.g. @CAPTAIN_AMERICA_THE_FIRST_AVENGER
-Pass-through without transcoding: ^title e.g. ^The_Incredibles_Extras_t47.mkv
+Pass-through without transcoding: ^title e.g. ^The_Incredibles_Extras
 Force decomb filter: +title e.g. +FUTURAMA_S2E10
 ```
 
