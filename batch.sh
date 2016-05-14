@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.4.8, 05-13-2016"
+	local versStamp="Version 1.5.0, 05-13-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -678,8 +678,6 @@ function transcode_Video () {
 	    titleName="$(basename "${input}" | sed 's/\.[^.]*$//')" 													# get the title of the video, no file extension
 	    cropFile="${cropsDir}/${titleName}.txt"
 	
-		fileType="unknown"																							# file type is unknown
-	
 		if [[ "${titleName}" =~ ([Ss][0-9]+[Ee][0-9]+) ]]; then
 			fileType="tvshow"																						# TV show
 			applyTag=${tvTag}
@@ -709,32 +707,34 @@ function transcode_Video () {
 	    fi
 
 	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file	
-	
-		echo_Msg "Transcoding ${input##*/}"
-		. "${sh_sendNotification}" "Transcoding" "${input##*/}"
+			
+		if [[ ${input} != *^* ]]; then																				# go ahead and process
+			echo_Msg "Transcoding ${input##*/}"
+			. "${sh_sendNotification}" "Transcoding" "${input##*/}"
 		
-	    transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
+			transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
 		
-		if [ "$fileType" == "tvshow" ]; then																		# TV Show
-			if [[ "${renameFile}" == "auto" || "${renameFile}" == "tv" ]]; then
-				showTitle=$(rename_File "${titleName}" "${tvShowFormat}" "TheTVDB")									# rename the file. For TV show: {Name} - {sXXeXX} - {Episode Name}.{ext}
-			fi	
-		else																										# movie
-			if [[ "${renameFile}" == "auto" || "${renameFile}" == "movie" ]]; then
-				showTitle=$(rename_File "${titleName}" "${movieFormat}")											# rename the file. For movie: {Name} {(Year of Release)}.{ext}
+			if [ "$fileType" == "tvshow" ]; then																	# TV Show
+				if [[ "${renameFile}" == "auto" || "${renameFile}" == "tv" ]]; then
+					showTitle=$(rename_File "${titleName}" "${tvShowFormat}" "TheTVDB")								# rename the file. For TV show: {Name} - {sXXeXX} - {Episode Name}.{ext}
+				fi	
+			else																									# movie
+				if [[ "${renameFile}" == "auto" || "${renameFile}" == "movie" ]]; then
+					showTitle=$(rename_File "${titleName}" "${movieFormat}")										# rename the file. For movie: {Name} {(Year of Release)}.{ext}
+				fi
 			fi
-		fi
 		
-		renamedPath="${outDir}/${showTitle}"																		# renamed file with full path
+			renamedPath="${outDir}/${showTitle}"																	# renamed file with full path
 														
-		. "${sh_metadataTag}" "${renamedPath}" "title"																# set the file 'title' metadata
+			. "${sh_metadataTag}" "${renamedPath}" "title"															# set the file 'title' metadata
 		
-		renamedPath=$(move_Transcoded "${renamedPath}" "${plexPath}")												# move the transcoded file to final location if flag is set
+			renamedPath=$(move_Transcoded "${renamedPath}" "${plexPath}")											# move the transcoded file to final location if flag is set
 		
-		. "${sh_finderTag}" "${applyTag}" "${renamedPath}"															# set Finder tags after final move
+			. "${sh_finderTag}" "${applyTag}" "${renamedPath}"														# set Finder tags after final move
 		
-		if [ ! -z "${sshUser}" ] && [ ! -z "${rsyncPath}" ] && [[ "${renamedPath}" != *@* ]]; then					# transfer completed files to a Transcode destination as long as they don't start with '@'
-			send_2Remote "${renamedPath}"
+			if [ ! -z "${sshUser}" ] && [ ! -z "${rsyncPath}" ] && [[ $(. "${sh_fileType}" "${titleName}") != "skip" ]]; then	# transfer completed files to a Transcode destination as long as they don't start with '@'
+				send_2Remote "${renamedPath}"
+			fi
 		fi
 
 		rm -f "${cropFile}"																							# remove the crop file

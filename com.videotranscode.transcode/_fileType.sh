@@ -21,7 +21,7 @@ function file_Type () {
 	local fileType="movie"
 	
 	case "${1}" in
-		*@* | *title* )
+		*@* | *title* | *^* )
 			fileType="skip"
 		;;
 		*"Featurettes"*|*"Behind The Scenes"*|*"Deleted Scenes"*|*"Interviews"*|*"Scenes"*|*"Shorts"*|*"Trailers"* )
@@ -50,6 +50,6 @@ function __main__ () {
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.3, 04-22-2016
+# Version 1.0.4, 05-13-2016
 
 __main__ "${@}"

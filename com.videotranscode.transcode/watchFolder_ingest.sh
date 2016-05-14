@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.3, 04-02-2016"
+	local versStamp="Version 1.1.4, 05-14-2016"
 	
 	readonly waitingPlist="com.videotranscode.ingest.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.ingest.batch.onhold.plist"
@@ -85,6 +85,7 @@ function wait_4StableFolder () {
 		dirEmpty=("${ingestPath}/"*)
 		
 		if [[ "${prevSize}" == "${newSize}" ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
 	done

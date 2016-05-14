@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.1, 04-04-2016"
+	local versStamp="Version 1.1.2, 05-14-2016"
 	
 	readonly waitingPlist="com.videotranscode.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.batch.onhold.plist"
@@ -53,9 +53,10 @@ function wait_4StableFolder () {
 	local tmpSize=${newSize}
 	local upperLimit=3
 	local sleepTime=20
+	local timeDivisor=2
 																							# check quickly to see if the directory has stabilized before moving to a longer wait period
 	for ((i=1; i<=upperLimit; i++)); do
-		sleep ${sleepTime}																	# wait for sizing information
+		sleep ${sleepTime}																	# wait for sizing information, decrease the wait time for each iteration
 		
 		if [ ${i} -ne 1 ]; then
 			tmpSize=${newSize} 																# move to intermediate value
@@ -68,9 +69,11 @@ function wait_4StableFolder () {
 		dirEmpty=("${convertDir}/"*)
 		
 		if [[ "${prevSize}" == "${newSize}" ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
 	
+		sleepTime=$((sleepTime / timeDivisor))												# decrease the wait time
 	done
 																							# wait for the directory to be stable
 	while [ ${prevSize} != ${newSize} ]; do 												# repeat until these values are the same
