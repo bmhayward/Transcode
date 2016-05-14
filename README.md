@@ -147,6 +147,7 @@ Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
 Movie Extras: title_(date)#extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney
 TV Specials: title_S00EYY#descriptive name e.g. FUTURAMA_S00E1#Interview with Matt Groening
 Skip renaming & auto-move: @title e.g. @CAPTAIN_AMERICA_THE_FIRST_AVENGER
+Pass-through without transcoding: ^title
 Force decomb filter: +title e.g. +FUTURAMA_S2E10
 ```
 
@@ -662,6 +663,7 @@ This scenario makes use of:
 * no subtitles pre-selection
 * default rename formatting
 * default Finder tagging
+* pass-through without transcoding
 
 #### Setup
 
@@ -693,6 +695,7 @@ This scenario makes use of:
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
 5. Provide a name for the checked title(s)
+6. Start non-primary title names with a ^ for later review
 6. Click `Save selected titles` 
 7. Goto Step 1
 
