@@ -701,6 +701,11 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.0](https://github.com/bmhayward/Transcode/releases/tag/1.2.0)
+Saturday, May 14, 2016
+* Added pass-through title naming
+* Improved batch queue handling
+
 ### [1.1.9](https://github.com/bmhayward/Transcode/releases/tag/1.1.9)
 Friday, May 13, 2016
 * Enabled opportunistic name matching in Filebot
