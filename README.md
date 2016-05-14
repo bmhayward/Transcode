@@ -139,7 +139,7 @@ For additional details, see this discussion about [understanding audio](https://
 
 ### File Naming
 
-Title originating content to be Transcoded, using these conventions:
+Name content to be Transcoded, using the following conventions:
 ```
 Movies: title e.g. WALL-E
 TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
@@ -240,9 +240,9 @@ To set a custom output destination, `control-click` the destination folder in th
 After setting the output destination, Transcode will automatically move content to the following custom destination:
 ```
 Movies: /root/Movies/{Movie Title}
+Movie Extras: /root/Movies/{Movie Title}/{Extras Tag}
 TV Shows: /root/TV Shows/{Show Title}/Season #
-TV Show Specials: /root/TV Shows/{Show Title}/Season #/Specials
-Extras: /root/Movies/{Movie Title}/{Extras Tag}
+TV Specials: /root/TV Shows/{Show Title}/Season #/Specials
 ```
 where the `Movies`, `TV Shows`, `Extras` or `Specials` folders and subfolders are created as needed.
 
@@ -313,7 +313,7 @@ Tag definitions can be added, edited or deleted in Transcode’s preferences.
 
 ### Auto-Update
 
-Transcode automatically maintains updates of all installed brew formulas, brew casks and Ruby gems. Transcode checks everyday at 3 a.m. and updates any brew or brew cask. If a gem update is found, an update dialog will be presented asking to proceed with the specific gem update.
+Transcode automatically updates all installed brew formulas, brew casks and Ruby gems. Transcode checks everyday at 3 a.m. and updates any brew or brew cask. If a gem update is found, an update dialog is presented asking to proceed with the specific gem update.
 
 To see a list of applied updates, open the Console and search for ‘brew.’ or ‘gem.’.
 
