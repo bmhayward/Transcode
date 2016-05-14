@@ -724,4 +724,4 @@ Sunday, May 8, 2016
 * Initial project version
 
 ## Acknowledgements
-A huge “thank you” to [Don Melton](@donmelton) and the developers of the other tools used by this package.
+A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
