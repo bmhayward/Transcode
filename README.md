@@ -698,15 +698,18 @@ This scenario makes use of:
 
 ## History
 
+### [1.1.9](https://github.com/bmhayward/Transcode/releases/tag/1.1.9)
 Friday, May 13, 2016
 * Enabled opportunistic name matching in Filebot
 
+### [1.1.8](https://github.com/bmhayward/Transcode/releases/tag/1.1.8)
 Thursday, May 12, 2016
 * Fixed handling of original content folder naming
   * After transcoding completes, original content is to be moved to /Transcode/Originals/{contentTitle}. In some instances, the 
     contentTitle was not being set correctly.
 * Added chmod +x for all scripts during initial install with Transcode Setup Assistant.
 
+### [1.1.7](https://github.com/bmhayward/Transcode/releases/tag/1.1.7)
 Tuesday, May 10, 2016
 
 * Fixed handling of original content tagged as 'movie'
@@ -715,6 +718,7 @@ Tuesday, May 10, 2016
 * Added Transcode Log Analyzer preference for the helper app
   * You can now specify any app to open the final tab-delimited report
 
+### [1.1.6](https://github.com/bmhayward/Transcode/releases/tag/1.1.6)
 Sunday, May 8, 2016
 
 * Initial project version
