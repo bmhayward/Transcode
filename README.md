@@ -198,7 +198,7 @@ For additional details about filename formatting expressions, see this [discussi
 
 ### Ingest
 
-Transcode accepts content to be converted by dropping `.mkv` files into:
+Transcode accepts content to be converted by adding `.mkv` files to:
 ```
 /Transcode/Convert
 ```
@@ -700,6 +700,11 @@ This scenario makes use of:
 7. Goto Step 1
 
 ## History
+
+### [1.2.1](https://github.com/bmhayward/Transcode/releases/tag/1.2.1)
+Sunday, May 15, 2016
+* Pass-through labeled titles are no longer processed by `detect-crop`
+* improved batch queuing of slower processing files
 
 ### [1.2.0](https://github.com/bmhayward/Transcode/releases/tag/1.2.0)
 Saturday, May 14, 2016
