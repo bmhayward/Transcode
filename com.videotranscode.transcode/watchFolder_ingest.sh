@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.4, 05-14-2016"
+	local versStamp="Version 1.1.5, 05-14-2016"
 	
 	readonly waitingPlist="com.videotranscode.ingest.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.ingest.batch.onhold.plist"
@@ -78,7 +78,7 @@ function wait_4StableFolder () {
 			tmpSize=${newSize} 																# move to intermediate value
 		fi
 		
-		newSize=$( du "${ingestPath}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )									# get new file size
 		prevSize=${tmpSize}
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob															# include hidden files												
@@ -94,7 +94,7 @@ function wait_4StableFolder () {
 		sleep 60																			# check every 60 seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
-		newSize=$( du "${ingestPath}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )									# get new file size
 		prevSize=${tmpSize}
 	done	
 	

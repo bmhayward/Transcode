@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.5.0, 05-13-2016"
+	local versStamp="Version 1.5.1, 05-13-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -147,10 +147,11 @@ function pre_Processors () {
 	local cropValue=""
 	local fileNameExt=""
 	local fileName=""
+	local fileType=""
 	local queueValue=""
-	
+
 	for i in "${convertFiles[@]}"; do
-		if [ ! -d "${i}" ]; then
+		if [[ ! -d "${i}" && ${i} != *^* ]]; then
 			capturedOutput=$(detect-crop "${i}")							# run detect-crop tool against the file
 
 			cropValue="${capturedOutput##*--crop}"

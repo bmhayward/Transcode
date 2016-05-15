@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.2, 05-14-2016"
+	local versStamp="Version 1.1.3, 05-14-2016"
 	
 	readonly waitingPlist="com.videotranscode.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.batch.onhold.plist"
@@ -51,18 +51,19 @@ function wait_4StableFolder () {
 	local prevSize=-1 																		# initialize variable
 	local newSize=0													 						# Convert directory original size
 	local tmpSize=${newSize}
-	local upperLimit=3
+	local upperLimit=2
 	local sleepTime=20
-	local timeDivisor=2
 																							# check quickly to see if the directory has stabilized before moving to a longer wait period
 	for ((i=1; i<=upperLimit; i++)); do
 		sleep ${sleepTime}																	# wait for sizing information, decrease the wait time for each iteration
+		
+		sleepTime=$((sleepTime / upperLimit))												# decrease the wait time
 		
 		if [ ${i} -ne 1 ]; then
 			tmpSize=${newSize} 																# move to intermediate value
 		fi
 		
-		newSize=$( du "${convertDir}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${convertDir}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob     														# include hidden files
@@ -72,15 +73,13 @@ function wait_4StableFolder () {
 			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
-	
-		sleepTime=$((sleepTime / timeDivisor))												# decrease the wait time
 	done
 																							# wait for the directory to be stable
 	while [ ${prevSize} != ${newSize} ]; do 												# repeat until these values are the same
 		sleep 60																			# check every 60 seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
-		newSize=$( du "${convertDir}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${convertDir}" | awk '{print $1}' )									# get new file size
 		prevSize=${tmpSize}
 	done	
 	
