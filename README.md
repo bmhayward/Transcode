@@ -704,7 +704,7 @@ This scenario makes use of:
 ### [1.2.1](https://github.com/bmhayward/Transcode/releases/tag/1.2.1)
 Sunday, May 15, 2016
 * Pass-through labeled titles are no longer processed by the `detect-crop` tool
-* Improved batch queuing of ingest files that are slow to process
+* Improved batch queuing of files that are slow to ingest
 
 ### [1.2.0](https://github.com/bmhayward/Transcode/releases/tag/1.2.0)
 Saturday, May 14, 2016
