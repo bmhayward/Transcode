@@ -4,7 +4,7 @@
 Tools to batch transcode and process videos
 
 ## About
-Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. Transcode is a wrapper that builds upon Don Melton’s exceptional video transcoding toolset.
+Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. Transcode is a wrapper that builds upon [Don Melton's](https://github.com/donmelton/video_transcoding) exceptional video transcoding toolset.
 
 * [About](#about)
 * [Requirements](#requirements)
