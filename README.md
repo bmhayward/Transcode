@@ -701,6 +701,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.2](https://github.com/bmhayward/Transcode/releases/tag/1.2.2)
+Monday, May 16, 2016
+* Added `Transcode • Transmogrify Video` Finder Service
+
 ### [1.2.1](https://github.com/bmhayward/Transcode/releases/tag/1.2.1)
 Sunday, May 15, 2016
 * Pass-through labeled titles are no longer processed by the `detect-crop` tool
