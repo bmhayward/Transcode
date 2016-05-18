@@ -58,6 +58,11 @@ One installer and the Terminal will launch:
 7. Safari has opened the download page for two additional tools you may find helpful, MakeMKV and VLC
 ```
 
+To uninstall Transcode:
+```
+Double-click uninstallTranscode.command in /Transcode/Extras
+```
+
 ## Usage
 Drop `.mkv` files into:
 ```
@@ -94,7 +99,7 @@ Drag files out of and back into the Convert folder
 ```
 ### Compression
 
-The `transcode-video tool` configures the [x264 video encoder](www.videolan.org/developers/x264.html) within HandBrake to provide a [constrained variable bitrate (CVBR)](https://en.wikipedia.org/wiki/Variable_bitrate) mode. This automatically targets bitrates appropriate for different input resolutions.
+The `transcode-video tool`, used by Transcode, configures the [x264 video encoder](www.videolan.org/developers/x264.html) within HandBrake to provide a [constrained variable bitrate (CVBR)](https://en.wikipedia.org/wiki/Variable_bitrate) mode. This automatically targets bitrates appropriate for different input resolutions.
 
 Input resolution | Target video bitrate
 --- | ---
@@ -133,7 +138,7 @@ For additional details, see this discussion of the [detect-crop tool](https://gi
 
 ### Audio
 
-The `transcode-video` tool selects the first audio track in the input as the main audio track. This is the first track in the output and the default track for playback. The main audio track is transcoded in AAC format and, if the original is multi-channel surround sound, in Dolby Digital AC-3 format. Any additional audio tracks are only transcoded in AAC format.
+The `transcode-video` tool, used by Transcode, selects the first audio track in the input as the main audio track. This is the first track in the output and the default track for playback. The main audio track is transcoded in AAC format and, if the original is multi-channel surround sound, in Dolby Digital AC-3 format. Any additional audio tracks are only transcoded in AAC format.
 
 For additional details, see this discussion about [understanding audio](https://github.com/donmelton/video_transcoding#understanding-audio).
 
@@ -198,7 +203,7 @@ For additional details about filename formatting expressions, see this [discussi
 
 ### Ingest
 
-Transcode accepts content to be converted by adding `.mkv` files to:
+Transcode converts content by adding `.mkv` files to:
 ```
 /Transcode/Convert
 ```
@@ -246,7 +251,7 @@ TV Specials: /root/TV Shows/{Show Title}/Season #/Specials
 ```
 where the `Movies`, `TV Shows`, `Extras` or `Specials` folders and subfolders are created as needed.
 
-Custom destinations will be ignored, if the renaming format for a movie or TV show differs from the default preference or the content name starts with `@` character.
+Custom destinations will be ignored, if the renaming format for a movie or TV show differs from the default preference or the content name starts with `@` or `^` character.
 
 #### Movie extras
 
@@ -472,6 +477,20 @@ operators:
   * 		- alias for "&", logical and
 ```
 
+### Transcode Log Analyzer
+
+Transcode Log Analyzer creates a tab-delimited report from HandBrake-generated `.log` files.
+
+Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor 
+--- | --- | --- | --- | --- | --- | ---
++Aladdin_(1992)#Featurettes-Music_t19.m4v | 05/15/2016 | 10:44:41 | 00:01:17 | 102.0933 | 1817.38 | 21.33
++FUTURAMA_S03E01.m4v | 04/12/2016 | 06:44:11 | 00:02:38 | 204.952179 | 1428.14 | 13.79
+Captain_America_The_First_Avenger_t01.m4v | 05/13/2016 | 10:53:35 | 00:05:28 | 24.250147 | 7275.31 | 19.84
+
+By default, reports are created from `.log` files located in `/Transcode/Logs` and the report opened in Numbers.app. Drag-n-drop individual log files or a folder of log files onto Transcode Log Analyzer to create log specific reports.
+
+The application used to open reports can be modified via Transcode’s preferences.
+
 ## Workflows
 ### Out-of-Box
 
@@ -504,8 +523,8 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
-6. Click `Save selected titles` 
+5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
+6. Click `Save selected titles`
 7. Goto Step 1
 
 ### Custom Destination
@@ -540,7 +559,7 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
+5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
 6. Click `Save selected titles` 
 7. Goto Step 1
 
@@ -574,7 +593,7 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
+5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
 6. Click `Save selected titles` 
 7. Goto Step 1
 
@@ -612,7 +631,7 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
+5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
 6. Click `Save selected titles` 
 7. Goto Step 1
 
@@ -648,7 +667,7 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
+5. Name the checked title(s) `{title name}#{extras tag}-{descriptive name}` e.g. `WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney`
 6. Click `Save selected titles` 
 7. Goto Step 1
 
@@ -663,7 +682,7 @@ This scenario makes use of:
 * no subtitles pre-selection
 * default rename formatting
 * default Finder tagging
-* pass-through without transcoding
+* pass-through without transcoding for later review
 
 #### Setup
 
@@ -694,10 +713,10 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s)
-6. Start non-primary title names with a ^ for later review
-6. Click `Save selected titles` 
-7. Goto Step 1
+5. Select the master title and prepend `^` to the title. This will change all titles to `^{title}`.
+6. Remove `^` from all primary titles to be transcoded. The remaining titles with a leading `^` will be available for later review.
+7. Click `Save selected titles` 
+8. Goto Step 1
 
 ## History
 
