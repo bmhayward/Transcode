@@ -485,7 +485,7 @@ Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor
 --- | --- | --- | --- | --- | --- | ---
 +Aladdin_(1992)#Featurettes-Music_t19.m4v | 05/15/2016 | 10:44:41 | 00:01:17 | 102.0933 | 1817.38 | 21.33
 +FUTURAMA_S03E01.m4v | 04/12/2016 | 06:44:11 | 00:02:38 | 204.952179 | 1428.14 | 13.79
-Captain_America_The_First_Avenger_t01.m4v | 05/13/2016 | 10:53:35 | 00:05:28 | 24.250147 | 7275.31 | 19.84
+AIRPLANE_t00.m4v | 03/14/2016 | 13:00:48 | 00:18:34 | 113.191116 | 2247.79 | 17.16
 
 By default, reports are created from `.log` files located in `/Transcode/Logs` and the report opened in Numbers.app. Drag-n-drop individual log files or a folder of log files onto Transcode Log Analyzer to create log specific reports.
 
