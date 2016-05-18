@@ -702,8 +702,7 @@ This scenario makes use of:
 14. Check `Expert mode`
 15. Select `MakeMKV>Preferences>Advanced`
 16. Select `Default profile: FLAC`
-17. Add `-sel:subtitle` to the Default selection rule. It should now look like:
-    `sel:all,+sel:(favlang|nolang|single),-sel:(havemulti|havecore),-sel:mvcvideo,-sel:subtitle,=100:all,-10:favlang` 
+17. Add `-sel:subtitle` to the Default selection rule. It should now look like: `sel:all,+sel:(favlang|nolang|single),-sel:(havemulti|havecore),-sel:mvcvideo,-sel:subtitle,=100:all,-10:favlang` 
 18. Click Apply
 19. Click OK
 20. `Control-click` the destination folder, on the Transcode destination and in the Finder select `Transcode • Set Output Destination` from the Finder Services menu
