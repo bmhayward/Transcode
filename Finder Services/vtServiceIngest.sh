@@ -15,7 +15,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.7, 04-08-2016"
+	local versStamp="Version 1.0.8, 05-18-2016"
 	
 	readonly libDir="${HOME}/Library"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")						# get the path to the Transcode folder
@@ -33,33 +33,21 @@ function define_Constants () {
 }
 
 function update_Prefs () {
-	if [ -e "${prefPath}" ]; then
-		. "${sh_readPrefs}" "${prefPath}"											# read in the preferences from Prefs.txt
-				
-		if [ "${plexPath}" != "${watchPath}" ]; then
-			rm -f "${prefPath}"														# remove Prefs.txt
-		else
-			pathsMatched="true"														# ingest and output (plex) paths match
-		fi	
-	else
-		readonly outExt="mkv"														# get the transcode file extension
-		readonly deleteWhenDone="false"												# what to do with the original files when done
-		readonly movieTag="purple,Movie,VT"											# Finder tags for movie files
-		readonly tvTag="orange,TV Show,VT"											# Finder tags for TV show files
-		readonly convertedTag="blue,Converted"										# Finder tags for original files that have been transcoded		
-		readonly renameFile="auto"													# whether or not to auto-rename files
-		readonly movieFormat=""														# movie rename format
-		readonly tvShowFormat="{n} - {'"'"'s'"'"'+s.pad(2)}e{e.pad(2)} - {t}"		# TV show rename format
-		readonly plexPath=""														# where to put the transcoded files in Plex
-		readonly sshUser=""															# get the ssh username
-		readonly rsyncPath=""														# get the path to the rsync Remote directory
-		readonly ingestPath=""														# get the path to the ingest directory
-		readonly extrasTag="yellow,Extra,VT"										# Finder tags for Extra show files
-		readonly outQuality=""														# Output quality setting to use
+																				# if Prefs.txt does not exist, create it
+	if [ ! -e "${prefPath}" ]; then
+	   . "${sh_writePrefs}" "${prefPath}"
 	fi
 	
+	. "${sh_readPrefs}" "${prefPath}"											# read in the preferences from Prefs.txt
+			
+	if [ "${plexPath}" != "${watchPath}" ]; then
+		rm -f "${prefPath}"														# remove Prefs.txt
+	else
+		pathsMatched="true"														# ingest and output (plex) paths match
+	fi	
+	
 	if [ "${pathsMatched}" == "false" ] && [ "${#passedArgs[@]}" -eq 1 ]; then
-		. "${sh_writePrefs}" "${prefPath}" "${outExt}" "${deleteWhenDone}" "${movieTag}" "${tvTag}" "${convertedTag}" "${renameFile}" "${movieFormat}" "${tvShowFormat}" "${plexPath}" "${sshUser}" "${rsyncPath}" "${passedArgs[0]}" "${extrasTag}" "${outQuality}"
+		. "${sh_writePrefs}" "${prefPath}" "${outExt}" "${deleteWhenDone}" "${movieTag}" "${tvTag}" "${convertedTag}" "${renameFile}" "${movieFormat}" "${tvShowFormat}" "${plexPath}" "${sshUser}" "${rsyncPath}" "${passedArgs[0]}" "${extrasTag}" "${outQuality}" "${tlaApp}"
 	fi
 }
 

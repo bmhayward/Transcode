@@ -14,6 +14,7 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function read_Prefs () {
+	# ${1}: path to the preferences file
 																				# create the default preferences file if it does not exist			
 	declare -a prefs
 
@@ -47,9 +48,9 @@ function read_Prefs () {
 	readonly tlaApp="${prefs[14]}"												# Transcode Log Analyzer helper app
 	
 	if [ "${tlaApp##*.}" = "app" ]; then
-		readonly tlaHelper="${tlaApp}"
+		tlaHelper="${tlaApp}"
 	else
-		readonly tlaHelper="${tlaApp}.app"
+		tlaHelper="${tlaApp}.app"
 	fi
 	
 	if [ -z "${outQuality}" ]; then
@@ -65,6 +66,6 @@ function __main__ () {
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 05-10-2016
+# Version 1.0.3, 05-18-2016
 
 __main__ "${@}"

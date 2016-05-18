@@ -35,7 +35,7 @@ function write_Prefs () {
 	local tlaHelper="Numbers.app"												# Transcode Log Analyzer helper app
 	
 	if [ ${#passedArgs[@]} -gt 1 ]; then
-								# new values were passed
+																				# new values were passed
 		outExtPref="${passedArgs[1]}"											# get the transcode file extension
 		deleteWhenDonePref="${passedArgs[2]}"									# what to do with the original files when done
 		movieTagPref="${passedArgs[3]}"											# Finder tags for movie files
