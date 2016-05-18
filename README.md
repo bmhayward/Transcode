@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.3](https://github.com/bmhayward/Transcode/releases/tag/1.2.3)
+Wednesday, May 18, 2016
+* Updated Finder Services to use preferences read/write libraries
+
 ### [1.2.2](https://github.com/bmhayward/Transcode/releases/tag/1.2.2)
 Monday, May 16, 2016
 * Added `Transcode • Transmogrify Video` Finder Service
