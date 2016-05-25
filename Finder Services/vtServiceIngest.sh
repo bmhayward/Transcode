@@ -15,7 +15,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 05-18-2016"
+	local versStamp="Version 1.0.9, 05-19-2016"
+	
+	readonly loggerTag="transcode.serviceIngest"
 	
 	readonly libDir="${HOME}/Library"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")						# get the path to the Transcode folder
@@ -89,12 +91,12 @@ function update_Plist () {
 
 			chmod 644 "${plistFile}"
 		else
-			launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t transcode.serviceIngest							# unload the watch folder agent
+			launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"										# unload the watch folder agent
 			
 			${plistBuddy} -c 'Set :WatchPaths:0 "'"${passedArgs[0]}"'"' "${plistFile}"										# update the launchAgent plist
 		fi
 		
-		launchctl load "${plistFile}" 2>&1 | logger -t transcode.serviceIngest												# load the launchAgent
+		launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"														# load the launchAgent
 }
 
 function update_MKV () {

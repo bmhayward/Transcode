@@ -17,36 +17,18 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.1, 05-01-2016"
+	local versStamp="Version 1.0.3, 05-23-2016"
+	
+	loggerTag="gem.update"
 	
 	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
-}
-
-function echo_Msg () {
-	# ${1}: message to echo
-	# ${2}: flag to suppress echo
 	
-	if [ $# -eq 1 ]; then
-		echo "${1}"									# echo to the Terminal
-	fi
-    echo "${1}" 2>&1 | logger -t gem.update			# echo to syslog
-}
-
-function if_Error () {
-	# ${1}: last line of error occurence
-	# ${2}: error code of last command
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
+	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 	
-	local lastLine="${1}"
-	local lastErr="${2}"
-																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg "" ""
-		echo_Msg "Something went awry :-(" ""
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}" ""
-		echo_Msg "Exiting..." ""
-		
-		exit 1
-	fi
+	# From brewAutoUpdate:
+		# readonly libDir="${HOME}/Library"
+		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
 }
 
 function __main__ () {
@@ -61,7 +43,7 @@ function check4Updates () {
 	local loopCounter=0
 	local msgTxt="Transcode is ready to install "
 	
-	echo_Msg "Checking for gem updates..." ""
+	. "${sh_echoMsg}" "Checking for gem updates..." ""
 	
 	declare -a gemUpdates
 	gemUpdates=( $(gem outdated) )
@@ -72,7 +54,7 @@ function check4Updates () {
 			
 			for i in "${gemUpdates[@]}"; do
 			    if [[ "${i}" == *"video_transcoding"* ]]; then
-					echo_Msg "Update available for video_transcoding" ""
+					. "${sh_echoMsg}" "Update available for video_transcoding" ""
 				
 					updateVT="true"
 					gemVers="${gemUpdates[loopCounter+3]%)*}"
@@ -80,7 +62,7 @@ function check4Updates () {
 			    fi
 
 				if [[ "${i}" == *"terminal-notifier"* ]]; then
-					echo_Msg "Update available for terminal-notifier" ""
+					. "${sh_echoMsg}" "Update available for terminal-notifier" ""
 					
 					gemVers="${gemUpdates[loopCounter+3]%)*}"
 					if [ "${updateVT}" = "false" ]; then
@@ -111,10 +93,10 @@ function check4Updates () {
 																			# open the Automator app to update the gems
 				open "${appScriptsPath}/Transcode Updater.app"
 			else
-				echo_Msg "User deferred update. Exiting..." ""
+				. "${sh_echoMsg}" "User deferred update. Exiting..." ""
 			fi
 		else
-			echo_Msg "All gems are up-to-date. Exiting..." ""
+			. "${sh_echoMsg}" "All gems are up-to-date. Exiting..." ""
 			
 		fi
 	fi
@@ -122,8 +104,8 @@ function check4Updates () {
 
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
-																													# Execute
-trap 'if_Error ${LINENO} $?' ERR																					# trap errors
+																							# Execute
+trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 __main__
 

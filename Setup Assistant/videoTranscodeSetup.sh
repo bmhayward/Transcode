@@ -16,7 +16,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.9, 05-07-2016"
+	local versStamp="Version 1.2.1, 05-23-2016"
+	
+	loggerTag="transcode.install"
 	
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly plistDir="${HOME}/Library/LaunchAgents"
@@ -32,22 +34,28 @@ function echo_Msg () {
 	if [ $# -eq 1 ]; then
 		echo "${1}"											# echo to the Terminal
 	fi
-    echo "${1}" 2>&1 | logger -t transcode.install			# echo to syslog
+    echo "${1}" 2>&1 | logger -t "${loggerTag}"				# echo to syslog
 }
 
 function if_Error () {
-	# ${1}: last line of error occurence
+	# ${1}: last line of error occurrence
 	# ${2}: error code of last command
-	
+
 	local lastLine="${1}"
 	local lastErr="${2}"
+	local currentScript=$(basename -- "${0}")
 																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
-		
+	if [[ ${lastErr} -gt 0 ]]; then
+		echo 2>&1 | logger -t "${loggerTag}"
+		echo ""
+		echo "${currentScript}: "$'\e[91m'"Something went awry :-("
+		echo "${currentScript}: Something went awry :-(" 2>&1 | logger -t "${loggerTag}"
+		echo "Script error encountered on $(date): Line: ${lastLine}: Exit status of last command: ${lastErr}"
+		echo "Script error encountered on $(date): Line: ${lastLine}: Exit status of last command: ${lastErr}" 2>&1 | logger -t "${loggerTag}"
+		echo "Exiting..."
+		echo $'\e[0m'
+		echo "Exiting..." 2>&1 | logger -t "${loggerTag}"
+
 		exit 1
 	fi
 }
@@ -58,6 +66,8 @@ function install_Tools () {
 		echo_Msg "Ruby 2.0 or later is required to complete installation.\nPlease install the latest version of OS X."
 		exit 1
 	fi
+	
+	echo_Msg ""
 	
 	# move the /Transcode alias to ~/Library/Application Support/Transcode
 	if [ -e "${supportDir}/Transcode alias" ]; then
@@ -90,6 +100,7 @@ function install_Tools () {
 }
 
 function create_Plists () {
+	echo_Msg ""
 																													# create the launchAgent directory if it does not exist
 	if [ ! -d "${plistDir}" ]; then
 	  mkdir -p "${plistDir}"
@@ -153,6 +164,21 @@ function create_Plists () {
 }
 
 function install_brewPkgs () {
+	local installerActive="Install Command Line Developer Tools"
+	local xcodePID=$(pgrep "${installerActive}")
+
+	if [ -n "${xcodePID}" ]; then
+		echo_Msg ""
+		echo_Msg "Waiting for Xcode Command Line Tools installation to complete..."
+		
+		while [[ -n "${xcodePID}" ]]; do
+			sleep 0.5
+			xcodePID=$(pgrep "${installerActive}")
+		done
+	fi
+	
+	echo_Msg ""
+	
 	# Homebrew - install if not in place
 	if ! command -v brew > /dev/null; then
 		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -250,12 +276,19 @@ EOD
 }
 
 function clean_Up () {
+																# make sure all the scripts are excutable
+	find "${scriptsDir}/${scriptsDirName}/" -name "*.sh" -exec chmod +x {} \;
+	
 	echo
 	echo $'\e[92mThis window can now be closed.\e[0m'
 	echo
 }
 
-function __main__ () {
+function __main__ () {	
+	echo_Msg ""
+	echo_Msg "========================================================================="
+	echo_Msg "Transcode Install"
+	
 	install_Tools
 	create_Plists
 	install_brewPkgs

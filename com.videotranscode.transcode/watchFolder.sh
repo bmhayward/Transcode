@@ -39,8 +39,8 @@ function define_Constants () {
 	readonly convertDir="${transcodeDir}/Convert"	
 	
 	readonly onHoldPath="${prefDir}/${onHoldPlist}"
-	
-	readonly batchCMD="${transcodeDir}/batch.command"										# get the path to batch.command
+
+	readonly batchCMD="${transcodeDir}/batch.command"														# get the path to batch.command
 }
 
 function wait_4StableFolder () {

@@ -16,8 +16,10 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 05-07-2016"
+	local versStamp="Version 1.1.0, 05-23-2016"
 	
+	loggerTag="transcode.sshIngestSetup"
+		
 	readonly libDir="${HOME}/Library"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")						# get the path to the Transcode folder
 	
@@ -26,50 +28,26 @@ function define_Constants () {
 	
 	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
 	readonly sh_writePrefs="${appScriptsPath}/_writePrefs.sh"
-}
-
-function echo_Msg () {
-	# ${1}: message to echo
-	# ${2}: flag to suppress echo
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
+	readonly sh_ifError="${appScriptsPath}/_ifError.sh"	
 	
-	if [ $# -eq 1 ]; then
-		echo "${1}"											# echo to the Terminal
-	fi
-    echo "${1}" 2>&1 | logger -t sshIngest.setup			# echo to syslog
-}
-
-function if_Error () {
-	# ${1}: last line of error occurence
-	# ${2}: error code of last command
-	
-	local lastLine="${1}"
-	local lastErr="${2}"
-																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
-		
-		exit 1
-	fi
 }
 
 function sshIngest_Confirm () {
-	echo_Msg ""
-	echo_Msg "========================================================================="
-	echo_Msg "Transcode Setup Ingest Auto-Connect"
-	echo_Msg ""
-	echo_Msg "Prior to continuing, make sure you have run setupDestinationAutoConnect.command at the Transcode destination."
+	. "${sh_echoMsg}" ""
+	. "${sh_echoMsg}" "========================================================================="
+	. "${sh_echoMsg}" "Transcode Setup Ingest Auto-Connect"
+	. "${sh_echoMsg}" ""
+	. "${sh_echoMsg}" "Prior to continuing, make sure you have run setupDestinationAutoConnect.command at the Transcode destination."
 	
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure you want to continue? [Yn]} " response
     case ${response} in
         [Y][E][S]|[Y] )
 			# just continue
-			echo_Msg ""
-            echo_Msg "Setting up ingest auto-connect with the destination..."
-			echo_Msg ""
+			. "${sh_echoMsg}" ""
+            . "${sh_echoMsg}" "Setting up ingest auto-connect with the destination..."
+			. "${sh_echoMsg}" ""
             ;;
 
         * )
@@ -95,8 +73,8 @@ function sshCopyKeys2_Destination () {
 	installedBrews=$(brew list)
 	
 	if [[ ${installedBrews} != *"ssh-copy-id"* ]]; then
-		echo_Msg ""		
-		echo_Msg "Installing brew ssh-copy-id"
+		. "${sh_echoMsg}" ""		
+		. "${sh_echoMsg}" "Installing brew ssh-copy-id"
 		
 		brew install ssh-copy-id
 	fi
@@ -110,7 +88,7 @@ function sshCopyKeys2_Destination () {
 }
 
 function update_Prefs () {
-	echo_Msg "Updating preferences..."
+	. "${sh_echoMsg}" "Updating preferences..."
 																					# lookup the path to the /Transcode/Remote directory on the destination
 	rsyncPathPref=$(ssh ${sshUserPref}@${destAddr} '/usr/local/bin/aliasPath "${HOME}/Library/Application Support/Transcode/Transcode alias"')"/Remote"
 		
@@ -151,15 +129,15 @@ function __main__ () {
 	sshCopyKeys2_Destination
 	update_Prefs
 	
-	echo_Msg "Ingest auto-connect setup completed!"
+	. "${sh_echoMsg}" "Ingest auto-connect setup completed!"
 }
 
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
-																								# execute
-trap clean_Up INT TERM EXIT																		# always run clean_Up regardless of how the script terminates
-trap "exit" INT																					# trap user cancelling
-trap 'if_Error ${LINENO} $?' ERR																# trap errors
+																							# execute
+trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
+trap "exit" INT																				# trap user cancelling
+trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 																								
 define_Constants
 

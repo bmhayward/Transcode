@@ -18,35 +18,50 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.0.3, 05-07-2017"
+	local versStamp="Version 1.0.7, 05-24-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
-																				# get the paths
+	
+	loggerTag="transcode.uninstall"
+	
 	readonly libDir="${HOME}/Library"
+	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
+	
+	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 }
 
 function echo_Msg () {
 	# ${1}: message to echo
 	# ${2}: flag to suppress echo
+	# loggerTag is defined as global in the calling script
 	
 	if [ $# -eq 1 ]; then
 		echo "${1}"											# echo to the Terminal
 	fi
-    echo "${1}" 2>&1 | logger -t transcode.uninstall		# echo to syslog
+	
+    echo "${1}" 2>&1 | logger -t "${loggerTag}"				# echo to syslog
 }
 
 function if_Error () {
-	# ${1}: last line of error occurence
+	# ${1}: last line of error occurrence
 	# ${2}: error code of last command
-	
+
 	local lastLine="${1}"
 	local lastErr="${2}"
+	local currentScript=$(basename -- "${0}")
 																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
-		
+	if [[ ${lastErr} -gt 0 ]]; then
+		echo 2>&1 | logger -t "${loggerTag}"
+		echo ""
+		echo "${currentScript}: "$'\e[91m'"Something went awry :-("
+		echo "${currentScript}: Something went awry :-(" 2>&1 | logger -t "${loggerTag}"
+		echo "Script error encountered on $(date): Line: ${lastLine}: Exit status of last command: ${lastErr}"
+		echo "Script error encountered on $(date): Line: ${lastLine}: Exit status of last command: ${lastErr}" 2>&1 | logger -t "${loggerTag}"
+		echo "Exiting..."
+		echo $'\e[0m'
+		echo "Exiting..." 2>&1 | logger -t "${loggerTag}"
+
 		exit 1
 	fi
 }
@@ -59,13 +74,12 @@ function uninstall_Confirm () {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure? [Yn]} " response
     case ${response} in
-        [Y][E][S]|[Y] )
+        [Y]|[Y][E][S] )
 			# just continue
 			echo_Msg ""
             echo_Msg "Uninstalling Transcode..."
 			echo_Msg ""
             ;;
-
         * )
 			# bail out
             exit 1
@@ -145,6 +159,7 @@ function uninstall_finderServices () {
 	removeThis[0]="${libDir}/Services/Transcode • Update Finder Info.workflow"
 	removeThis[1]="${libDir}/Services/Transcode • Set Ingest Path.workflow"
 	removeThis[2]="${libDir}/Services/Transcode • Set Output Destination.workflow"
+	removeThis[3]="${libDir}/Services/Transcode • Transmogrify Video.workflow"
 	
 	# remove the Finder Services
 	for i in "${removeThis[@]}"; do
@@ -166,6 +181,7 @@ function uninstall_brewPkgs () {
 	removeThis[4]="mplayer"
 	removeThis[5]="rsync"
 	removeThis[6]="tag"
+	removeThis[7]="ssh-copy-id"
 	
 	# brew, remove if in place
 	for i in "${removeThis[@]}"; do
@@ -224,9 +240,9 @@ function uninstall_commandLineTools () {
 	local removeThis="/Library/Developer/CommandLineTools"
 	
 	if [ -d "${removeThis}" ]; then
-		echo_Msg "${removeThis}"
+		echo_Msg "Removing ${removeThis}"
 		
-		rm -rf "${removeThis}"
+		sudo rm -rf "${removeThis}"
 	fi
 }
 

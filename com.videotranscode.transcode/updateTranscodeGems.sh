@@ -16,45 +16,23 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.1, 05-01-2016"
+	local versStamp="Version 1.0.3, 05-23-2016"
 	
-	readonly scriptsDir="${HOME}/Library/Application Scripts"
+	loggerTag="gem.update"
+	
 	readonly libDir="${HOME}/Library"
-	
+	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+
 	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
-}
-
-function echo_Msg () {
-	# ${1}: message to echo
-	# ${2}: flag to suppress echo
 	
-	if [ $# -eq 1 ]; then
-		echo "${1}"									# echo to the Terminal
-	fi
-    echo "${1}" 2>&1 | logger -t gem.update			# echo to syslog
-}
-
-function if_Error () {
-	# ${1}: last line of error occurence
-	# ${2}: error code of last command
-	
-	local lastLine="${1}"
-	local lastErr="${2}"
-																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg "" ""
-		echo_Msg "Something went awry :-(" ""
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}" ""
-		echo_Msg "Exiting..." ""
-		
-		exit 1
-	fi
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
+	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 }
 
 function updateGems () {
 	local updateVT="false"
 	
-	echo_Msg "Checking for updates..." ""
+	. "${sh_echoMsg}" "Checking for updates..." ""
 	
 	declare -a gemUpdates
 	gemUpdates=( $(gem outdated) )
@@ -65,7 +43,7 @@ function updateGems () {
 		if [[ ${gemUpdates[*]} =~ video_transcoding ]]; then
 			local updateVT="true"
 																	# upgrade video_transcoding
-			echo_Msg "Updating transcode-video..." ""
+			. "${sh_echoMsg}" "Updating transcode-video..." ""
 			sudo gem update video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			gem cleanup video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			
@@ -74,7 +52,7 @@ function updateGems () {
 
 		if [[ ${gemUpdates[*]} =~ terminal-notifier ]]; then
 																	# upgrade terminal-notifier
-			echo_Msg "Updating terminal-notifier..." ""
+			. "${sh_echoMsg}" "Updating terminal-notifier..." ""
 			sudo gem update terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 			gem cleanup terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 
@@ -105,8 +83,8 @@ EOF
 
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
-																													# Execute
-trap 'if_Error ${LINENO} $?' ERR																					# trap errors
+																							# Execute
+trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 __main__
 

@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.5, 05-14-2016"
+	local versStamp="Version 1.1.6, 05-19-2016"
 	
 	readonly waitingPlist="com.videotranscode.rsync.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.rsync.batch.onhold.plist"
@@ -38,9 +38,10 @@ function define_Constants () {
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")								# get the path to the Transcode folder
 	readonly convertDir="${workDir}/Remote"
 	
-	readonly onHoldPath="${prefDir}/${onHoldPlist}"
+	readonly onHoldPath="${prefDir}/${onHoldPlist}"	
+	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
 	
-	readonly batchCMD="${libDir}/Application Scripts/com.videotranscode.transcode/batch_rsync.sh"		# get the path to batch.command
+	readonly batchCMD="${appScriptsPath}/batch_rsync.sh"																# get the path to batch.command
 }
 
 function wait_4StableFolder () {

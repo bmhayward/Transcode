@@ -15,7 +15,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 05-10-2016"
+	local versStamp="Version 1.0.9, 05-20-2016"
+	
+	readonly loggerTag="transcode.logAnalysis"
 	
 	readonly libDir="${HOME}/Library"
 	
@@ -29,9 +31,10 @@ function echo_Msg () {
 	# ${2}: flag to suppress echo
 	
 	if [ $# -eq 1 ]; then
-		echo "${1}"									# echo to the Terminal
+		echo "${1}"										# echo to the Terminal
 	fi
-    echo "${1}" 2>&1 | logger -t transcode.logAnalysis			# echo to syslog
+	
+    echo "${1}" 2>&1 | logger -t "${loggerTag}"			# echo to syslog
 }
 
 function if_Error () {
@@ -42,10 +45,14 @@ function if_Error () {
 	local lastErr="${2}"
 																		# if lastErr > 0 then echo error msg and log
 	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
+		echo ""
+		echo 2>&1 | logger -t "${loggerTag}"
+		echo "Something went awry :-("
+		echo "Something went awry :-(" 2>&1 | logger -t "${loggerTag}"
+		echo "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
+		echo "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}" 2>&1 | logger -t "${loggerTag}"
+		echo "Exiting..."
+		echo "Exiting..." 2>&1 | logger -t "${loggerTag}"
 		
 		exit 1
 	fi

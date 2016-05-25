@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.5.1, 05-13-2016"
+	local versStamp="Version 1.5.5, 05-23-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -33,6 +33,8 @@ function define_Constants () {
 		[[ ${SOURCE} != /* ]] && SOURCE="${DIR}/${SOURCE}" 						# if ${SOURCE} was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 	done
 	
+	loggerTag="batch.command"
+	
 	readonly scriptPath="$( cd -P "$( dirname "${SOURCE}" )" && pwd )"
 	
 	readonly workDir="${scriptPath}"
@@ -48,10 +50,12 @@ function define_Constants () {
 	readonly outDirOption="--output ${outDir}"
 	
 	readonly queuePath="${workDir}/queue.txt"
+	readonly skipPath="${workDir}/skip.txt"
 	readonly prefPath="${workDir}/Prefs.txt"
 	readonly workingPath="${libDir}/Preferences/com.videotranscode.batch.working.plist"
 	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
 	
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_matchVal="${appScriptsPath}/_matchVal.sh"
 	readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
 	readonly sh_fileType="${appScriptsPath}/_fileType.sh"
@@ -59,33 +63,7 @@ function define_Constants () {
 	readonly sh_finderTag="${appScriptsPath}/_finderTag.sh"
 	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
 	readonly sh_writePrefs="${appScriptsPath}/_writePrefs.sh"
-}
-
-function echo_Msg () {
-	# ${1}: message to echo
-	# ${2}: flag to suppress echo
-	
-	if [ $# -eq 1 ]; then
-		echo "${1}"									# echo to the Terminal
-	fi
-    echo "${1}" 2>&1 | logger -t batch.cmd			# echo to syslog
-}
-
-function if_Error () {
-	# ${1}: last line of error occurence
-	# ${2}: error code of last command
-	
-	local lastLine="${1}"
-	local lastErr="${2}"
-																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
-		
-		exit 1
-	fi
+	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 }
 
 function get_Prefs () {
@@ -140,8 +118,39 @@ function build_Resources () {
 	fi
 }
 
+function ingest_Skips () {
+	if [ -e "${skipPath}" ]; then
+		local loopCounter=0
+		
+		declare -a skippedFiles
+			
+		input="$(sed -n 1p "${skipPath}")"																		# get the first file to convert
+	
+		while [ "${input}" ]; do
+			skippedFiles[${loopCounter}]="${input}"
+			
+			mv -f "${input}" "${originalsDir}"																	# move skipped file to its final destination
+		
+			sed -i '' 1d "${skipPath}" || exit 1  																# delete the line from the skip file
+
+			input="$(sed -n 1p "${skipPath}")"																	# get the next file to process
+			
+			(( loopCounter++ ))
+		done
+		
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Files skipped in this batch (${loopCounter}):"
+		printf '%s\n' "${skippedFiles[@]}"																		# print to the Terminal
+		printf '%s\n' "${skippedFiles[@]}"  2>&1 | logger -t "${loggerTag}"										# print to syslog
+		
+		if [ -e "${skipPath}" ]; then
+		    rm -f "${skipPath}"
+		fi
+	fi
+}
+
 function pre_Processors () {
-	echo_Msg "Pre-processing files"
+	. "${sh_echoMsg}" "Pre-processing files"
 	
 	local capturedOutput=""
 	local cropValue=""
@@ -167,8 +176,12 @@ function pre_Processors () {
 	
 			queueValue="${convertDir}/${fileNameExt}"
 			echo ${queueValue} >> "${queuePath}"							# write the file path to the queue file
+		elif [[ ${i} = *^* ]]; then
+			printf "%s\n" "${i}" >> ${skipPath}
 		fi
 	done
+																			# move all skip files to Originals
+	ingest_Skips
 }
 
 function rename_File () {
@@ -184,7 +197,7 @@ function rename_File () {
 	
 	fileType=$(. "${sh_fileType}" "${1}")																				# get the type of file, movie, tv show, multi episode, extra, skip
 	
-	echo_Msg "Renaming: File type is ${fileType}" ""
+	. "${sh_echoMsg}" "Renaming: File type is ${fileType}" ""
 	
 	case "${fileType}" in																								# process the file based on file type
 		skip )						
@@ -219,7 +232,7 @@ function rename_File () {
 			tempName="${tempName#*+}"																							# remove any plus characters from the front of the string
 			local labelInfo="${1#*#}"																							# get the extras label
 			labelInfo="${labelInfo%%_*}"																						# strip off any trailing _tXX
-			
+				
 			if [ -z "${2}" ]; then
 				capturedOutput=$(filebot -rename "${outDir}/${tempName}.${outExt}" -non-strict)									# movie
 			else
@@ -276,7 +289,7 @@ function rename_File () {
 				break
 			fi
 			
-			(( loopCounter++ )) 
+			(( loopCounter++ ))
 		done
 		
 		renamedFile="${renamedFile%.*}_${loopCounter}.${outExt}"
@@ -299,13 +312,13 @@ function move_Transcoded () {
 	
 	fileType=$(. "${sh_fileType}" "${movedPath}")								# get the type of file, movie, tv show, multi episode, extra, skip
 	
-	echo_Msg "Moving transcoded: File type is ${fileType}" ""
+	. "${sh_echoMsg}" "Moving transcoded: File type is ${fileType}" ""
 																				# custom path, not skipping
 	if [ -n "${extMovePath}" ]; then
 		 																		# what file type
 		case "${fileType}" in
 			skip )
-				echo_Msg "Moving transcoded: nothing to see here, skipping move" ""
+				. "${sh_echoMsg}" "Moving transcoded: nothing to see here, skipping move" ""
 			;;
 
 			movie )
@@ -449,7 +462,7 @@ function move_Original () {
 	
 	fileType=$(. "${sh_fileType}" "${1}")										# get the type of file, movie, tv show, multi episode, extra, skip
 	
-	echo_Msg "Moving original: File type is ${fileType}" ""
+	. "${sh_echoMsg}" "Moving original: File type is ${fileType}" ""
 																				# custom path, not skipping
 	if [ -n "${extMovePath}" ]; then
 		 																		# what file type
@@ -584,11 +597,11 @@ function time_Stamp () {
 		
 		timeStamp=$(date +"%r, %D")
 		
-		echo_Msg ""
-		echo_Msg "Transcode started @ ${timeStamp}"
-		echo_Msg "Files to be transcoded in this batch:"
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Transcode started @ ${timeStamp}"
+		. "${sh_echoMsg}" "Files to be transcoded in this batch:"
 		printf '%s\n' "${convertFiles[@]}"						# print to Terminal
-		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t batch.cmd
+		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"
 		
 		if [ "${#convertFiles[@]}" == "1" ]; then
 			. "${sh_sendNotification}" "Transcode Started" "${timeStamp}" "${#convertFiles[@]} file to convert"
@@ -625,14 +638,16 @@ function time_Stamp () {
 			else
 				timeStamp=${timeStamp}"${seconds} second"
 			fi
+		else
+			timeStamp="Less than a second"
 		fi
 		
-		echo_Msg ""
-		echo_Msg "Transcode completed"
-		echo_Msg "It took ${timeStamp}"
-		echo_Msg "Files transcoded in this batch:"
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Transcode completed"
+		. "${sh_echoMsg}" "It took ${timeStamp}"
+		. "${sh_echoMsg}" "Files transcoded in this batch:"
 		printf '%s\n' "${convertFiles[@]}"										# print to the Terminal
-		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t batch.cmd			# print to syslog
+		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"			# print to syslog
 		
 		if [ "${#convertFiles[@]}" == "1" ]; then
 			. "${sh_sendNotification}" "Transcode Complete" "${convertFiles[0]##*/}" "converted in ${timeStamp}" "Hero"
@@ -654,7 +669,7 @@ function send_2Remote () {
 		rsync -a --info=progress2 --temp-dir="${tempDir}/" --delay-updates "${1}" sadmin@media.mdm2195.com:"${rsyncPath}"
 																														# if an error occurred
 		if [ "${?}" -ne "0" ]; then
-			echo_Msg "Retrying rsync to ${rsyncPath} in ${sleepTime} seconds..."
+			. "${sh_echoMsg}" "Retrying rsync to ${rsyncPath} in ${sleepTime} seconds..."
 			sleep ${sleepTime}																							# pause and try again
 		else
 			break																										# all good, we're done
@@ -672,7 +687,7 @@ function transcode_Video () {
 	local showTitle=""
 	local renamedPath=""
 	local hdbrkOption=''
-	
+		
 	input="$(sed -n 1p "${queuePath}")"																				# get the first file to convert
 
 	while [ "${input}" ]; do
@@ -707,59 +722,60 @@ function transcode_Video () {
 	        subTitleOption=''
 	    fi
 
-	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file	
-			
-		if [[ ${input} != *^* ]]; then																				# go ahead and process
-			echo_Msg "Transcoding ${input##*/}"
-			. "${sh_sendNotification}" "Transcoding" "${input##*/}"
-		
-			transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
-		
-			if [ "$fileType" == "tvshow" ]; then																	# TV Show
-				if [[ "${renameFile}" == "auto" || "${renameFile}" == "tv" ]]; then
-					showTitle=$(rename_File "${titleName}" "${tvShowFormat}" "TheTVDB")								# rename the file. For TV show: {Name} - {sXXeXX} - {Episode Name}.{ext}
-				fi	
-			else																									# movie
-				if [[ "${renameFile}" == "auto" || "${renameFile}" == "movie" ]]; then
-					showTitle=$(rename_File "${titleName}" "${movieFormat}")										# rename the file. For movie: {Name} {(Year of Release)}.{ext}
-				fi
+	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file
+
+		. "${sh_echoMsg}" "Transcoding ${input##*/}"
+		. "${sh_sendNotification}" "Transcoding" "${input##*/}"
+	
+		transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
+	
+		if [ "$fileType" == "tvshow" ]; then																		# TV Show
+			if [[ "${renameFile}" == "auto" || "${renameFile}" == "tv" ]]; then
+				showTitle=$(rename_File "${titleName}" "${tvShowFormat}" "TheTVDB")									# rename the file. For TV show: {Name} - {sXXeXX} - {Episode Name}.{ext}
+			fi	
+		else																										# movie
+			if [[ "${renameFile}" == "auto" || "${renameFile}" == "movie" ]]; then
+				showTitle=$(rename_File "${titleName}" "${movieFormat}")											# rename the file. For movie: {Name} {(Year of Release)}.{ext}
 			fi
-		
-			renamedPath="${outDir}/${showTitle}"																	# renamed file with full path
-														
-			. "${sh_metadataTag}" "${renamedPath}" "title"															# set the file 'title' metadata
-		
-			renamedPath=$(move_Transcoded "${renamedPath}" "${plexPath}")											# move the transcoded file to final location if flag is set
-		
-			. "${sh_finderTag}" "${applyTag}" "${renamedPath}"														# set Finder tags after final move
-		
-			if [ ! -z "${sshUser}" ] && [ ! -z "${rsyncPath}" ] && [[ $(. "${sh_fileType}" "${titleName}") != "skip" ]]; then	# transfer completed files to a Transcode destination as long as they don't start with '@'
-				send_2Remote "${renamedPath}"
-			fi
+		fi
+	
+		renamedPath="${outDir}/${showTitle}"																		# renamed file with full path
+													
+		. "${sh_metadataTag}" "${renamedPath}" "title"																# set the file 'title' metadata
+	
+		renamedPath=$(move_Transcoded "${renamedPath}" "${plexPath}")												# move the transcoded file to final location if flag is set
+	
+		. "${sh_finderTag}" "${applyTag}" "${renamedPath}"															# set Finder tags after final move
+	
+		if [ ! -z "${sshUser}" ] && [ ! -z "${rsyncPath}" ] && [[ $(. "${sh_fileType}" "${titleName}") != "skip" ]]; then	# transfer completed files to a Transcode destination as long as they don't start with '@'
+			send_2Remote "${renamedPath}"
 		fi
 
 		rm -f "${cropFile}"																							# remove the crop file
 		
 		input="$(sed -n 1p "${queuePath}")"																			# get the next file to process
-	done	
+	done
 }
 
 function post_Processors () {
-	echo_Msg "Moving log files to ${logDir}"
+	. "${sh_echoMsg}" "Moving log files to ${logDir}"
+	
 	find "${outDir}" -name '*.log' -exec mv {} "${logDir}" \;					# move all the log files to Logs
 	
 	if [ "${deleteWhenDone}" == "true" ]; then									# check the deleteWhenDone flag and proceed accordingly
-		echo_Msg "Deleting originals"
+		. "${sh_echoMsg}" "Deleting originals"
 		
 		for i in "${convertFiles[@]}"; do
 			rm -fr "${i}"														# remove all the original files
 		done
 	else
-		echo_Msg "Moving originals to ${originalsDir}"
+		. "${sh_echoMsg}" "Moving originals to ${originalsDir}"
 		
 		for i in "${convertFiles[@]}"; do
-			tag '--set' "${convertedTag}" "${i}"								# set the original file Finder tags to indicate it has been processed
-			move_Original "${i}" "${originalsDir}"								# move all the original files to Originals									
+			if [ -e "${i}" ]; then
+				. "${sh_finderTag}" "${convertedTag}" "${i}"					# set the original file Finder tags to indicate it has been processed
+				move_Original "${i}" "${originalsDir}"							# move all the original files to Originals
+			fi								
 		done
 	fi
 }
@@ -786,8 +802,8 @@ function __main__ () {
 																											# exit if no files to convert
 	if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
 		input=""
-		echo_Msg ""
-		echo_Msg "Exiting, no files found in ${convertDir} to transcode."
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Exiting, no files found in ${convertDir} to transcode."
 		
 		. "${sh_sendNotification}" "Transcode Stopped" "No files to convert"
 
@@ -798,7 +814,7 @@ function __main__ () {
 
 	get_Prefs
 	build_Resources
-	pre_Processors 
+	pre_Processors
 	transcode_Video
 	post_Processors
 
@@ -810,7 +826,7 @@ function __main__ () {
 																							# execute
 trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 trap "exit" INT																				# trap user cancelling
-trap 'if_Error ${LINENO} $?' ERR															# trap errors
+trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 printf '\e[8;5;154t'																		# set the Terminal window size to 154x5
 
 define_Constants

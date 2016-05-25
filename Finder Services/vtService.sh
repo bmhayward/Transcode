@@ -15,7 +15,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.7, 04-22-2016"
+	local versStamp="Version 1.1.8, 05-19-2016"
+	
+	readonly loggerTag="transcode.service"
 	
 	readonly libDir="${HOME}/Library"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
@@ -25,6 +27,7 @@ function define_Constants () {
 	
 	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
 	readonly sh_writePrefs="${appScriptsPath}/_writePrefs.sh"
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 }
 
 function get_Prefs () {
@@ -64,14 +67,14 @@ function set_MetadataTag () {
 
 	metaVal=${metaVal%${matchVal}*}																	# remove the matched value from the metaVal
 
-	atomicparsley "${1}" --overWrite --title "${metaVal}"  2>&1 | logger -t transcode.service		# set the metadata tag
+	atomicparsley "${1}" --overWrite --title "${metaVal}"  2>&1 | logger -t "${loggerTag}"		# set the metadata tag
 }
 
 function set_FinderTag () {
 	# ${1}: path to the file
 	
-	echo 2>&1 | logger -t transcode.service
-	echo " Updating Finder tags..." 2>&1 | logger -t transcode.service
+	echo 2>&1 | logger -t "${loggerTag}"
+	echo " Updating Finder tags..." 2>&1 | logger -t "${loggerTag}"
 	
 	local applyTag=""
 	local titleName=$(extract_MatchVal "${1}")											# get the string to strip out
@@ -88,7 +91,7 @@ function set_FinderTag () {
 		applyTag=${movieTag}
 	fi
 	
-	tag --add "${applyTag}"	 "${1}"	 2>&1 | logger -t transcode.service					# set Finder tags	
+	tag --add "${applyTag}"	 "${1}"	 2>&1 | logger -t "${loggerTag}"					# set Finder tags	
 }
 
 
@@ -110,8 +113,8 @@ for f in "${@}"; do
 				fileExt="${file##*.}"
 														# only deal with .m4v, .mp4 or .mkv files
 				if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
-					echo "" 2>&1 | logger -t transcode.service
-					echo "${file##*/}" 2>&1 | logger -t transcode.service
+					. "${sh_echoMsg}" ""
+					. "${sh_echoMsg}" "${file##*/}"
 					set_MetadataTag "${file}"
 					set_FinderTag "${file}"
 				fi
@@ -122,14 +125,14 @@ for f in "${@}"; do
 		fileExt="${searchPath##*.}"
 														# only deal with .m4v, .mp4 or .mkv files
 		if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
-			echo "" 2>&1 | logger -t transcode.service
-			echo "${searchPath##*/}" 2>&1 | logger -t transcode.service
+			. "${sh_echoMsg}" ""
+			. "${sh_echoMsg}" "${searchPath##*/}"
 			set_MetadataTag "${searchPath}"
 			set_FinderTag "${searchPath}"
 		fi
 	fi
 
-	echo "" 2>&1 | logger -t transcode.service
+	. "${sh_echoMsg}" ""
 done
 
 exit 0

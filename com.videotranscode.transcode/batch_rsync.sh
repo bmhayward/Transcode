@@ -15,64 +15,42 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.6, 04-23-2016"
+	local versStamp="Version 1.1.8, 05-23-2016"
 	
+	loggerTag="batch.rsync"
+		
 	readonly outDir="${convertDir}"
 	
 	readonly queuePath="${workDir}/queue_remote.txt"						# workDir is global, from watchFolder_rsync
 	readonly prefPath="${workDir}/Prefs.txt"
 	readonly workingPath="${libDir}/Preferences/${workingPlist}"			# workingPlist is global, from watchFolder_rsync
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
 	
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_matchVal="${appScriptsPath}/_matchVal.sh"
 	readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
 	readonly sh_fileType="${appScriptsPath}/_fileType.sh"
 	readonly sh_metadataTag="${appScriptsPath}/_metadataTag.sh"
 	readonly sh_finderTag="${appScriptsPath}/_finderTag.sh"
 	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
+	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 	
-	# convertDir is global, from watchFolder_rsync
-	# workDir is global, from watchFolder_rsync
-}
-
-function echo_Msg () {
-	# ${1}: message to echo
-	# ${2}: flag to suppress echo
-	
-	if [ $# -eq 1 ]; then
-		echo "${1}"									# echo to the Terminal
-	fi
-    echo "${1}" 2>&1 | logger -t batch.rsync		# echo to syslog
-}
-
-function if_Error () {
-	# ${1}: last line of error occurence
-	# ${2}: error code of last command
-	
-	local lastLine="${1}"
-	local lastErr="${2}"
-																		# if lastErr > 0 then echo error msg and log
-	if [[ ${lastErr} -eq 0 ]]; then
-		echo_Msg ""
-		echo_Msg "Something went awry :-("
-		echo_Msg "Script error encountered $(date) in ${scriptName}.sh: line ${lastLine}: exit status of last command: ${lastErr}"
-		echo_Msg "Exiting..."
-		
-		exit 1
-	fi
+	# From watchFolder_rsync.sh:
+		# readonly convertDir="${workDir}/Remote"
+		# readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
+		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"	
 }
 
 function read_Prefs () {
 	if [ -e "${prefPath}" ]; then
 		. "${sh_readPrefs}" "${prefPath}"											# read in the preferences from Prefs.txt
 	else
-		echo_Msg "Pref.txt is missing, exiting..."
+		. "${sh_echoMsg}" "Pref.txt is missing, exiting..."
 		exit 1
 	fi
 }
 
 function pre_Processors () {
-	echo_Msg "Pre-processing files"
+	. "${sh_echoMsg}" "Pre-processing files"
 	local fileNameExt=""
 	local queueValue=""
 	
@@ -96,13 +74,13 @@ function move_Transcoded () {
 	
 	fileType=$(. "${sh_fileType}" "${movedPath}")								# get the type of file, movie, tv show, multi episode, extra, skip
 	
-	echo_Msg "Moving: File type is ${fileType}" ""
+	. "${sh_echoMsg}" "Moving: File type is ${fileType}" ""
 																				# custom path
 	if [ -n "${plexPath}" ]; then
 		 																		# what file type
 		case "${fileType}" in
 			skip )
-				echo_Msg "Moving: nothing to see here, skipping move" ""
+				. "${sh_echoMsg}" "Moving: nothing to see here, skipping move" ""
 			;;
 			
 			movie )
@@ -250,7 +228,7 @@ function rsync_Process () {
 		showTitle="${input##*/}"																		# get the title of the video including extension
 	    fileType="unknown"																				# file type is unknown
 	    
-		echo_Msg "Processing remote title ${showTitle}"
+		. "${sh_echoMsg}" "Processing remote title ${showTitle}"
 		
 	    if [[ "${titleName}" =~ ([s][0-9]+[e][0-9]+) ]]; then
    			fileType="tvshow"																			# TV show
@@ -260,7 +238,7 @@ function rsync_Process () {
    			applyTag=${movieTag}
    		fi
 
-		echo_Msg "${showTitle} file type: ${fileType}"
+		. "${sh_echoMsg}" "${showTitle} file type: ${fileType}"
 
 	 	sed -i '' 1d "${queuePath}" || exit 1  															# delete the line from the queue file
 	   		
@@ -270,7 +248,7 @@ function rsync_Process () {
 		
 		renamedPath=$(move_Transcoded "${renamedPath}" "${showTitle}")									# move the transcoded file to final location if flag is set
 		
-		echo_Msg "Moved ${showTitle} to ${renamedPath}"
+		. "${sh_echoMsg}" "Moved ${showTitle} to ${renamedPath}"
 		
 		. "${sh_finderTag}" "${applyTag}" "${renamedPath}"												# set Finder tags after final move
 		
@@ -295,8 +273,8 @@ function __main__ () {
 																							# exit if no files to convert
 	if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
 		input=""
-		echo_Msg ""
-		echo_Msg "Exiting, no files found in ${convertDir} to process."
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Exiting, no files found in ${convertDir} to process."
 
 		exit 1
 	fi	
@@ -311,7 +289,7 @@ function __main__ () {
 																							# execute
 trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 trap "exit" INT																				# trap user cancelling
-trap 'if_Error ${LINENO} $?' ERR															# trap errors
+ttrap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 define_Constants
 

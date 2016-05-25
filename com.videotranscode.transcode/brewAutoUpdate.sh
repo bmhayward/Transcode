@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 #-------------------------------------------------------------MAIN------------------------------------------------------------------
 
-# Version 1.0.4, 05-11-2016
+# Version 1.0.5, 05-20-2016
 
 readonly libDir="${HOME}/Library"
 readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"

@@ -15,7 +15,16 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.0, 05-16-2016"
+	local versStamp="Version 1.0.1, 05-19-2016"
+	
+	readonly loggerTag="transcode.service"
+	
+	readonly libDir="${HOME}/Library"
+	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
+	
+	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+
+	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"	
 }
 
 
@@ -36,9 +45,9 @@ for f in "${@}"; do
 				fileExt="${file##*.}"
 														# only deal with .m4v, .mp4 or .mkv files
 				if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
-					echo "" 2>&1 | logger -t transcode.service
-					echo "Transmogrifying ${file##*/}" 2>&1 | logger -t transcode.service
-					convert-video "${file##*/}" 2>&1 | logger -t transcode.service
+					. "${sh_echoMsg}" ""
+					. "${sh_echoMsg}" "Transmogrifying ${file##*/}"
+					convert-video "${file##*/}" 2>&1 | logger -t "${loggerTag}"
 				fi
 			fi
 		done
@@ -49,13 +58,13 @@ for f in "${@}"; do
 		if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
 			cd "${searchPath%/*}"
 			
-			echo "" 2>&1 | logger -t transcode.service
-			echo "Transmogrifying ${searchPath##*/}" 2>&1 | logger -t transcode.service
-			convert-video "${searchPath##*/}" 2>&1 | logger -t transcode.service
+			. "${sh_echoMsg}" ""
+			. "${sh_echoMsg}" "Transmogrifying ${searchPath##*/}"
+			convert-video "${searchPath##*/}" 2>&1 | logger -t "${loggerTag}"
 		fi
 	fi
 
-	echo "" 2>&1 | logger -t transcode.service
+	. "${sh_echoMsg}" ""
 done
 
 exit 0
