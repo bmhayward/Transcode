@@ -720,6 +720,12 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.4](https://github.com/bmhayward/Transcode/releases/tag/1.2.4)
+Wednesday, May 25, 2016
+* Moved all terminal and Console messaging to a standardized library
+* Moved all error trapping to a standardized library
+* Updated Transcode Setup Assistant to support the current version of Xcode Command-Line Tools
+
 ### [1.2.3](https://github.com/bmhayward/Transcode/releases/tag/1.2.3)
 Wednesday, May 18, 2016
 * Updated Finder Services to use preferences read/write libraries
