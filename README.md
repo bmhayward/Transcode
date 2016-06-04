@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.6](https://github.com/bmhayward/Transcode/releases/tag/1.2.6)
+Saturday, June 4, 2016
+* Fixed an issue where Specials or Extras originating files were marked with Finder tags yellow,Extra,VT. They are now marked with Finder tags blue,Converted
+
 ### [1.2.5](https://github.com/bmhayward/Transcode/releases/tag/1.2.5)
 Saturday, June 4, 2016
 * Added Transcode auto-update feature
