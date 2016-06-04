@@ -318,9 +318,9 @@ Tag definitions can be added, edited or deleted in Transcode’s preferences.
 
 ### Auto-Update
 
-Transcode automatically updates all installed brew formulas, brew casks and Ruby gems. Transcode checks everyday at 3 a.m. and updates any brew or brew cask. If a gem update is found, an update dialog is presented asking to proceed with the specific gem update.
+Everyday at 3 a.m. Transcode updates any brew, brew cask, Ruby gem or Transcode itself. If a Ruby gem update is found, an update dialog is presented asking to proceed with the specific gem update.
 
-To see a list of applied updates, open the Console and search for ‘brew.’ or ‘gem.’.
+To see a list of applied updates, open the Console.app and search for ‘brew.’, ‘gem.’ or ‘transcode.’.
 
 ## Guide
 
@@ -719,6 +719,12 @@ This scenario makes use of:
 8. Goto Step 1
 
 ## History
+
+### [1.2.5](https://github.com/bmhayward/Transcode/releases/tag/1.2.5)
+Saturday, June 4, 2016
+* Added Transcode auto-update feature
+* Updated TV Show and TV multi-episode naming so that the name is always structured with a leading zero if required, e.g. s04e06.m4v or s03e01-e18.m4v
+* A copy of Transcode Setup Assistant is now placed in /Transcode/Extras during installation
 
 ### [1.2.4](https://github.com/bmhayward/Transcode/releases/tag/1.2.4)
 Wednesday, May 25, 2016
