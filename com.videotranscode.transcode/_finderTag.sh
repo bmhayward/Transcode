@@ -19,11 +19,13 @@ function set_FinderTag () {
 	
 	local tag2Apply="${1}"
 
-	case "${2}" in							# if this is an Extra, change the tagging based on the preference setting
-		*"Featurettes"*|*"Behind The Scenes"*|*"Deleted Scenes"*|*"Interviews"*|*"Scenes"*|*"Shorts"*|*"Trailers"*|*"Specials"*|*"s00"* )
-			tag2Apply="${extrasTag}"
-		;;
-	esac
+	if [ "${2##*.}" != "mkv" ]; then
+		case "${2}" in							# if this is an Extra, change the tagging based on the preference setting
+			*"Featurettes"*|*"Behind The Scenes"*|*"Deleted Scenes"*|*"Interviews"*|*"Scenes"*|*"Shorts"*|*"Trailers"*|*"Specials"*|*"s00"* )
+				tag2Apply="${extrasTag}"
+			;;
+		esac
+	fi
 	
 	tag --set "${tag2Apply}" "${2}"			# set Finder tags
 }
@@ -34,6 +36,6 @@ function __main__ () {
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 04-22-2016
+# Version 1.0.3, 06-04-2016
 
 __main__ "${@}"
