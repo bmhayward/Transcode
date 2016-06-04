@@ -16,15 +16,27 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.1, 05-23-2016"
+	local versStamp="Version 1.2.2, 06-01-2016"
 	
 	loggerTag="transcode.install"
+	readonly scriptsDirName="com.videotranscode.transcode"
 	
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
-	readonly plistDir="${HOME}/Library/LaunchAgents"
-	readonly scriptsDir="${HOME}/Library/Application Scripts"
-	readonly supportDir="${HOME}/Library/Application Support"
-	readonly scriptsDirName="com.videotranscode.transcode"
+	readonly libDir="${HOME}/Library"	
+	readonly plistDir="${libDir}/LaunchAgents"
+	readonly scriptsDir="${libDir}/Application Scripts"
+	readonly supportDir="${libDir}/Application Support"
+																				# get the paths
+	local DIR=""
+	local SOURCE="${BASH_SOURCE[0]}"
+	
+	while [ -h "${SOURCE}" ]; do 												# resolve ${SOURCE} until the file is no longer a symlink
+		DIR="$( cd -P "$( dirname "${SOURCE}" )" && pwd )"
+		SOURCE="$(readlink "${SOURCE}")"
+		[[ ${SOURCE} != /* ]] && SOURCE="${DIR}/${SOURCE}" 						# if ${SOURCE} was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	
+	readonly scriptPath="$( cd -P "$( dirname "${SOURCE}" )" && pwd )"
 }
 
 function echo_Msg () {
@@ -278,6 +290,12 @@ EOD
 function clean_Up () {
 																# make sure all the scripts are excutable
 	find "${scriptsDir}/${scriptsDirName}/" -name "*.sh" -exec chmod +x {} \;
+
+	workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
+	
+	tsaPath="${scriptPath%/Contents*}"
+																# copy Transcode Setup Assistant to /Transcode/Extras	
+	cp -R "${tsaPath}" "${workDir}/Extras"
 	
 	echo
 	echo $'\e[92mThis window can now be closed.\e[0m'

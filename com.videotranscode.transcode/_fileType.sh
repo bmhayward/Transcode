@@ -28,13 +28,13 @@ function file_Type () {
 			fileType="extra"
 		;;
 		* )
-			if [[ "${1}" =~ ([Ss][0-9]+[Ee][0-9]+[Ee][0-9]+) ]]; then
+			if [[ "${1}" =~ ([Ss][0-9]+[Ee][0-9]+[Ee][0-9]+) ]]; then		# TV multi-episode sXXeYYeZZ
 				matchVal=${BASH_REMATCH[1]}
 				fileType="multi/${matchVal}"
-			elif [[ "${1}" =~ ([Ss][0][0][Ee][0-9]+) ]]; then
+			elif [[ "${1}" =~ ([Ss][0][0][Ee][0-9]+) ]]; then				# TV special s00eYY
 				matchVal=${BASH_REMATCH[1]}
 				fileType="special/${matchVal}"
-			elif [[ "${1}" =~ ([Ss][0-9]+[Ee][0-9]+) ]]; then
+			elif [[ "${1}" =~ ([Ss][0-9]+[Ee][0-9]+) ]]; then				# TV episode sXXeYY
 				matchVal=${BASH_REMATCH[1]}
 				fileType="tvshow/${matchVal}"
 			fi

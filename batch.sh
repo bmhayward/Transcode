@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.5.5, 05-23-2016"
+	local versStamp="Version 1.5.8, 06-01-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -194,6 +194,9 @@ function rename_File () {
 	local capturedOutput=""
 	local fileType=""
 	local renamedFile=""
+	local need2Rename="true"
+	local patternVal=""
+	local replaceVal=""
 	
 	fileType=$(. "${sh_fileType}" "${1}")																				# get the type of file, movie, tv show, multi episode, extra, skip
 	
@@ -205,49 +208,83 @@ function rename_File () {
 		;;
 		
 		multi* )
+			local matchLoc=""
+			local YYVal=""
+			local ZZVal=""
+			
 			matchVal="${fileType##*/}"																					# get the embedded matched value out of the string							
 		
 			capturedOutput="${1%${matchVal}*}"																			# remove the original matched text
 			capturedOutput="${capturedOutput//_/ }"																		# convert any underscores to spaces
+			capturedOutput="${capturedOutput#*+}"																		# remove any plus characters from the front of the string
 			capturedOutput=$(echo ${capturedOutput} | awk '{print tolower($0)}') 										# lowercase the original text
-			capturedOutput=$(echo ${capturedOutput} |  awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
+			capturedOutput=$(echo ${capturedOutput} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
 
-			local matchLoc=$(expr "${matchVal}" : '^.*[Ee]') 															# find the last 'E' in the matched text
+			matchLoc=$(expr "${matchVal}" : '^.*[Ee]') 																	# find the last 'E' in the matched text
 			matchVal=$(echo ${matchVal} | awk '{print tolower($0)}') 													# lowercase the matched text
 			matchVal=$(echo ${matchVal:0:(${matchLoc}-1)}-${matchVal:(${matchLoc}-1)})  								# structure the matched text as sXXeYY-eZZ
+			
+			if [ ${#matchVal} -lt 10 ]; then																			# need to add leading zero's?
+				if [[ "${matchVal}" =~ ([s][0-9]+) ]]; then																# if matchVal is not structured as sXX
+					patternVal=${BASH_REMATCH[1]//[^0-9]/}																# get the pattern of numbers after the 's'
+					replaceVal="$(printf "%02d" ${patternVal})"															# pad with a leading zero
+
+					matchVal=${matchVal//${patternVal}/${replaceVal}}													# replace the pattern value with the replacement value in the matchVal
+				fi
+
+				YYVal="${matchVal%-*}"																					# get the sXXeYY portion
+				ZZVal="${matchVal#*-}"																					# get the eZZ portion
+
+				if [[ "${YYVal}" =~ ([e][0-9]+) && ${#YYVal} -lt 6 ]]; then												# if matchVal is not structured as eYY
+					patternVal=${BASH_REMATCH[1]//[^0-9]/}																# get the pattern of numbers after the 'e'
+					replaceVal="$(printf "%02d" ${patternVal})"
+					replaceVal=${YYVal//${patternVal}/${replaceVal}}													# pad with a leading zero
+
+					matchVal=${matchVal//${YYVal}/${replaceVal}}														# replace eY with eYY
+				fi
+
+				if [[ "${ZZVal}" =~ ([e][0-9]+) && ${#ZZVal} -lt 3 ]]; then												# if matchVal is not structured as eZZ
+					patternVal=${BASH_REMATCH[1]//[^0-9]/}																# get the pattern of numbers after the 'e'
+					replaceVal="$(printf "%02d" ${patternVal})"
+					replaceVal=${ZZVal//${patternVal}/${replaceVal}}													# pad with a leading zero
+
+					matchVal=${matchVal//${ZZVal}/${replaceVal}}														# replace eZ with eZZ
+				fi
+			fi
 
 			capturedOutput="${capturedOutput} - ${matchVal}.${outExt}" 													# final output showTitle - sXXeYY-eZZ.ext
 		;;
 
 		tvshow* )
+			need2Rename="false"
 			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict --order "dvd" --db "${3}" --format "${2}")
 		;;
 
 		movie )
+			need2Rename="false"
 			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict)
 		;;
 
 		extra )
-			local tempName="${1%%#*}"																							# get the title
-			tempName="${tempName#*+}"																							# remove any plus characters from the front of the string
-			local labelInfo="${1#*#}"																							# get the extras label
-			labelInfo="${labelInfo%%_*}"																						# strip off any trailing _tXX
-				
-			if [ -z "${2}" ]; then
-				capturedOutput=$(filebot -rename "${outDir}/${tempName}.${outExt}" -non-strict)									# movie
-			else
-				capturedOutput=$(filebot -rename "${outDir}/${tempName}.${outExt}" -non-strict --db "${3}" --format "${2}")		# TV show
-			fi
+			local tempName=""
+			local labelInfo=""
+			local fileBotName=""
 			
-			local fileBotName="${capturedOutput##*[}"																			# delete the longest match of "[" from the front of capturedOutput 
-			fileBotName="${fileBotName%]*}"																						# delete the shortest match of "]" from the back of capturedOutput, leaving filename.ext
-			fileBotName="${fileBotName##*/}"																					# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
+			tempName="${1%%#*}"																							# get the title name
+			tempName="${tempName#*+}"																					# remove any plus characters from the front of the string
+			labelInfo="${1#*#}"																							# get the extras label
+			labelInfo="${labelInfo%%_*}"																				# strip off any trailing _tXX
+
+			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict --action test)						# movie, do not actually rename the file, just get the name
 			
-			capturedOutput="${fileBotName%.*}#${labelInfo}.${outExt}"															# put the title back together with the extras label
+			fileBotName="${capturedOutput##*[}"																			# delete the longest match of "[" from the front of capturedOutput 
+			fileBotName="${fileBotName%]*}"																				# delete the shortest match of "]" from the back of capturedOutput, leaving filename.ext
+			fileBotName="${fileBotName##*/}"																			# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
+			
+			capturedOutput="${fileBotName%.*}#${labelInfo}.${outExt}"													# put the title back together with the extras label
 		;;
 		
 		special* )
-			local matchLoc=""
 			local specialDescpt=""
 			
 			matchVal="${fileType##*/}"																					# get the embedded matched value out of the string							
@@ -258,13 +295,19 @@ function rename_File () {
 			capturedOutput=$(echo ${capturedOutput} | awk '{print tolower($0)}') 										# lowercase the original text
 			capturedOutput=$(echo ${capturedOutput} |  awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
 
-			matchLoc=$(expr "${matchVal}" : '^.*[Ee]') 																	# find the last 'E' in the matched text
 			matchVal=$(echo ${matchVal} | awk '{print tolower($0)}') 													# lowercase the matched text
+
+			if [[ "${matchVal}" =~ ([e][0-9]+) && ${#matchVal} -lt 6 ]]; then											# if matchVal is not structured as s00eYY
+				patternVal=${BASH_REMATCH[1]//[^0-9]/}																	# get the pattern of numbers after the 'e'
+				replaceVal="$(printf "%02d" ${patternVal})"																# pad with a leading zero
+
+				matchVal=${matchVal//${patternVal}/${replaceVal}}														# replace eY with eYY
+			fi
 			
 			specialDescpt=$(trim ${1##*#})																				# get the description of the of the special
 			specialDescpt=$(echo ${specialDescpt%%_*})																	# remove any underscores
 			
-			capturedOutput="${capturedOutput} - ${matchVal} - ${specialDescpt}.${outExt}"					# final output showTitle - s00eYY - description.ext
+			capturedOutput="${capturedOutput} - ${matchVal} - ${specialDescpt}.${outExt}"								# final output showTitle - s00eYY - description.ext
 		;;
 	esac
 	
@@ -273,6 +316,8 @@ function rename_File () {
 	renamedFile=${renamedFile##*/}														# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
 	
 	if [[ "${capturedOutput}" =~ (already exists) ]]; then								# duplicate file?
+		need2Rename="true"
+		
 		declare -a dupFiles
 		dupFiles=( "${outDir}"/* )														# get a list of filenames in the output directory
 		
@@ -295,7 +340,9 @@ function rename_File () {
 		renamedFile="${renamedFile%.*}_${loopCounter}.${outExt}"
 	fi
 	
-	mv -f "${outDir}/${1}.${outExt}" "${outDir}/${renamedFile}"							# rename the file to the correct final name
+	if [ "${need2Rename}" = "true" ]; then
+		mv -f "${outDir}/${1}.${outExt}" "${outDir}/${renamedFile}"						# rename the file to the correct final name
+	fi
 	
 	echo "${renamedFile}"																# pass back the new filename
 }
@@ -643,7 +690,7 @@ function time_Stamp () {
 		fi
 		
 		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Transcode completed"
+		. "${sh_echoMsg}" "Transcode completed!"
 		. "${sh_echoMsg}" "It took ${timeStamp}"
 		. "${sh_echoMsg}" "Files transcoded in this batch:"
 		printf '%s\n' "${convertFiles[@]}"										# print to the Terminal
@@ -758,6 +805,7 @@ function transcode_Video () {
 }
 
 function post_Processors () {
+	. "${sh_echoMsg}" ""
 	. "${sh_echoMsg}" "Moving log files to ${logDir}"
 	
 	find "${outDir}" -name '*.log' -exec mv {} "${logDir}" \;					# move all the log files to Logs

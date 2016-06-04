@@ -9,20 +9,21 @@
 #	Copyright (c) 2016 Brent Hayward		
 #
 #	
-#	This script checks to see if Ruby Gems need to be udpated and logs the results to the system log
+#	This script is called from Transcode Updater.app to see if Ruby Gems need to be udpated and logs the results to the system log
+#	This script needs to be placed in Transcode_Update.app/Content/Resources
 #
 
 
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.3, 05-23-2016"
+	local versStamp="Version 1.0.4, 05-24-2016"
 	
 	loggerTag="gem.update"
 	
 	readonly libDir="${HOME}/Library"
+	
 	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-
 	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
 	
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
@@ -62,6 +63,8 @@ function updateGems () {
 				msgTxt="${msgTxt} and terminal-notifier"
 			fi
 		fi
+																	# remove the semaphore file
+		rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.plist"
 	fi
 }
 

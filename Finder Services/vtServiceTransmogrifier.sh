@@ -17,7 +17,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 function define_Constants () {
 	local versStamp="Version 1.0.1, 05-19-2016"
 	
-	readonly loggerTag="transcode.service"
+	loggerTag="transcode.serviceTransmogrify"
 	
 	readonly libDir="${HOME}/Library"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
