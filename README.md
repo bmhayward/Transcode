@@ -431,7 +431,7 @@ invokes the following:
 -sel:subtitle       ->	Deselect all subtitle tracks
 -sel:special        ->	Deselect all special tracks (director’s comments etc.)
 =100:all            ->	set output weight 100 to all tracks
--10:eng             ->	decrement the weight of all tracks in English language by 10 (to make them the first ones in  output)
+-10:eng             ->	decrement the weight of all tracks in English language by 10 (to make them the first ones in output)
 ```
 The tokens and operators used by the default selection rule are:
 ```
