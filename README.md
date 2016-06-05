@@ -318,7 +318,7 @@ Tag definitions can be added, edited or deleted in Transcode’s preferences.
 
 ### Auto-Update
 
-Everyday at 3 a.m. Transcode updates any brew, brew cask, Ruby gem or Transcode itself. If a Ruby gem update is found, an update dialog is presented asking to proceed with the specific gem update.
+Transcode updates any brew, brew cask, supported Ruby gem or Transcode itself everyday at 3 a.m.. If a Ruby gem update is found, an update dialog is presented asking to proceed with the specific gem update.
 
 To see a list of applied updates, open the Console.app and search for ‘brew.’, ‘gem.’ or ‘transcode.’.
 
