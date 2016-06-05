@@ -389,7 +389,8 @@ TV Shows: FAMILY_GUY_S6E1
 Multi-Episode TV Show: BETTER_CALL_SAUL_S1E1E10
 Extras: INSIDE_OUT_(2015)#Shorts-Lava
 Skip renaming & auto-move: @RATATOUILLE_EXTRAS
-Force decomb filter: +ICE_AGE#Behind The Scenes-Making Of 
+Force decomb filter: +ICE_AGE#Behind The Scenes-Making Of
+Pass-through without transcoding: ^The_Incredibles_Extras
 ```
 Verify a movie or TV show title:
 ```
