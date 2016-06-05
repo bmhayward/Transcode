@@ -51,11 +51,10 @@ One installer and the Terminal will launch:
 ```
 1. Complete the installation of the Xcode command-line tools
 2. Select the open Terminal window once Xcode has been installed
-3. Press [Return]
-4. Enter the local administrator password when prompted
-5. Click OK once the Setup Assistant has completed
-6. Close the open Terminal window
-7. Safari has opened the download page for two additional tools you may find helpful, MakeMKV and VLC
+3. Enter the local administrator password when prompted
+4. Click OK once the Setup Assistant has completed
+5. Close the open Terminal window
+6. Safari has opened the download page for two additional tools you may find helpful, MakeMKV and VLC
 ```
 
 To uninstall Transcode:
