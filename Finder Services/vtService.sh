@@ -15,7 +15,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.8, 05-19-2016"
+	local versStamp="Version 1.1.9, 06-05-2016"
 	
 	loggerTag="transcode.serviceMetadata"
 	
@@ -67,7 +67,7 @@ function set_MetadataTag () {
 
 	metaVal=${metaVal%${matchVal}*}																	# remove the matched value from the metaVal
 
-	atomicparsley "${1}" --overWrite --title "${metaVal}"  2>&1 | logger -t "${loggerTag}"		# set the metadata tag
+	atomicparsley "${1}" --overWrite --title "${metaVal}"  2>&1 | logger -t "${loggerTag}"			# set the metadata tag
 }
 
 function set_FinderTag () {
@@ -76,22 +76,22 @@ function set_FinderTag () {
 	echo 2>&1 | logger -t "${loggerTag}"
 	echo " Updating Finder tags..." 2>&1 | logger -t "${loggerTag}"
 	
-	local applyTag=""
-	local titleName=$(extract_MatchVal "${1}")											# get the string to strip out
+	local tag2Apply=${convertedTag}
+	local titleName=$(extract_MatchVal "${1}")												# get the string to strip out
 
-	if [[ "${titleName}" =~ ([Ss][0][0][Ee][0-9]+) ]]; then		
-		applyTag=${extrasTag}
-	elif [[ "${titleName}" =~ ([Ss][0-9]+[Ee][0-9]+) ]]; then
-		applyTag=${tvTag}
-	elif [[ "${titleName}" == "Featurettes" ]] || [[ "${titleName}" == "Behind The Scenes" ]] || [[ "${titleName}" == "Deleted Scenes" ]] || [[ "${titleName}" == "Interviews" ]] || [[ "${titleName}" == "Scenes" ]] || [[ "${titleName}" == "Shorts" ]] || [[ "${titleName}" ==  "Trailers" ]]; then
-		applyTag=${extrasTag}
-	elif [[ "${1##*.}" == "mkv" ]]; then
-		applyTag=${convertedTag}
-	else
-		applyTag=${movieTag}
+	if [[ "${1##*.}" != "mkv" ]]; then
+		if [[ "${titleName}" =~ ([Ss][0][0][Ee][0-9]+) ]]; then		
+			tag2Apply=${extrasTag}
+		elif [[ "${titleName}" =~ ([Ss][0-9]+[Ee][0-9]+) ]]; then
+			tag2Apply=${tvTag}
+		elif [[ "${titleName}" == "Featurettes" ]] || [[ "${titleName}" == "Behind The Scenes" ]] || [[ "${titleName}" == "Deleted Scenes" ]] || [[ "${titleName}" == "Interviews" ]] || [[ "${titleName}" == "Scenes" ]] || [[ "${titleName}" == "Shorts" ]] || [[ "${titleName}" ==  "Trailers" ]]; then
+			tag2Apply=${extrasTag}
+		else
+			tag2Apply=${movieTag}
+		fi
 	fi
 	
-	tag --add "${applyTag}"	 "${1}"	 2>&1 | logger -t "${loggerTag}"					# set Finder tags	
+	tag --add "${tag2Apply}" "${1}"	 2>&1 | logger -t "${loggerTag}"						# set Finder tags	
 }
 
 
@@ -110,9 +110,10 @@ for f in "${@}"; do
 		find . -print0 | while IFS= read -r -d '' file
 		do
 		   if [[ "${file##*/}" != "." && "${file##*/}" != ".DS_Store" && ! -d "${file}" ]]; then
+				fileName="${file##*/}"
 				fileExt="${file##*.}"
 														# only deal with .m4v, .mp4 or .mkv files
-				if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
+				if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]] && [[ "${file}" != *"^"* ]]; then
 					. "${sh_echoMsg}" ""
 					. "${sh_echoMsg}" "${file##*/}"
 					set_MetadataTag "${file}"
@@ -124,7 +125,7 @@ for f in "${@}"; do
 														# single file, apply
 		fileExt="${searchPath##*.}"
 														# only deal with .m4v, .mp4 or .mkv files
-		if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]]; then
+		if [[ "${fileExt}" = "m4v" || "${fileExt}" = "mp4" || "${fileExt}" = "mkv" ]] && [[ "${file}" != *"^"* ]]; then
 			. "${sh_echoMsg}" ""
 			. "${sh_echoMsg}" "${searchPath##*/}"
 			set_MetadataTag "${searchPath}"
