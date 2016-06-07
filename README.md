@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.8](https://github.com/bmhayward/Transcode/releases/tag/1.2.8)
+Tuesday, June 7, 2016
+* Transcode auto-update changed to support multi-version updates
+
 ### [1.2.7](https://github.com/bmhayward/Transcode/releases/tag/1.2.7)
 Monday, June 6, 2016
 * Updated Finder service Transcode • Update Finder Info to ignore original content with a '^' label and to only tag original content with Finder tags blue,Converted
