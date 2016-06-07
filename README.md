@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.7](https://github.com/bmhayward/Transcode/releases/tag/1.2.7)
+Monday, June 6, 2016
+* Updated Finder service Transcode • Update Finder Info to ignore original content with a '^' label and to only tag original content with Finder tags blue,Converted
+
 ### [1.2.6](https://github.com/bmhayward/Transcode/releases/tag/1.2.6)
 Saturday, June 4, 2016
 * Fixed an issue where Specials or Extras originating files were marked with Finder tags yellow,Extra,VT. They are now marked with Finder tags blue,Converted
