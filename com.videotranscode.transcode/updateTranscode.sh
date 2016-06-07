@@ -16,9 +16,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 06-02-2016"
+	local versStamp="Version 1.1.0, 06-05-2016"
 	
-	loggerTag="transcode.auto-update"
+	loggerTag="transcode.update"
 	
 	readonly prefDir="${libDir}/Preferences"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
@@ -29,7 +29,7 @@ function define_Constants () {
 	readonly comLabel="com.videotranscode.transcode"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-	
+
 	gemJustChecked="false"
 	
 	# From brewAutoUpdate:
@@ -70,51 +70,36 @@ function clean_Up () {
 }
 
 function check4Update_Transcode () {
+	local plistBuddy="/usr/libexec/PlistBuddy"
+	local versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
+	local versUpdate=""
+	local msgTxt="Checking for Transcode updates..."
 	local needsUpdatePlist="${comLabel}.update.plist"
 	local downloadedZipFile="TranscodeUpdater.zip"
 	local capturedOutput=""
-	
 	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
-	
-	 . "${sh_echoMsg}" "Checking for Transcode updates..." ""
 																				# has the update been checked for previously
 	if [ ! -e "${needsUpdatePath}" ]; then
 																				# get a copy of Transcode Updater.app
-		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/Transcode%20Updater.zip 2>&1 | logger -t "${loggerTag}"
+		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/Transcode%20Updater.zip >/dev/null
 																				# extract the Version.plist from the archive
-		unzip -j "${updaterPath}/${downloadedZipFile}" "Transcode Updater.app/Contents/Resources/transcodeVersion.plist" -d "${updaterPath}" 2>&1 | logger -t "${loggerTag}"
+		unzip -j "${updaterPath}/${downloadedZipFile}" "Transcode Updater.app/Contents/Resources/transcodeVersion.plist" -d "${updaterPath}" >/dev/null
 																				# remove any remnants of the unzip
 		rm -rf "${updaterPath}/__MACOSX"
 																				# check the version numbers for an update
 		capturedOutput=$(diff --brief "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist" "${updaterPath}/transcodeVersion.plist")
 	
 		if [[ "${capturedOutput}" = *"differ"* ]]; then
-			touch "${needsUpdatePath}"											# create the Transcode update plist
+																				# create the Transcode update plist
+			touch "${needsUpdatePath}"
+																				# get the update version number
+			versUpdate=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${updaterPath}/transcodeVersion.plist")
+			
+			msgTxt="Updating Transcode from ${versCurrent} to ${versUpdate}."
 		fi
 	fi
-}
-
-function check4Update_Gems () {
-	loggerTag="gem.update"
 	
-	local gemVers=""
-	local updateVT="false"
-	local loopCounter=0
-	local needsUpdatePlist="${comLabel}.gem.update.plist"
-	local msgTxt="Transcode is ready to install "
-	
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
-	
-	. "${sh_echoMsg}" "Checking for gem updates..." ""
-																			# has the update been checked for previously
-	if [ ! -e "${needsUpdatePath}" ]; then
-		gemUpdates=( $(gem outdated) )
-		
-		if [ "${#gemUpdates[@]}" -gt "0" ]; then							# create the gem update plist
-			touch "${needsUpdatePath}"
-			gemJustChecked="true"
-		fi	
-	fi
+	. "${sh_echoMsg}" "${msgTxt}" ""
 }
 
 function update_Transcode () {
@@ -129,13 +114,12 @@ function update_Transcode () {
 	local fileName=""
 																			# can update happen
 	if [[ -e "${needsUpdatePath}" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
-		 . "${sh_echoMsg}" "Updating Transcode..." ""
 																			# pull down a copy of AutoUpdater
-		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/AutoUpdater.zip 2>&1 | logger -t "${loggerTag}"
+		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/AutoUpdater.zip >/dev/null
 																			# extract the auto-update directory to the temp folder
-		unzip "${updaterPath}/${downloadedZipFile}" -d "${updaterPath}/${downloadedZipFile%.*}" 2>&1 | logger -t "${loggerTag}"
+		unzip "${updaterPath}/${downloadedZipFile}" -d "${updaterPath}/${downloadedZipFile%.*}" >/dev/null
 																			# unzip any applications in the bundle
-		unzip "${updaterPath}/${downloadedZipFile%.*}/*.zip" -d "${updaterPath}/${downloadedZipFile%.*}" 2>&1 | logger -t "${loggerTag}"
+		unzip "${updaterPath}/${downloadedZipFile%.*}/*.zip" -d "${updaterPath}/${downloadedZipFile%.*}" >/dev/null
 																			# delete any embedded zip files
 		rm -f "${updaterPath}/${downloadedZipFile%.*}"/*.zip
 																			# remove any remnants of the unzip
@@ -175,12 +159,12 @@ function update_Transcode () {
 																					# move to the update location
 						ditto "${i}" "${transcode2Replace}"
 						
-						. "${sh_echoMsg}" "Updated ${fileName}" ""
+						. "${sh_echoMsg}" "==> Updated ${fileName}" ""
 																					# this script needs to be updated later, move to /tmp for the moment
 					elif [ "${fileName}" = "updateTranscode.sh" ]; then
 						ditto "${i}" "/tmp"
 						
-						. "${sh_echoMsg}" "Moved ${fileName} to /tmp" ""
+						. "${sh_echoMsg}" "==> Moved ${fileName} to /tmp" ""
 					fi
 				
 				;;
@@ -189,18 +173,46 @@ function update_Transcode () {
 				
 					cp -R -p "${i}" "${transcode2Replace}"
 					
-					. "${sh_echoMsg}" "Updated ${fileName}" ""
+					. "${sh_echoMsg}" "==> Updated ${fileName}" ""
 				;;	
 			esac
 		done
 																			# delete the sempahore file
-		rm -f "${needsUpdatePath}"	
+		rm -f "${needsUpdatePath}"
+	elif [[ -e "${waitingPlist}" || -e "${onHoldPlist}" || -e "${workingPlist}" ]]; then
+		. "${sh_echoMsg}" "Update deferred." ""
+	else
+		. "${sh_echoMsg}" "Already up-to-date." ""
 	fi	
 }
 
+function check4Update_Gems () {
+	loggerTag="gem.update"
+	
+	local needsUpdatePlist="${comLabel}.gem.update.plist"
+	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
+	
+	. "${sh_echoMsg}" "Checking for gem updates..." ""
+																			# has the update been checked for previously
+	if [ ! -e "${needsUpdatePath}" ]; then
+		gemUpdates=( $(gem outdated) )
+		
+		if [ "${#gemUpdates[@]}" -gt "0" ]; then							# create the gem update plist
+			touch "${needsUpdatePath}"
+			gemJustChecked="true"
+		fi	
+	fi
+}
+
 function update_Gems () {
+	local needsUpdatePlist="${comLabel}.gem.update.plist"
+	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
+	local updateVT="false"
+	local gemVers=""
+	local loopCounter=0
+	local msgTxt="Transcode is ready to install "
 																			# need to update?
-	if [ -e "${needsUpdatePlist}" ]; then
+	if [ -e "${needsUpdatePath}" ]; then
 																			# get what needs to be updated
 		if [ "${gemJustChecked}" = "false" ]; then
 			gemUpdates=( $(gem outdated) )
@@ -228,7 +240,7 @@ function update_Gems () {
 					fi
 				fi
 
-				(( loopCounter++ ))
+				((loopCounter++))
 			done
 																			# display update notification dialog
 			local btnPressed=$(/usr/bin/osascript << EOT
@@ -249,12 +261,13 @@ function update_Gems () {
 																			# open the Automator app to update the gems
 				open "${appScriptsPath}/Transcode Updater.app"
 			else
-				. "${sh_echoMsg}" "User deferred update. Exiting..." ""
+				. "${sh_echoMsg}" "User deferred update" ""
 			fi
 		else
-			. "${sh_echoMsg}" "All gems are up-to-date. Exiting..." ""
+			. "${sh_echoMsg}" "All gems are up-to-date" ""
 		fi
-		
+																			# delete the sempahore file
+		rm -f "${needsUpdatePath}"
 	fi	
 }
 
