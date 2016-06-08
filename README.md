@@ -720,7 +720,7 @@ This scenario makes use of:
 
 ## History
 
-### [1.2.9](https://github.com/bmhayward/Transcode/releases/tag/1.3.0)
+### [1.3.0](https://github.com/bmhayward/Transcode/releases/tag/1.3.0)
 Wednesday, June 8, 2016
 * Cleaned up the auto-updater to remove all temporary files when done
 
