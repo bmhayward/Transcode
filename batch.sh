@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.5.8, 06-01-2016"
+	local versStamp="Version 1.5.9, 06-08-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -150,6 +150,7 @@ function ingest_Skips () {
 }
 
 function pre_Processors () {
+	. "${sh_echoMsg}" ""
 	. "${sh_echoMsg}" "Pre-processing files"
 	
 	local capturedOutput=""
@@ -172,6 +173,7 @@ function pre_Processors () {
 
 			if [ "${cropValue//:}" != "0000" ]; then
 				echo ${cropValue} > "${cropsDir}/${fileName}"				# write the crop value out to its crop file
+				. "${sh_echoMsg}" "Using suggested crop value of ${cropValue}"
 			fi
 	
 			queueValue="${convertDir}/${fileNameExt}"
@@ -639,7 +641,7 @@ function time_Stamp () {
 	local timeStamp=""
 	
 	if [ "${1}" == "start" ]; then
-																# set the start of the duration timer
+																			# set the start of the duration timer
 		SECONDS=0
 		
 		timeStamp=$(date +"%r, %D")
@@ -647,7 +649,7 @@ function time_Stamp () {
 		. "${sh_echoMsg}" ""
 		. "${sh_echoMsg}" "Transcode started @ ${timeStamp}"
 		. "${sh_echoMsg}" "Files to be transcoded in this batch:"
-		printf '%s\n' "${convertFiles[@]}"						# print to Terminal
+		printf '%s\n' "${convertFiles[@]}"									# print to Terminal
 		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"
 		
 		if [ "${#convertFiles[@]}" == "1" ]; then
@@ -657,7 +659,7 @@ function time_Stamp () {
 			. "${sh_sendNotification}" "Transcode Started" "${timeStamp}" "${#convertFiles[@]} files to convert"
 		fi		
 	else
-		local duration=${SECONDS} 								# set the stop time
+		local duration=${SECONDS} 											# set the stop time
 
 		local hours=$((${duration} / 3600))
 		local minutes=$(((${duration} / 60) % 60))
@@ -694,7 +696,8 @@ function time_Stamp () {
 		. "${sh_echoMsg}" "It took ${timeStamp}"
 		. "${sh_echoMsg}" "Files transcoded in this batch:"
 		printf '%s\n' "${convertFiles[@]}"										# print to the Terminal
-		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"			# print to syslog
+		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"		# print to syslog
+		. "${sh_echoMsg}" ""
 		
 		if [ "${#convertFiles[@]}" == "1" ]; then
 			. "${sh_sendNotification}" "Transcode Complete" "${convertFiles[0]##*/}" "converted in ${timeStamp}" "Hero"
@@ -770,8 +773,9 @@ function transcode_Video () {
 	    fi
 
 	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file
-
-		. "${sh_echoMsg}" "Transcoding ${input##*/}"
+		
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Transcoding ${input##*/} -"
 		. "${sh_sendNotification}" "Transcoding" "${input##*/}"
 	
 		transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
@@ -831,12 +835,13 @@ function post_Processors () {
 function clean_Up () {
 																							# delete the semaphore file so processing can be started again
 	rm -f "${workingPath}"
-																							# process was halted, need to remove the last file and log that was not finished transcoding
+																							# process was halted, need to remove the last file, log and crops file that was not finished transcoding
 	if [ ! -z "${input}" ]; then
 		local titleName="$(basename "${input}" | sed 's/\.[^.]*$//')"
 		titleName="${outDir}/${titleName}.${outExt}"
 		rm -f "${titleName}"
 		rm -f "${titleName}.log"
+		rm -rf "${cropsDir}"/*
 		
 		. "${sh_sendNotification}" "Transcode Cancelled"
 	fi
