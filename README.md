@@ -720,6 +720,11 @@ This scenario makes use of:
 
 ## History
 
+### [1.2.9](https://github.com/bmhayward/Transcode/releases/tag/1.2.9)
+Wednesday, June 8, 2016
+* Cleaned up the auto-updater to remove all temporary files when done
+* Improved messaging around crop values used if differences are found by ```detect-crop``` tool
+
 ### [1.2.8](https://github.com/bmhayward/Transcode/releases/tag/1.2.8)
 Tuesday, June 7, 2016
 * Transcode auto-update changed to support multi-version updates
