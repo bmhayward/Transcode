@@ -5,7 +5,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 # set -xv; exec 1>>/private/tmp/uninstallTranscodeTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
-#	uninstall
+#	uninstallTranscode
 #	Copyright (c) 2016 Brent Hayward		
 #	
 #	
@@ -18,7 +18,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.0.7, 05-24-2017"
+	local versStamp="Version 1.0.8, 06-11-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	
 	loggerTag="transcode.uninstall"
