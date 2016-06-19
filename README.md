@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.3.3](https://github.com/bmhayward/Transcode/releases/tag/1.3.3)
+Saturday, June 18, 2016
+* Added a check to verify /usr/local/bin has correct permissions before installing
+
 ### [1.3.2](https://github.com/bmhayward/Transcode/releases/tag/1.3.2)
 Saturday, June 18, 2016
 * Fixed a regression error from v1.2.9 impacting multi-version updates
