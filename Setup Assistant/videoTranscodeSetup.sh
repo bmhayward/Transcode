@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.2, 06-01-2016"
+	local versStamp="Version 1.2.3, 06-18-2016"
 	
 	loggerTag="transcode.install"
 	readonly scriptsDirName="com.videotranscode.transcode"
@@ -26,6 +26,7 @@ function define_Constants () {
 	readonly plistDir="${libDir}/LaunchAgents"
 	readonly scriptsDir="${libDir}/Application Scripts"
 	readonly supportDir="${libDir}/Application Support"
+	readonly lbin="/usr/local/bin/"
 																				# get the paths
 	local DIR=""
 	local SOURCE="${BASH_SOURCE[0]}"
@@ -96,17 +97,32 @@ function install_Tools () {
 	fi
 	
 	# /local/bin - create if not in place, brew should have done this already
-	if [ ! -d "/usr/local/bin" ]; then
-		echo_Msg "Creating /usr/local/bin"
+	if [ ! -d "${lbin}" ]; then
+		echo_Msg "Creating ${lbin}"
 		
-		mkdir -p "/usr/local/bin"
+		mkdir -p "${lbin}"
+	fi
+	
+	# make sure permissions are correct
+	local binPermissions=$(ls -ld ${lbin} | awk '{print $1}')
+	local binUser=$(ls -ld ${lbin} | awk '{print $3}')
+	local binGroup=$(ls -ld ${lbin} | awk '{print $4}')
+	
+	if [[ "${binUser}" != "${USER}" || "${binGroup}" != "admin" ]]; then
+		echo_Msg "${lbin} owner:group need to be updated:"
+		sudo chown ${USER}:admin "${lbin}"
+	fi
+	
+	if [ "${binPermissions}" != "drwxrwxr-x" ]; then
+		echo_Msg "${lbin} permissions need to be updated:"
+		sudo chmod 0775 "${lbin}"
 	fi
 	
 	# aliasPath - copy to /local/bin
 	if [ -e "${supportDir}/aliasPath" ]; then
-		echo_Msg "Moving aliasPath to /usr/local/bin"
+		echo_Msg "Moving aliasPath to ${lbin}"
 		
-		ditto "${supportDir}/aliasPath" "/usr/local/bin"
+		ditto "${supportDir}/aliasPath" "${lbin}"
 		rm -f "${supportDir}/aliasPath"
 	fi
 }
