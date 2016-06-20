@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.5.9, 06-08-2016"
+	local versStamp="Version 1.6.0, 06-19-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -231,7 +231,7 @@ function rename_File () {
 					patternVal=${BASH_REMATCH[1]//[^0-9]/}																# get the pattern of numbers after the 's'
 					replaceVal="$(printf "%02d" ${patternVal})"															# pad with a leading zero
 
-					matchVal=${matchVal//${patternVal}/${replaceVal}}													# replace the pattern value with the replacement value in the matchVal
+					matchVal=${matchVal/${patternVal}/${replaceVal}}													# replace the first occurance of the pattern value with the replacement value in the matchVal
 				fi
 
 				YYVal="${matchVal%-*}"																					# get the sXXeYY portion
@@ -240,7 +240,7 @@ function rename_File () {
 				if [[ "${YYVal}" =~ ([e][0-9]+) && ${#YYVal} -lt 6 ]]; then												# if matchVal is not structured as eYY
 					patternVal=${BASH_REMATCH[1]//[^0-9]/}																# get the pattern of numbers after the 'e'
 					replaceVal="$(printf "%02d" ${patternVal})"
-					replaceVal=${YYVal//${patternVal}/${replaceVal}}													# pad with a leading zero
+					replaceVal=${YYVal/%${patternVal}/${replaceVal}}													# pad with a leading zero from the back of the string
 
 					matchVal=${matchVal//${YYVal}/${replaceVal}}														# replace eY with eYY
 				fi

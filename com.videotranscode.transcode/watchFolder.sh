@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.3, 05-14-2016"
+	local versStamp="Version 1.1.4, 06-20-2016"
 	
 	readonly waitingPlist="com.videotranscode.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.batch.onhold.plist"
@@ -53,11 +53,13 @@ function wait_4StableFolder () {
 	local tmpSize=${newSize}
 	local upperLimit=2
 	local sleepTime=20
+	local diffTime=0
 																							# check quickly to see if the directory has stabilized before moving to a longer wait period
 	for ((i=1; i<=upperLimit; i++)); do
 		sleep ${sleepTime}																	# wait for sizing information, decrease the wait time for each iteration
 		
-		sleepTime=$((sleepTime / upperLimit))												# decrease the wait time
+		diffTime=$((sleepTime / upperLimit))
+		sleepTime=$((sleepTime - diffTime))													# decrease the wait time
 		
 		if [ ${i} -ne 1 ]; then
 			tmpSize=${newSize} 																# move to intermediate value
@@ -65,11 +67,16 @@ function wait_4StableFolder () {
 		
 		newSize=$( du -s "${convertDir}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
+																							# sleep a little longer if first loop through and file size is 0, just to make sure we are not waiting on the DVD reader
+		if [[ ${i} -eq 1 && ${newSize} -eq 0 ]]; then
+			sleep 7
+			newSize=$( du -s "${ingestPath}" | awk '{print $1}' )							# get new file size
+		fi
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob     														# include hidden files
 		dirEmpty=("${convertDir}/"*)
 		
-		if [[ "${prevSize}" == "${newSize}" ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+		if [[ ${prevSize} -eq ${newSize} ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
 			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi

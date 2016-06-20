@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.5, 05-14-2016"
+	local versStamp="Version 1.1.6, 06-20-2016"
 	
 	readonly waitingPlist="com.videotranscode.ingest.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.ingest.batch.onhold.plist"
@@ -65,6 +65,7 @@ function wait_4StableFolder () {
 	local tmpSize=${newSize}
 	local upperLimit=2
 	local sleepTime=20
+	local diffTime=0
 																							# if trancoding is active allow for more time for ingest
 	if [ -e "${prefDir}/com.videotranscode.batch.working.plist" ]; then
 		upperLimit=3
@@ -74,17 +75,25 @@ function wait_4StableFolder () {
 	for ((i=1; i<=upperLimit; i++)); do
 		sleep ${sleepTime}																	# wait for sizing information
 		
+		diffTime=$((sleepTime / upperLimit))
+		sleepTime=$((sleepTime - diffTime))													# decrease the wait time
+		
 		if [ ${i} -ne 1 ]; then
 			tmpSize=${newSize} 																# move to intermediate value
 		fi
 		
-		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
+																							# sleep a little longer if first loop through and file size is 0, just to make sure we are not waiting on the DVD reader
+		if [[ ${i} -eq 1 && ${newSize} -eq 0 ]]; then
+			sleep 10
+			newSize=$( du -s "${ingestPath}" | awk '{print $1}' )							# get new file size
+		fi
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob															# include hidden files												
 		dirEmpty=("${ingestPath}/"*)
-		
-		if [[ "${prevSize}" == "${newSize}" ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+				
+		if [[ ${prevSize} -eq ${newSize} ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
 			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
@@ -94,7 +103,7 @@ function wait_4StableFolder () {
 		sleep 60																			# check every 60 seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
-		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 	done	
 	

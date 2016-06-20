@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.6, 05-19-2016"
+	local versStamp="Version 1.1.7, 06-20-2016"
 	
 	readonly waitingPlist="com.videotranscode.rsync.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.rsync.batch.onhold.plist"
@@ -55,19 +55,19 @@ function wait_4StableFolder () {
 	local upperLimit=2
 																							# check quickly to see if the directory has stabilized before moving to a longer wait period
 	for ((i=1; i<=upperLimit; i++)); do
-		sleep 5																			# wait for sizing information
+		sleep 5																				# wait for sizing information
 		
 		if [ ${i} -ne 1 ]; then
 			tmpSize=${newSize} 																# move to intermediate value
 		fi
 		
-		newSize=$( du -s "${convertDir}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${convertDir}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob     														# include hidden files
 		dirEmpty=("${convertDir}/"*)
 		
-		if [[ "${prevSize}" == "${newSize}" ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+		if [[ ${prevSize} -eq ${newSize} ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
 			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
@@ -77,7 +77,7 @@ function wait_4StableFolder () {
 		sleep 20																			# check every 60 seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
-		newSize=$( du -s "${convertDir}" | awk '{print $1}' )									# get new file size
+		newSize=$( du -s "${convertDir}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 	done
 	
