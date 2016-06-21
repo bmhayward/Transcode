@@ -721,7 +721,7 @@ This scenario makes use of:
 ## History
 
 ### [1.3.5](https://github.com/bmhayward/Transcode/releases/tag/1.3.5)
-Monday, June 20, 2016
+Tuesday, June 21, 2016
 * Added SHA1 checksum to the auto-updater
 
 ### [1.3.4](https://github.com/bmhayward/Transcode/releases/tag/1.3.4)
