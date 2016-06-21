@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.5, 06-14-2016"
+	local versStamp="Version 1.0.6, 06-21-2016"
 	
 	loggerTag="transcode.post-update"
 	
@@ -70,7 +70,6 @@ function full_Update () {
 		cmdFiles[0]="setupIngestAutoConnect.command"
 		cmdFiles[1]="setupDestinationAutoConnect.command"
 		cmdFiles[2]="uninstallTranscode.command"
-		cmdFiles[3]="uninstallTranscode.command"
 
 		declare -a extrasFiles
 		extrasFiles[0]="sshSource.sh"
@@ -111,7 +110,7 @@ function full_Update () {
 		done
 																							# delete full update resources from /tmp
 		rm -rf "${updaterPath}"
-																							# remove sempahore from /tmp
+																							# remove sempahore from ~/Library
 		rm -f "${updateTranscode}"
 	fi	
 }
