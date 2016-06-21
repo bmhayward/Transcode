@@ -720,10 +720,14 @@ This scenario makes use of:
 
 ## History
 
-### [1.3.4](https://github.com/bmhayward/Transcode/releases/tag/1.3.3)
+### [1.3.5](https://github.com/bmhayward/Transcode/releases/tag/1.3.5)
+Monday, June 20, 2016
+* Added SHA1 checksum to the auto-updater
+
+### [1.3.4](https://github.com/bmhayward/Transcode/releases/tag/1.3.4)
 Monday, June 20, 2016
 * Fixed an issue where an extra zero would sometimes get inserted into a multi-episode name
-* Improved batch queuing of files that are slow to ingest 
+* Improved batch queuing of files that are slow to ingest
 
 ### [1.3.3](https://github.com/bmhayward/Transcode/releases/tag/1.3.3)
 Saturday, June 18, 2016
