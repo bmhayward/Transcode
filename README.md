@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.3.6](https://github.com/bmhayward/Transcode/releases/tag/1.3.6)
+Thursday, June 23, 2016
+* Updated the auto-updater to correct an issue with multi-version updates
+
 ### [1.3.5](https://github.com/bmhayward/Transcode/releases/tag/1.3.5)
 Tuesday, June 21, 2016
 * Added SHA1 checksum to the auto-updater
