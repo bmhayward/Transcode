@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.7, 06-21-2016"
+	local versStamp="Version 1.1.8, 06-22-2016"
 	
 	loggerTag="transcode.update"
 	
@@ -196,6 +196,10 @@ function update_Transcode () {
 					;;	
 				esac
 			done
+	
+			. "${sh_echoMsg}" "Update complete." ""
+		else
+			. "${sh_echoMsg}" "SHA1 checksums do not match, update skipped." ""
 		fi
 																				# delete the sempahore file
 			rm -f "${needsUpdatePath}"

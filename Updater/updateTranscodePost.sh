@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.6, 06-21-2016"
+	local versStamp="Version 1.0.7, 06-23-2016"
 	
 	loggerTag="transcode.post-update"
 	
@@ -58,6 +58,8 @@ function full_Update () {
 	local loopCounter=0
 	
 	if [[ -e "${updateTranscode}" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
+		. "${sh_echoMsg}" "Starting full update..." ""
+		
 		updaterPath=$(mktemp -d "/tmp/transcodeFullUpdate_XXXXXXXXXXXX")
 																							# move the compressed resources to /tmp
 		ditto "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/vtExtras.zip" "${updaterPath}"
@@ -84,14 +86,14 @@ function full_Update () {
 																							# move and rename the diff script to /Transcode/Extras
 				mv -f "${updaterPath}/Extras/${i}" "${workDir}/Extras/${cmdFiles[${loopCounter}]}"
 
-				. "${sh_echoMsg}" "==> Updated ${i}" ""
+				. "${sh_echoMsg}" "==> Updated ${cmdFiles[${loopCounter}]}" ""
 			fi
 			
 			(( loopCounter++ ))
 		done
 																							# loop through Scripts looking for diffs	
 		declare -a scriptFiles
-		scriptFiles=( "${appScriptsPath}"/* )												# get a list of filenames with path
+		scriptFiles=( "${updaterPath}/Scripts"/* )											# get a list of filenames with path
 	
 		for i in "${scriptFiles[@]}"; do
 			fileName=${i##*/}
@@ -104,10 +106,12 @@ function full_Update () {
 																							# copy the diff script to ~/Library/Application Scripts/com.videotranscode.transcode
 					ditto "${i}" "${appScriptsPath}"
 
-					. "${sh_echoMsg}" "==> Updated ${i}" ""
+					. "${sh_echoMsg}" "==> Updated ${fileName}" ""
 				fi
 			fi
 		done
+		
+		. "${sh_echoMsg}" "Full update complete." ""
 																							# delete full update resources from /tmp
 		rm -rf "${updaterPath}"
 																							# remove sempahore from ~/Library
