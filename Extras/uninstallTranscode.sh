@@ -18,7 +18,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.0.8, 06-11-2017"
+	local versStamp="Version 1.0.9, 06-25-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	
 	loggerTag="transcode.uninstall"
@@ -118,6 +118,7 @@ function uninstall_launchDaemons () {
 	removeThis[1]="${libDir}/LaunchAgents/com.videotranscode.watchfolder.plist"
 	removeThis[2]="${libDir}/LaunchAgents/com.videotranscode.rsync.watchfolder.plist"
 	removeThis[3]="${libDir}/LaunchAgents/com.videotranscode.ingest.watchfolder.plist"
+	removeThis[4]="${libDir}/LaunchAgents/com.videotranscode.gemautoupdate.plist"	
 	
 	# remove LaunchAgents
 	for i in "${removeThis[@]}"; do
@@ -142,6 +143,9 @@ function uninstall_preferenceFiles () {
 	removeThis[6]="${libDir}/Preferences/com.videotranscode.ingest.batch.waiting.plist"
 	removeThis[7]="${libDir}/Preferences/com.videotranscode.ingest.batch.onhold.plist"
 	removeThis[8]="${libDir}/Preferences/com.videotranscode.ingest.batch.working.plist"
+	removeThis[9]="${libDir}/Preferences/com.videotranscode.gem.update.plist"
+	removeThis[10]="${libDir}/Preferences/com.videotranscode.transcode.update.plist"	
+	removeThis[11]="${libDir}/Preferences/com.videotranscode.transcode.full.update.plist"
 	
 	# remove preferences
 	for i in "${removeThis[@]}"; do

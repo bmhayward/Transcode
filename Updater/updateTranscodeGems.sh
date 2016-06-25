@@ -17,7 +17,7 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.4, 05-24-2016"
+	local versStamp="Version 1.0.6, 06-25-2016"
 	
 	loggerTag="gem.update"
 	
@@ -28,12 +28,14 @@ function define_Constants () {
 	
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+	
+	msgTxt="You're up-to-date!"
 }
 
 function updateGems () {
 	local updateVT="false"
 	
-	. "${sh_echoMsg}" "Checking for updates..." ""
+	. "${sh_echoMsg}" "Checking updates..." ""
 	
 	declare -a gemUpdates
 	gemUpdates=( $(gem outdated) )
@@ -44,34 +46,36 @@ function updateGems () {
 		if [[ ${gemUpdates[*]} =~ video_transcoding ]]; then
 			local updateVT="true"
 																	# upgrade video_transcoding
-			. "${sh_echoMsg}" "Updating transcode-video..." ""
+			. "${sh_echoMsg}" "Updating video_transcoding gem..." ""
 			sudo gem update video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			gem cleanup video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			
-			msgTxt="${msgTxt} video_transcoding"
+			msgTxt="${msgTxt} video_transcoding gem"
 		fi
 
 		if [[ ${gemUpdates[*]} =~ terminal-notifier ]]; then
 																	# upgrade terminal-notifier
-			. "${sh_echoMsg}" "Updating terminal-notifier..." ""
+			. "${sh_echoMsg}" "Updating terminal-notifier gem..." ""
 			sudo gem update terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 			gem cleanup terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 
 			if [ "${updateVT}" = "false" ]; then
-				msgTxt="${msgTxt} terminal-notifier"
+				msgTxt="${msgTxt} terminal-notifier gem"
 			else
-				msgTxt="${msgTxt} and terminal-notifier"
+				msgTxt="${msgTxt} and terminal-notifier gem"
 			fi
 		fi
-																	# remove the semaphore file
-		rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.plist"
 	fi
+}
+
+function clean_Up () {
+																	# remove the semaphore files
+	rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.plist"
+	rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.inprogress.plist"
 }
 
 function __main__ () {
 	define_Constants
-	
-	msgTxt="You're up-to-date!"
 	
 	updateGems
 	
@@ -87,6 +91,7 @@ EOF
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
 																							# Execute
+trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates																									
 trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 __main__

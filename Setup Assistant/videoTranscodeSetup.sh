@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.3, 06-18-2016"
+	local versStamp="Version 1.2.4, 06-25-2016"
 	
 	loggerTag="transcode.install"
 	readonly scriptsDirName="com.videotranscode.transcode"
@@ -138,6 +138,7 @@ function create_Plists () {
 	plistName[0]="com.videotranscode.brewautoupdate"
 	plistName[1]="com.videotranscode.watchfolder"
 	plistName[2]="com.videotranscode.rsync.watchfolder"
+	plistName[3]="com.videotranscode.gemautoupdate"
 		
 	plistFile="${plistDir}/${plistName[0]}.plist"
 
@@ -189,6 +190,23 @@ function create_Plists () {
 		
 		launchctl load "${plistFile}"																				# load the launchAgent
 	fi
+	
+	plistFile="${plistDir}/${plistName[3]}.plist"																	# get the watch folder launch agent
+
+	if [ ! -e "${plistFile}" ]; then																				# write out the watch folder LaunchAgent plist to ~/Library/LaunchAgent
+		local watchPath="${libDir}/Preferences/com.videotranscode.gem.update.plist"									# get the path to the watch plist
+
+		${plistBuddy} -c 'Add :Label string "'"${plistName[3]}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
+		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${scriptsDir}/${scriptsDirName}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
+		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
+		${plistBuddy} -c 'Add :WatchPaths array' "${plistFile}"
+		${plistBuddy} -c 'Add :WatchPaths:0 string "'"${watchPath}"'"' "${plistFile}"
+
+		chmod 644 "${plistFile}"
+		
+		launchctl load "${plistFile}"																				# load the launchAgent
+	fi	
 }
 
 function install_brewPkgs () {

@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.8, 06-22-2016"
+	local versStamp="Version 1.2.0, 06-24-2016"
 	
 	loggerTag="transcode.update"
 	
@@ -31,23 +31,10 @@ function define_Constants () {
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
-
-	gemJustChecked="false"
 	
 	# From brewAutoUpdate:
 		# readonly libDir="${HOME}/Library"
 		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-}
-
-function __main__ () {
-	define_Constants
-	
-	declare -a gemUpdates
-	
-	check4Update_Transcode
-	update_Transcode
-	check4Update_Gems
-	update_Gems
 }
 
 function runAndDisown () {
@@ -61,7 +48,7 @@ function runAndDisown () {
 	  exec 2>/dev/null
 	fi
 
-	"$@" &	
+	"$@" &
 }
 
 function clean_Up () {
@@ -199,11 +186,15 @@ function update_Transcode () {
 	
 			. "${sh_echoMsg}" "Update complete." ""
 		else
+			if [ -e "${prefDir}/${needsFullUpdatePlist}" ]; then
+																				# remove the full update semaphore file
+				rm -f "${prefDir}/${needsFullUpdatePlist}"
+			fi
+			
 			. "${sh_echoMsg}" "SHA1 checksums do not match, update skipped." ""
 		fi
 																				# delete the sempahore file
-			rm -f "${needsUpdatePath}"
-			
+			rm -f "${needsUpdatePath}"	
 	elif [[ -e "${waitingPlist}" || -e "${onHoldPlist}" || -e "${workingPlist}" ]]; then
 		. "${sh_echoMsg}" "Update deferred." ""
 	else
@@ -211,89 +202,11 @@ function update_Transcode () {
 	fi	
 }
 
-function check4Update_Gems () {
-	loggerTag="gem.update"
-	
-	local needsUpdatePlist="${comLabel}.gem.update.plist"
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
-	
-	. "${sh_echoMsg}" "Checking for gem updates..." ""
-																			# has the update been checked for previously
-	if [ ! -e "${needsUpdatePath}" ]; then
-		gemUpdates=( $(gem outdated) )
-		
-		if [ "${#gemUpdates[@]}" -gt "0" ]; then							# create the gem update plist
-			touch "${needsUpdatePath}"
-			gemJustChecked="true"
-		fi	
-	fi
-}
+function __main__ () {
+	define_Constants
 
-function update_Gems () {
-	local needsUpdatePlist="${comLabel}.gem.update.plist"
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
-	local updateVT="false"
-	local gemVers=""
-	local loopCounter=0
-	local msgTxt="Transcode is ready to install "
-																			# need to update?
-	if [ -e "${needsUpdatePath}" ]; then
-																			# get what needs to be updated
-		if [ "${gemJustChecked}" = "false" ]; then
-			gemUpdates=( $(gem outdated) )
-		fi
-																			# check which gems need to be updated
-		if [[ ${gemUpdates[*]} =~ video_transcoding || ${gemUpdates[*]} =~ terminal-notifier ]]; then
-	
-			for i in "${gemUpdates[@]}"; do
-			    if [[ "${i}" == *"video_transcoding"* ]]; then
-					. "${sh_echoMsg}" "Update available for video_transcoding" ""
-		
-					updateVT="true"
-					gemVers="${gemUpdates[loopCounter+3]%)*}"
-					msgTxt="${msgTxt} video_transcoding ${gemVers}"
-			    fi
-
-				if [[ "${i}" == *"terminal-notifier"* ]]; then
-					. "${sh_echoMsg}" "Update available for terminal-notifier" ""
-			
-					gemVers="${gemUpdates[loopCounter+3]%)*}"
-					if [ "${updateVT}" = "false" ]; then
-						msgTxt="${msgTxt} terminal-notifier ${gemVers}"
-					else
-						msgTxt="${msgTxt} and terminal-notifier ${gemVers}"
-					fi
-				fi
-
-				((loopCounter++))
-			done
-																			# display update notification dialog
-			local btnPressed=$(/usr/bin/osascript << EOT
-			set iconPath to "$icnsPath" as string
-			set posixPath to POSIX path of iconPath
-			set hfsPath to POSIX file posixPath
-
-			set btnPressed to display dialog "$msgTxt" buttons {"Install Later", "Install Update"} default button "Install Update" with title "Transcode" with icon file hfsPath
-
-			if button returned of the result is "Install Later" then
-				return 1
-			else
-				return 0
-			end if
-			EOT)
-
-			if [ "${btnPressed}" = "0" ] ; then
-																			# open the Automator app to update the gems
-				open "${appScriptsPath}/Transcode Updater.app"
-			else
-				. "${sh_echoMsg}" "User deferred update" ""
-			fi
-		else
-			. "${sh_echoMsg}" "All gems are up-to-date" ""
-		fi
-																			# delete the sempahore file
-		rm -f "${needsUpdatePath}"
-	fi	
+	check4Update_Transcode
+	update_Transcode
 }
 
 

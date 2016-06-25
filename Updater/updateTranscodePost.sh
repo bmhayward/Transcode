@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.7, 06-23-2016"
+	local versStamp="Version 1.0.9, 06-25-2016"
 	
 	loggerTag="transcode.post-update"
 	
@@ -45,7 +45,7 @@ function runAndDisown () {
 	  exec 2>/dev/null
 	fi
 
-	"$@" &	
+	"$@" &
 }
 
 function full_Update () {
@@ -120,19 +120,31 @@ function full_Update () {
 }
 
 function patch_Update () {
-	echo
-	# case ${versCurrent} in
-	# 	1.3.1 )
-	# 																						# remove the previous temp version
-	# 		if [ -e "/tmp/updateTranscode.sh" ]; then
-	# 			rm -f "/tmp/updateTranscode.sh"
-	# 		fi
-	# 																						# copy the updated version to /tmp
-	# 		ditto "${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscode.sh" "/tmp"
-	# 																						# rerun updateTranscode.sh
-	# 		runAndDisown "/tmp/updateTranscode.sh"
-	# 	;;
-	# esac
+	case ${versCurrent} in
+			1.3.7 )		# this value needs to be the new update value in order to execute
+				. "${sh_echoMsg}" "Applying 1.3.7 update..." ""
+				
+				local plistName="com.videotranscode.gemautoupdate"
+				local plistFile="${libDir}/LaunchAgents/${plistName}.plist"														# get the watch folder launch agent
+
+				if [ ! -e "${plistFile}" ]; then																				# write out the watch folder LaunchAgent plist to ~/Library/LaunchAgent
+					local watchPath="${libDir}/Preferences/com.videotranscode.gem.update.plist"									# get the path to the watch plist
+
+					${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+					${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
+					${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
+					${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
+					${plistBuddy} -c 'Add :WatchPaths array' "${plistFile}"
+					${plistBuddy} -c 'Add :WatchPaths:0 string "'"${watchPath}"'"' "${plistFile}"
+
+					chmod 644 "${plistFile}"
+
+					launchctl load "${plistFile}"																				# load the launchAgent
+					
+					. "${sh_echoMsg}" "Create and started launchAgent ${watchPath}..." ""
+				fi
+			;;
+		esac
 }
 
 function clean_Up () {
@@ -144,6 +156,8 @@ function clean_Up () {
 	if [ -e "/tmp/updateTranscode.sh" ]; then
 		rm -f "/tmp/updateTranscode.sh"
 	fi
+																							# run updateTranscodeGemsCheck independently
+	touch "${prefDir}/com.videotranscode.transcode.gem.update.plist"
 }
 
 function __main__ () {
