@@ -70,8 +70,8 @@ function updateGems () {
 
 function clean_Up () {
 																	# remove the semaphore files
-	rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.plist"
-	rm -f "${libDir}/Preferences/com.videotranscode.transcode.gem.update.inprogress.plist"
+	rm -f "${libDir}/Preferences/com.videotranscode.gem.update.plist"
+	rm -f "${libDir}/Preferences/com.videotranscode.gem.update.inprogress.plist"
 }
 
 function __main__ () {

@@ -16,21 +16,22 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.0, 06-24-2016"
+	local versStamp="Version 1.0.1, 06-25-2016"
 	
 	loggerTag="gem.update"
 	
+	readonly comLabel="com.videotranscode.transcode"
+	
 	readonly libDir="${HOME}/Library"
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+	readonly appScriptsPath="${libDir}/Application Scripts/${comLabel}"
 	readonly prefDir="${libDir}/Preferences"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
 
 	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
 	
-	readonly comLabel="com.videotranscode.transcode"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-	readonly needsUpdatePlist="${comLabel}.gem.update.plist"
+	readonly needsUpdatePlist="com.videotranscode.gem.update.plist"
 	readonly needsUpdatePath="${prefDir}/${needsUpdatePlist}"
 }
 
@@ -43,7 +44,7 @@ function __main__ () {
 }
 
 function update_Gems () {
-	local updateInProgressPlist="${comLabel}.gem.update.inprogress.plist"
+	local updateInProgressPlist="com.videotranscode.gem.update.inprogress.plist"
 	local updateInProgessPath="${prefDir}/${updateInProgressPlist}"
 	local updateVT="false"
 	local gemVers=""

@@ -16,16 +16,18 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.0, 06-25-2016"
+	local versStamp="Version 1.1.1, 06-25-2016"
 	
 	loggerTag="transcode.post-update"
+	
+	readonly comLabel="com.videotranscode.transcode"
 	
 	readonly libDir="${HOME}/Library"
 	readonly prefDir="${libDir}/Preferences"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
 	
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-	readonly updateTranscode="${libDir}/Preferences/com.videotranscode.transcode.full.update.plist"
+	readonly appScriptsPath="${libDir}/Application Scripts/${comLabel}"
+	readonly updateTranscode="${libDir}/Preferences/${comLabel}.full.update.plist"
 	
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
