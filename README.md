@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.3.8](https://github.com/bmhayward/Transcode/releases/tag/1.3.8)
+Saturday, June 25, 2016
+* Corrected a typo in the 1.3.7 release the prevented Ruby gems from updating
+
 ### [1.3.7](https://github.com/bmhayward/Transcode/releases/tag/1.3.7)
 Saturday, June 25, 2016
 * Fixed an issue with Ruby gems not getting updated when an update is available
