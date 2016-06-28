@@ -18,7 +18,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.0.9, 06-25-2017"
+	local versStamp="Version 1.1.0, 06-25-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	
 	loggerTag="transcode.uninstall"
@@ -146,6 +146,7 @@ function uninstall_preferenceFiles () {
 	removeThis[9]="${libDir}/Preferences/com.videotranscode.gem.update.plist"
 	removeThis[10]="${libDir}/Preferences/com.videotranscode.transcode.update.plist"	
 	removeThis[11]="${libDir}/Preferences/com.videotranscode.transcode.full.update.plist"
+	removeThis[12]="${libDir}/Preferences/com.videotranscode.gem.update.inprogress.plist"
 	
 	# remove preferences
 	for i in "${removeThis[@]}"; do

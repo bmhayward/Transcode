@@ -17,7 +17,7 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.6, 06-25-2016"
+	local versStamp="Version 1.0.7, 06-27-2016"
 	
 	loggerTag="gem.update"
 	

@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.0, 06-24-2016"
+	local versStamp="Version 1.2.4, 06-28-2016"
 	
 	loggerTag="transcode.update"
 	
@@ -24,13 +24,16 @@ function define_Constants () {
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
 	
 	readonly updaterPath=$(mktemp -d "/tmp/transcodeUpdater_XXXXXXXXXXXX")
-	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
 	
-	readonly comLabel="com.videotranscode.transcode"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+	readonly sh_updatePost="${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodePost.sh"
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
+	
+	fullUpdate="false"
+	needsUpdate="false"
+	SHA1Clean="false"
 	
 	# From brewAutoUpdate:
 		# readonly libDir="${HOME}/Library"
@@ -51,42 +54,27 @@ function runAndDisown () {
 	"$@" &
 }
 
-function clean_Up () {
-																				# delete the auto-update files
-	rm -rf "${updaterPath}"
-																				# run the post-update script and disown from this shell so this script can be updated if needed
-	runAndDisown "${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodePost.sh"
-}
-
 function check4Update_Transcode () {
-	local needsUpdatePlist="${comLabel}.update.plist"
 	local downloadedZipFile="Transcode Updater.zip"
 	local capturedOutput=""
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
 	
 	. "${sh_echoMsg}" "Checking for Transcode updates..." ""
-																				# has the update been checked for previously
-	if [ ! -e "${needsUpdatePath}" ]; then
 																				# get a copy of Transcode Updater.app
-		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/Transcode%20Updater.zip > /dev/null		
+	curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/Transcode%20Updater.zip > /dev/null		
 																				# extract the Version.plist from the archive
-		unzip -j "${updaterPath}/${downloadedZipFile}" "Transcode Updater.app/Contents/Resources/transcodeVersion.plist" -d "${updaterPath}" > /dev/null
+	unzip -j "${updaterPath}/${downloadedZipFile}" "Transcode Updater.app/Contents/Resources/transcodeVersion.plist" -d "${updaterPath}" > /dev/null
 																				# remove any remnants of the unzip
-		rm -rf "${updaterPath}/__MACOSX"
+	rm -rf "${updaterPath}/__MACOSX"
 																				# check the version numbers for an update
-		capturedOutput=$(diff --brief "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist" "${updaterPath}/transcodeVersion.plist")
-	
-		if [[ "${capturedOutput}" = *"differ"* ]]; then
-																				# create the Transcode update sempahore
-			touch "${needsUpdatePath}"
-		fi
+	capturedOutput=$(diff --brief "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist" "${updaterPath}/transcodeVersion.plist")
+
+	if [[ "${capturedOutput}" = *"differ"* ]]; then
+																				# needs update
+		needsUpdate="true"
 	fi
 }
 
 function update_Transcode () {
-	local needsUpdatePlist="${comLabel}.update.plist"
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
-	local needsFullUpdatePlist="${comLabel}.full.update.plist"
 	local waitingPlist="{prefDir}/com.videotranscode.batch.waiting.plist"
 	local onHoldPlist="{prefDir}/com.videotranscode.batch.onhold.plist"
 	local workingPlist="{prefDir}/com.videotranscode.batch.working.plist"
@@ -100,7 +88,7 @@ function update_Transcode () {
 	local SHA1=""
 	local capturedOutput=""
 																				# can update happen
-	if [[ -e "${needsUpdatePath}" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
+	if [[ "${needsUpdate}" == "true" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
 																				# pull down a copy of AutoUpdater
 		curl -L -o "${updaterPath}/${downloadedZipFile}" github.com/bmhayward/Transcode/raw/master/Updater/${downloadedZipFile} >/dev/null
 																				# pull down a copy of SHA1 checksum
@@ -111,7 +99,8 @@ function update_Transcode () {
 		capturedOutput=$(shasum "${updaterPath}/${downloadedZipFile}")
 		SHA1="${capturedOutput%% *}"
 																				# do the SHA1 checksums match?
-		if [ "${auSHA1}" == "${SHA1}"  ]; then
+		if [ "${auSHA1}" == "${SHA1}" ]; then
+			SHA1Clean="true"
 																				# extract the auto-update to the AutoUpdater directory in the temp folder
 			unzip "${updaterPath}/${downloadedZipFile}" -d "${updaterPath}/${downloadedZipFile%.*}" >/dev/null
 																				# unzip any applications in the AutoUpdater directory
@@ -127,8 +116,8 @@ function update_Transcode () {
 			versUpdate=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${updaterPath}/transcodeVersion.plist")
 																				# check to see if a full update needs to be done
 			if [ "${versCurrent}" != "${versPrevious}"  ]; then
-																				# create the Transcode full update semaphore
-				touch "${prefDir}/${needsFullUpdatePlist}"
+																				# needs full update
+				fullUpdate="true"
 			fi
 
 			. "${sh_echoMsg}" "Updating Transcode from ${versCurrent} to ${versUpdate}." ""
@@ -160,7 +149,6 @@ function update_Transcode () {
 			
 				case "${fileType}" in
 					sh|app|command )
-				
 						if [ "${fileName}" != "updateTranscode.sh" ]; then
 																				# move to the update location
 							ditto "${i}" "${transcode2Replace}"
@@ -176,25 +164,20 @@ function update_Transcode () {
 					;;
 				
 					workflow )
-				
 						cp -R -p "${i}" "${transcode2Replace}"
 					
 						. "${sh_echoMsg}" "==> Updated ${fileName}" ""
 					;;	
 				esac
 			done
-	
+			
 			. "${sh_echoMsg}" "Update complete." ""
 		else
-			if [ -e "${prefDir}/${needsFullUpdatePlist}" ]; then
-																				# remove the full update semaphore file
-				rm -f "${prefDir}/${needsFullUpdatePlist}"
-			fi
+																				# remove the full update flag
+			fullUpdate="false"
 			
 			. "${sh_echoMsg}" "SHA1 checksums do not match, update skipped." ""
 		fi
-																				# delete the sempahore file
-			rm -f "${needsUpdatePath}"	
 	elif [[ -e "${waitingPlist}" || -e "${onHoldPlist}" || -e "${workingPlist}" ]]; then
 		. "${sh_echoMsg}" "Update deferred." ""
 	else
@@ -202,11 +185,44 @@ function update_Transcode () {
 	fi	
 }
 
+function clean_Up () {
+																				# delete the auto-update files from /tmp
+	rm -rf "${updaterPath}"
+	
+	find "${appScriptsPath}/" -name "*.sh" -exec chmod +x {} \;
+	find "${workDir}/" -name "*.command" -exec chmod +x {} \;
+	find "${workDir}/Extras/" -name "*.command" -exec chmod +x {} \;
+	
+	local gemUpdatePlist="com.videotranscode.gem.update.plist"
+	local plistName="com.videotranscode.gemautoupdate"
+	local plistFile="${libDir}/LaunchAgents/${plistName}.plist"					# get the watch folder launch agent
+
+	if [ ! -e "${plistFile}" ]; then											# write out the watch folder LaunchAgent plist to ~/Library/LaunchAgent
+		local watchPath="${libDir}/Preferences/${gemUpdatePlist}"				# get the path to the watch plist
+
+		${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
+		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
+		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
+		${plistBuddy} -c 'Add :WatchPaths array' "${plistFile}"
+		${plistBuddy} -c 'Add :WatchPaths:0 string "'"${watchPath}"'"' "${plistFile}"
+
+		chmod 644 "${plistFile}"
+
+		launchctl load "${plistFile}"											# load the launchAgent
+	
+		. "${sh_echoMsg}" "Created and started launchAgent ${watchPath}..." ""
+	fi
+																				# run updateTranscodeGemsCheck independently
+	touch "${prefDir}/${gemUpdatePlist}"
+}
+
 function __main__ () {
 	define_Constants
 
 	check4Update_Transcode
 	update_Transcode
+	. "${sh_updatePost}"														# executing this way to run an updated version if available
 }
 
 

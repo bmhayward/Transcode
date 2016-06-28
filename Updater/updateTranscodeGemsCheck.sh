@@ -16,7 +16,7 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.1, 06-25-2016"
+	local versStamp="Version 1.0.3, 06-28-2016"
 	
 	loggerTag="gem.update"
 	
@@ -31,19 +31,24 @@ function define_Constants () {
 	
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-	readonly needsUpdatePlist="com.videotranscode.gem.update.plist"
-	readonly needsUpdatePath="${prefDir}/${needsUpdatePlist}"
 }
 
 function __main__ () {
 	define_Constants
 	
 	declare -a gemUpdates
-	
+
 	update_Gems
 }
 
+function clean_Up () {
+																			# remove update script
+	rm -f "/tmp/updateTranscode.sh"
+}
+
 function update_Gems () {
+	local needsUpdatePlist="com.videotranscode.gem.update.plist"
+	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
 	local updateInProgressPlist="com.videotranscode.gem.update.inprogress.plist"
 	local updateInProgessPath="${prefDir}/${updateInProgressPlist}"
 	local updateVT="false"
@@ -127,6 +132,7 @@ function update_Gems () {
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
 																							# Execute
+trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 __main__
