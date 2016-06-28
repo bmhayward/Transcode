@@ -720,6 +720,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.0](https://github.com/bmhayward/Transcode/releases/tag/1.4.0)
+Tuesday, June 28, 2016
+* In some instances, post-update code would not execute and gems would not be checked for update. Completely reworked post-Transcode and gem update code
+
 ### [1.3.9](https://github.com/bmhayward/Transcode/releases/tag/1.3.9)
 Saturday, June 25, 2016
 * Corrected a varialbe change that broke Ruby gem updates
