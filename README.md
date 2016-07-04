@@ -38,7 +38,7 @@ Transcode Setup Assistant will install these command line programs:
 * `transcode_video`
 * `Xcode command-line tools`
 
-In addition, a Blu-ray or DVD [reader](www.amazon.com/Samsung-External-Blu-ray-SE-506CB-RSBD/dp/B00JJGFRIQ/ref=pd_sim_147_4?ie=UTF8&dpID=21l0PtOb6GL&dpSrc=sims&preST=_AC_UL160_SR160,160_&refRID=02K1BF563A1RE2C79GV5) is recommended.
+In addition, a Blu-ray or DVD [reader](https://www.amazon.com/Samsung-External-Blu-ray-SE-506CB-RSBD/dp/B00JJGFRIQ/ref=pd_sim_147_4?ie=UTF8&dpID=21l0PtOb6GL&dpSrc=sims&preST=_AC_UL160_SR160,160_&refRID=02K1BF563A1RE2C79GV5) is recommended.
 
 ## Installation
 Download the [latest release](https://github.com/bmhayward/Transcode/releases).
