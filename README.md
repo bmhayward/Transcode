@@ -162,7 +162,7 @@ Where for TV Shows/Specials:
  
 ### Auto-Renaming 
 
-Transcode auto-renames transcoded files based on matches from the [TheMovieDB](https://www.themoviedb.org) and the [TheTVDB](thetvdb.com). A transcoded files ‘title’ metadata tag is also set to the renamed movie or TV show.
+Transcode auto-renames transcoded files based on matches from the [TheMovieDB](https://www.themoviedb.org) and the [TheTVDB](http://thetvdb.com). A transcoded files ‘title’ metadata tag is also set to the renamed movie or TV show.
 
 Transcode auto-renames transcoded files using these formats:
 ```
