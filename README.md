@@ -726,7 +726,7 @@ Tuesday, June 28, 2016
 
 ### [1.3.9](https://github.com/bmhayward/Transcode/releases/tag/1.3.9)
 Saturday, June 25, 2016
-* Corrected a varialbe change that broke Ruby gem updates
+* Corrected a variable change that broke Ruby gem updates
 
 ### [1.3.8](https://github.com/bmhayward/Transcode/releases/tag/1.3.8)
 Saturday, June 25, 2016
