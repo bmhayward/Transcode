@@ -98,7 +98,7 @@ Drag files out of and back into the Convert folder
 ```
 ### Compression
 
-The `transcode-video tool`, used by Transcode, configures the [x264 video encoder](www.videolan.org/developers/x264.html) within HandBrake to provide a [constrained variable bitrate (CVBR)](https://en.wikipedia.org/wiki/Variable_bitrate) mode. This automatically targets bitrates appropriate for different input resolutions.
+The `transcode-video tool`, used by Transcode, configures the [x264 video encoder](http://www.videolan.org/developers/x264.html) within HandBrake to provide a [constrained variable bitrate (CVBR)](https://en.wikipedia.org/wiki/Variable_bitrate) mode. This automatically targets bitrates appropriate for different input resolutions.
 
 Input resolution | Target video bitrate
 --- | ---
@@ -198,7 +198,7 @@ Twin Peaks - s01e01-e08.m4v
 ```
 Auto-renaming can be modified via Transcode’s preferences. 
 
-For additional details about filename formatting expressions, see this [discussion](www.filebot.net/naming.html).
+For additional details about filename formatting expressions, see this [discussion](http://www.filebot.net/naming.html).
 
 ### Ingest
 
@@ -327,7 +327,7 @@ To see a list of applied updates, open the Console.app and search for ‘brew.�
 
 Don Melton’s four rules for preparing media for transcoding:
 
-1. Use [MakeMKV](www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
+1. Use [MakeMKV](http://www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
 2. Rip each selected video as a single Matroska format `.mkv` file.
 3. Look for forced subtitles and isolate them in their own track.
 4. Convert lossless audio tracks to [FLAC format](https://en.wikipedia.org/wiki/FLAC).
@@ -539,8 +539,8 @@ This scenario makes use of:
 #### Setup
 
 1. Open Transcode Setup Assistant to install Transcode
-2. Download [MakeMKV](www.makemkv.com/download/)
-3. Download [VLC](www.videolan.org/index.html)
+2. Download [MakeMKV](http://www.makemkv.com/download/)
+3. Download [VLC](http://www.videolan.org/index.html)
 4. Open MakeMKV
 5. Select `MakeMKV>Preferences>Video>Custom` 
 6. Click `Set output folder` 
@@ -577,8 +577,8 @@ This scenario makes use of:
 1. Open Transcode Setup Assistant to install Transcode
 2. Create an ingest folder on the secondary volume
 3. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
-4. Download [MakeMKV](www.makemkv.com/download/)
-5. Download [VLC](www.videolan.org/index.html)
+4. Download [MakeMKV](http://www.makemkv.com/download/)
+5. Download [VLC](http://www.videolan.org/index.html)
 6. Open MakeMKV
 7. Select `MakeMKV>Preferences>General`
 8. Check `Expert mode` 
@@ -612,8 +612,8 @@ This scenario makes use of:
 2. Double-click `setupDestinationAutoConnect.command` in `/Transcode/Extras` on the Transcode `destination`
 3. Open Transcode Setup Assistant to install Transcode on the source
 4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode `source`
-5. Download [MakeMKV](www.makemkv.com/download/)
-6. Download [VLC](www.videolan.org/index.html)
+5. Download [MakeMKV](http://www.makemkv.com/download/)
+6. Download [VLC](http://www.videolan.org/index.html)
 7. Open MakeMKV
 8. Select `MakeMKV>Preferences>Video>Custom` 
 9. Click `Set output folder` 
@@ -648,8 +648,8 @@ This scenario makes use of:
 #### Setup
 
 1. Open Transcode Setup Assistant to install Transcode
-2. Download [MakeMKV](www.makemkv.com/download/)
-3. Download [VLC](www.videolan.org/index.html)
+2. Download [MakeMKV](http://www.makemkv.com/download/)
+3. Download [VLC](http://www.videolan.org/index.html)
 4. Open MakeMKV
 5. Select `MakeMKV>Preferences>Video>Custom` 
 6. Click `Set output folder` 
@@ -692,8 +692,8 @@ This scenario makes use of:
 4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode source
 5. Create an ingest folder on the secondary volume of a Transcode source and/or destination. Both source and destination can be used for ingest.
 6. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
-7. Download [MakeMKV](www.makemkv.com/download/)
-8. Download [VLC](www.videolan.org/index.html)
+7. Download [MakeMKV](http://www.makemkv.com/download/)
+8. Download [VLC](http://www.videolan.org/index.html)
 9. Open MakeMKV
 10. Select `MakeMKV>Preferences>Language`
 11. Select `Interface language: eng: English` 
