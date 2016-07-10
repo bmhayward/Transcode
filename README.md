@@ -227,7 +227,7 @@ To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode de
 
 #### Default transcode destination
 
-Transcode will move files to default destinations once transcoding has completed:
+Transcode will move files to these default destinations once transcoding has completed:
 ```
 Converted files are moved to /Transcode/Completed
 .mkv files are moved to /Transcode/Originals
