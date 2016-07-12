@@ -341,11 +341,11 @@ Transcode’s preferences can be modified to tailor your workflow. The preferenc
 The preference file contains the following:
 ```
 Transcoded file extension, default: m4v can also be mkv or mp4
-Delete original file, default: false or true to auto-delete
+Delete original file, default: false can be true to auto-delete
 Movie Finder tags, comma separated, default: purple,Movie,VT
 TV Show Finder tags, comma separated, default: orange,TV Show,VT
 Original file Finder tags, comma separated, default: blue,Converted
-Auto-rename files, default: auto or movie, tv, or off
+Auto-rename files, default: auto can also be movie, tv, or off
 Movie rename format, default: blank
 TV Show rename format, default: {n} - {'s'+s.pad(2)}e{e.pad(2)} - {t}
 Transcode completed move path, default: blank
