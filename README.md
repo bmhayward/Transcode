@@ -245,8 +245,8 @@ After setting the output destination, Transcode will automatically move content 
 ```
 Movies: /root/Movies/{Movie Title}
 Movie Extras: /root/Movies/{Movie Title}/{Extras Tag}
-TV Shows: /root/TV Shows/{Show Title}/Season #
-TV Specials: /root/TV Shows/{Show Title}/Season #/Specials
+TV Shows: /root/TV Shows/{Show Title}/{Season #}
+TV Specials: /root/TV Shows/{Show Title}/{Season #}/Specials
 ```
 where the `Movies`, `TV Shows`, `Extras` or `Specials` folders and subfolders are created as needed.
 
