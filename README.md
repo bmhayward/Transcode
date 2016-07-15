@@ -724,7 +724,7 @@ This scenario makes use of:
 Friday, July 15, 2016
 * Third time is a charm for the gem updater code. Completely rewrote how gems are updated.
 * Added colorization to batch.command to make it easier to spot what is going on in the output
-* You can now get the Transcode version by running batch.command --version from the command-line
+* You can now get the Transcode version by running `batch.command --version` from the command-line
 
 ### [1.4.0](https://github.com/bmhayward/Transcode/releases/tag/1.4.0)
 Tuesday, June 28, 2016
