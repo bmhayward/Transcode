@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH #----- DO NOT INCLUDE PATH CHANGES, OTHERWISE gem update WILL NOT FUNCTION!!! -------
+# PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH  #----- DO NOT INCLUDE PATH CHANGES, OTHERWISE WILL NOT FUNCTION!!! -------
 
 # set -xv; exec 1>>/tmp/updateTranscodeGemsCheckTraceLog 2>&1
 
@@ -9,14 +9,14 @@
 #	Copyright (c) 2016 Brent Hayward		
 #
 #	
-#	This script is called by updateTranscode.sh and checks to see if Ruby Gems need to be udpated and logs the results to the system log
+#	This script is called by a launchAgent to see if Ruby Gems need to be udpated and logs the results to the system log
 #
 
 
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.3, 06-28-2016"
+	local versStamp="Version 1.0.8, 07-14-2016"
 	
 	loggerTag="gem.update"
 	
@@ -25,59 +25,66 @@ function define_Constants () {
 	readonly libDir="${HOME}/Library"
 	readonly appScriptsPath="${libDir}/Application Scripts/${comLabel}"
 	readonly prefDir="${libDir}/Preferences"
-	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
 
-	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
+	readonly icnsPath="${appScriptsPath}/Transcode Updater.app/Contents/Resources/AutomatorApplet.icns"
 	
+	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+	disableLaunchAgent="false"
 }
 
-function __main__ () {
-	define_Constants
-	
-	declare -a gemUpdates
-
-	update_Gems
-}
-
-function clean_Up () {
-																			# remove update script
-	rm -f "/tmp/updateTranscode.sh"
-}
-
-function update_Gems () {
-	local needsUpdatePlist="com.videotranscode.gem.update.plist"
-	local needsUpdatePath="${prefDir}/${needsUpdatePlist}"
+function check4Update_Gems () {
 	local updateInProgressPlist="com.videotranscode.gem.update.inprogress.plist"
 	local updateInProgessPath="${prefDir}/${updateInProgressPlist}"
-	local updateVT="false"
 	local gemVers=""
+	local vtVers="0"
+	local tnVers="0"
 	local loopCounter=0
 	local msgTxt="Transcode is ready to install"
-																			# need to update?
-	if [[ -e "${needsUpdatePath}" && ! -e "${updateInProgessPath}" ]]; then
+	local plistDir="${libDir}/LaunchAgents"
+	local plistName="com.videotranscode.gem.check"
+	local plistFile="${plistDir}/${plistName}.plist"
+																			# need to check for update?
+	if [ ! -e "${updateInProgessPath}" ]; then
 		. "${sh_echoMsg}" "Checking for gem updates..." ""
-																			# write out the semphore file
-		touch "${updateInProgessPath}"
 																			# get what needs to be updated
+		declare -a gemUpdates
 		gemUpdates=( $(gem outdated) )
 																			# check which gems need to be updated
 		if [[ ${gemUpdates[*]} =~ video_transcoding || ${gemUpdates[*]} =~ terminal-notifier ]]; then
 			for i in "${gemUpdates[@]}"; do
 			    if [[ "${i}" == *"video_transcoding"* ]]; then
-					. "${sh_echoMsg}" "Update available for video_transcoding" ""
-		
-					updateVT="true"
 					gemVers="${gemUpdates[loopCounter+3]%)*}"
-					msgTxt="${msgTxt} video_transcoding ${gemVers}"
+					
+					vtVers=$(/usr/local/bin/transcode-video --version)
+					vtVers="${vtVers#* }"
+					vtVers="${vtVers%%C*}"
+																			# current version (vtVers) is not equal to the update available version (gemVers)
+					if [ "${gemVers}" != "${vtVers}" ]; then
+																			# write out the semphore file
+						touch "${updateInProgessPath}"
+						
+						. "${sh_echoMsg}" "Update available for video_transcoding" ""
+
+						vtVers="${gemVers}"
+						msgTxt="${msgTxt} video_transcoding ${gemVers}"
+					else
+																			# nothing has changed, put back to default
+						vtVers="0"
+					fi
 			    fi
 
 				if [[ "${i}" == *"terminal-notifier"* ]]; then
+																			# write out the semphore file
+					touch "${updateInProgessPath}"
+					
 					. "${sh_echoMsg}" "Update available for terminal-notifier" ""
-			
+
 					gemVers="${gemUpdates[loopCounter+3]%)*}"
-					if [ "${updateVT}" = "false" ]; then
+					tnVers="${gemVers}"
+					
+					if [ "${vtVers}" = "0" ]; then
 						msgTxt="${msgTxt} terminal-notifier ${gemVers}"
 					else
 						msgTxt="${msgTxt} and terminal-notifier ${gemVers}"
@@ -86,53 +93,70 @@ function update_Gems () {
 
 				((loopCounter++))
 			done
-																			# display update notification dialog
-			local btnPressed=$(/usr/bin/osascript << EOT
-			set iconPath to "$icnsPath" as string
-			set posixPath to POSIX path of iconPath
-			set hfsPath to POSIX file posixPath
+			
+			if [ -e "${updateInProgessPath}" ]; then
+																			# write out plist for use with updateTranscodeGems and Gem Updater.app
+				plistName="com.videotranscode.gem.update"
+				plistDir="/tmp"
+				plistFile="${plistDir}/${plistName}.plist"
+																			# delete the plist if it is hanging around
+				if [ -e "${plistFile}" ]; then
+					/bin/rm -f "${plistFile}"
+				fi
+																			# write out the plist to /tmp
+				${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+				${plistBuddy} -c 'Add :msgTxt string "'"${msgTxt}"'"' "${plistFile}"
+				${plistBuddy} -c 'Add :video_transcoding string "'"${vtVers}"'"' "${plistFile}"
+				${plistBuddy} -c 'Add :terminal-notifier string "'"${tnVers}"'"' "${plistFile}"
 
-			set btnPressed to display dialog "$msgTxt" buttons {"Install Later", "Install Update"} default button "Install Update" with title "Transcode" with icon file hfsPath
-
-			if button returned of the result is "Install Later" then
-				return 1
+																			# open Transcode Updater Dialog.app
+				open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
 			else
-				return 0
-			end if
-			EOT)
-
-			if [ "${btnPressed}" = "0" ] ; then
-				msgTxt="Requesting update."
-																			# open the Automator app to update the gems
-				open "${appScriptsPath}/Transcode Updater.app"
-			else
-				msgTxt="User deferred update."
-																			# delete the sempahore file
-				rm -f "${needsUpdatePath}"
-				rm -f "${updateInProgessPath}"
+																			# no semaphore files available
+				msgTxt=""
+				disableLaunchAgent="true"
 			fi
 		else
 			msgTxt="Already up-to-date."
+			disableLaunchAgent="true"
 																			# delete the sempahore file
-			rm -f "${needsUpdatePath}"
-			rm -f "${updateInProgessPath}"
+			/bin/rm -f "${updateInProgessPath}"
 		fi
-	elif [[ ! -e "${needsUpdatePath}" && ! -e "${updateInProgessPath}" ]]; then
+	elif [ ! -e "${updateInProgessPath}" ]; then
 																			# no semaphore files available
 		msgTxt=""
+		disableLaunchAgent="true"
 	else
-		msgTxt="Waiting for update approval, please click Install Update." ""
-																			# bring Transcode Updater.app to the front
-		open "${appScriptsPath}/Transcode Updater.app"
+		msgTxt="Waiting for update approval, please click Install Update."
+																			# bring the updater app to the front
+		/usr/bin/open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
 	fi
 	
-	. "${sh_echoMsg}" "${msgTxt}" ""	
+	. "${sh_echoMsg}" "${msgTxt}" ""
+	
+	if [ "${disableLaunchAgent}" = "true" ]; then
+		disable_launchAgent
+	fi
+}
+
+function disable_launchAgent () {
+	local plistDir="${libDir}/LaunchAgents"
+	local plistName="com.videotranscode.gem.check"
+	local plistFile="${plistDir}/${plistName}.plist"
+																			# turn off launchAgent to run updateTranscodeGemsCheck.sh
+	${plistBuddy} -c 'Set :Disabled true' "${plistFile}"
+	/bin/launchctl unload "${plistFile}"
+}
+
+function __main__ () {
+	define_Constants
+	
+	check4Update_Gems
 }
 
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
-																							# Execute
-trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
+																							# Execute																						
 trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
 
 __main__

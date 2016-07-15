@@ -16,10 +16,23 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.4, 06-28-2016"
+	local versStamp="Version 1.2.7, 07-09-2016"
 	
 	loggerTag="transcode.update"
 	
+	local DIR=""
+	local SOURCE="${BASH_SOURCE[0]}"
+	
+	while [ -h "${SOURCE}" ]; do 												# resolve ${SOURCE} until the file is no longer a symlink
+		DIR="$( cd -P "$( dirname "${SOURCE}" )" && pwd )"
+		SOURCE="$(readlink "${SOURCE}")"
+		[[ ${SOURCE} != /* ]] && SOURCE="${DIR}/${SOURCE}" 						# if ${SOURCE} was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	
+	readonly comLabel="com.videotranscode.transcode"
+	
+	readonly libDir="${HOME}/Library"
+	readonly appScriptsPath="${libDir}/Application Scripts/${comLabel}"
 	readonly prefDir="${libDir}/Preferences"
 	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
 	
@@ -34,24 +47,6 @@ function define_Constants () {
 	fullUpdate="false"
 	needsUpdate="false"
 	SHA1Clean="false"
-	
-	# From brewAutoUpdate:
-		# readonly libDir="${HOME}/Library"
-		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-}
-
-function runAndDisown () {
-	# ${1}: path to script to execute
-
-	if test -t 1; then
-	  exec 1>/dev/null
-	fi
-
-	if test -t 2; then
-	  exec 2>/dev/null
-	fi
-
-	"$@" &
 }
 
 function check4Update_Transcode () {
@@ -186,35 +181,20 @@ function update_Transcode () {
 }
 
 function clean_Up () {
+	local plistDir="${libDir}/LaunchAgents"
+	local plistName="com.videotranscode.gem.check"
+	local plistFile="${plistDir}/${plistName}.plist"
 																				# delete the auto-update files from /tmp
 	rm -rf "${updaterPath}"
-	
+																				# make sure everything can execute
 	find "${appScriptsPath}/" -name "*.sh" -exec chmod +x {} \;
 	find "${workDir}/" -name "*.command" -exec chmod +x {} \;
 	find "${workDir}/Extras/" -name "*.command" -exec chmod +x {} \;
-	
-	local gemUpdatePlist="com.videotranscode.gem.update.plist"
-	local plistName="com.videotranscode.gemautoupdate"
-	local plistFile="${libDir}/LaunchAgents/${plistName}.plist"					# get the watch folder launch agent
-
-	if [ ! -e "${plistFile}" ]; then											# write out the watch folder LaunchAgent plist to ~/Library/LaunchAgent
-		local watchPath="${libDir}/Preferences/${gemUpdatePlist}"				# get the path to the watch plist
-
-		${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
-		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
-		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
-		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
-		${plistBuddy} -c 'Add :WatchPaths array' "${plistFile}"
-		${plistBuddy} -c 'Add :WatchPaths:0 string "'"${watchPath}"'"' "${plistFile}"
-
-		chmod 644 "${plistFile}"
-
-		launchctl load "${plistFile}"											# load the launchAgent
-	
-		. "${sh_echoMsg}" "Created and started launchAgent ${watchPath}..." ""
-	fi
-																				# run updateTranscodeGemsCheck independently
-	touch "${prefDir}/${gemUpdatePlist}"
+																				# launchAgent to run updateTranscodeGemsCheck.sh
+	${plistBuddy} -c 'Set :Disabled true' "${plistFile}"																			
+	launchctl unload "${plistFile}"
+	${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
+	launchctl load "${plistFile}"
 }
 
 function __main__ () {

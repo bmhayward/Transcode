@@ -16,10 +16,11 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 #-------------------------------------------------------------MAIN------------------------------------------------------------------
 
-# Version 1.0.6, 06-07-2016
+# Version 1.0.8, 07-13-2016
 
 readonly libDir="${HOME}/Library"
 readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+readonly plistBuddy="/usr/libexec/PlistBuddy"
 
 # update brew
 brew update 2>&1 | logger -t brew.update
@@ -37,8 +38,7 @@ brew cask update 2>&1 | logger -t brew.caskUpdate
 brew cask cleanup 2>&1 | logger -t brew.caskCleanup
 
 # upgrade Transcode and gems
-ditto "${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscode.sh" "/tmp"
-
-. "/tmp/updateTranscode.sh"
+ditto "${appScriptsPath}/Transcode Updater.app" "/tmp/Transcode Updater.app"
+open "/tmp/Transcode Updater.app"
 
 exit 0

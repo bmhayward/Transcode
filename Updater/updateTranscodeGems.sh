@@ -17,15 +17,16 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.7, 06-27-2016"
+	local versStamp="Version 1.0.9, 07-09-2016"
 	
 	loggerTag="gem.update"
 	
 	readonly libDir="${HOME}/Library"
 	
 	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-	readonly icnsPath="${libDir}/Application Support/Transcode/Transcode_custom.icns"
+	readonly icnsPath="${libDir}/Application Scripts/com.videotranscode.transcode/Transcode Updater.app/Contents/Resources/AutomatorApplet.icns"
 	
+	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 	
@@ -33,36 +34,41 @@ function define_Constants () {
 }
 
 function updateGems () {
-	local updateVT="false"
+	local plistName="com.videotranscode.gem.update"
+	local plistDir="/tmp"
+	local plistFile="${plistDir}/${plistName}.plist"
 	
 	. "${sh_echoMsg}" "Checking updates..." ""
 	
-	declare -a gemUpdates
-	gemUpdates=( $(gem outdated) )
+	vtVers=$(${plistBuddy} -c 'print :video_transcoding' "${plistFile}")
+	ntVers=$(${plistBuddy} -c 'print :terminal-notifier' "${plistFile}")
+																	# delete the info plist
+	rm -f "${plistFile}"
 
-	if [ "${#gemUpdates[@]}" -gt "0" ]; then
+	if [[ "${vtVers}" != "0" || "${ntVers}" != "0" ]]; then
 		msgTxt="Transcode successfully updated"
 																	# update the gems
-		if [[ ${gemUpdates[*]} =~ video_transcoding ]]; then
-			local updateVT="true"
+		if [ "${vtVers}" != "0" ]; then
 																	# upgrade video_transcoding
 			. "${sh_echoMsg}" "Updating video_transcoding gem..." ""
+			
 			sudo gem update video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			gem cleanup video_transcoding 2>&1 | logger -t gem.video_transcoding.update
 			
-			msgTxt="${msgTxt} video_transcoding gem"
+			msgTxt="${msgTxt} video_transcoding gem to version ${vtVers}"
 		fi
 
-		if [[ ${gemUpdates[*]} =~ terminal-notifier ]]; then
+		if [ "${ntVers}" != "0" ]; then
 																	# upgrade terminal-notifier
 			. "${sh_echoMsg}" "Updating terminal-notifier gem..." ""
+			
 			sudo gem update terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 			gem cleanup terminal-notifier 2>&1 | logger -t gem.terminal-notifier.update
 
-			if [ "${updateVT}" = "false" ]; then
-				msgTxt="${msgTxt} terminal-notifier gem"
+			if [ "${vtVers}" = "0" ]; then
+				msgTxt="${msgTxt} terminal-notifier gem to version ${ntVers}"
 			else
-				msgTxt="${msgTxt} and terminal-notifier gem"
+				msgTxt="${msgTxt} and terminal-notifier gem to version ${ntVers}"
 			fi
 		fi
 	fi
@@ -70,7 +76,6 @@ function updateGems () {
 
 function clean_Up () {
 																	# remove the semaphore files
-	rm -f "${libDir}/Preferences/com.videotranscode.gem.update.plist"
 	rm -f "${libDir}/Preferences/com.videotranscode.gem.update.inprogress.plist"
 }
 

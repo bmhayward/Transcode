@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.6.0, 06-19-2016"
+	local versStamp="Version 1.6.3, 07-10-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -64,6 +64,21 @@ function define_Constants () {
 	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
 	readonly sh_writePrefs="${appScriptsPath}/_writePrefs.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+	readonly plistBuddy="/usr/libexec/PlistBuddy"
+	readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
+	
+	readonly LIGHTBLUE='\033[0;36m'
+	readonly LIGHTBLUEBOLD='\033[1;36m'
+	readonly LIGHTGREEN='\033[0;32m'
+	readonly LIGHTGREENBOLD='\033[1;32m'
+	readonly LIGHTYELLOW='\033[0;93m'
+	readonly LIGHTYELLOWBOLD='\033[1;93m'
+	readonly LIGHTMAGENTA='\033[0;95m'
+	readonly LIGHTMAGENTABOLD='\033[1;95m'
+	readonly WHITEBOLD='\033[1;37m'
+	readonly RED='\033[0;91m'
+	readonly REDBOLD='\033[1;91m'
+	readonly NC='\033[0m' # No Color
 }
 
 function get_Prefs () {
@@ -140,7 +155,10 @@ function ingest_Skips () {
 		
 		. "${sh_echoMsg}" ""
 		. "${sh_echoMsg}" "Files skipped in this batch (${loopCounter}):"
-		printf '%s\n' "${skippedFiles[@]}"																		# print to the Terminal
+																												# print to the Terminal
+		printf "${RED}"
+		printf '%s\n' "${skippedFiles[@]}"
+		printf "${NC}"																		
 		printf '%s\n' "${skippedFiles[@]}"  2>&1 | logger -t "${loggerTag}"										# print to syslog
 		
 		if [ -e "${skipPath}" ]; then
@@ -173,7 +191,7 @@ function pre_Processors () {
 
 			if [ "${cropValue//:}" != "0000" ]; then
 				echo ${cropValue} > "${cropsDir}/${fileName}"				# write the crop value out to its crop file
-				. "${sh_echoMsg}" "Using suggested crop value of ${cropValue}"
+				. "${sh_echoMsg}" "Using suggested crop value of ${LIGHTYELLOWBOLD}${cropValue}${NC}"
 			fi
 	
 			queueValue="${convertDir}/${fileNameExt}"
@@ -647,8 +665,10 @@ function time_Stamp () {
 		timeStamp=$(date +"%r, %D")
 		
 		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Transcode started @ ${timeStamp}"
-		. "${sh_echoMsg}" "Files to be transcoded in this batch:"
+		. "${sh_echoMsg}" "Transcode version ${LIGHTBLUEBOLD}${versCurrent}${NC}"
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Transcode started @ ${LIGHTGREENBOLD}${timeStamp}${NC}"
+		. "${sh_echoMsg}" "Files to be transcoded in this batch (${#convertFiles[@]}):"
 		printf '%s\n' "${convertFiles[@]}"									# print to Terminal
 		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"
 		
@@ -694,8 +714,11 @@ function time_Stamp () {
 		. "${sh_echoMsg}" ""
 		. "${sh_echoMsg}" "Transcode completed!"
 		. "${sh_echoMsg}" "It took ${timeStamp}"
-		. "${sh_echoMsg}" "Files transcoded in this batch:"
+		. "${sh_echoMsg}" ""
+		. "${sh_echoMsg}" "Files transcoded in this batch (${#convertFiles[@]}):"
+		printf "${LIGHTMAGENTA}"
 		printf '%s\n' "${convertFiles[@]}"										# print to the Terminal
+		printf "${NC}"
 		printf '%s\n' "${convertFiles[@]}"  2>&1 | logger -t "${loggerTag}"		# print to syslog
 		. "${sh_echoMsg}" ""
 		
@@ -775,7 +798,7 @@ function transcode_Video () {
 	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file
 		
 		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Transcoding ${input##*/} -"
+		. "${sh_echoMsg}" "Transcoding ${LIGHTBLUEBOLD}${input##*/} -${NC}"
 		. "${sh_sendNotification}" "Transcoding" "${input##*/}"
 	
 		transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
@@ -815,7 +838,7 @@ function post_Processors () {
 	find "${outDir}" -name '*.log' -exec mv {} "${logDir}" \;					# move all the log files to Logs
 	
 	if [ "${deleteWhenDone}" == "true" ]; then									# check the deleteWhenDone flag and proceed accordingly
-		. "${sh_echoMsg}" "Deleting originals"
+		. "${sh_echoMsg}" "${REDBOLD}Deleting originals${NC}"
 		
 		for i in "${convertFiles[@]}"; do
 			rm -fr "${i}"														# remove all the original files
@@ -851,18 +874,31 @@ function clean_Up () {
 	fi
 }
 
+function handleSwitches () {
+	# ${1}: switches
+	
+	case "${1}" in
+		*--version* | *-v* )
+			printf "Transcode version ${LIGHTBLUEBOLD}${versCurrent}${NC}\n"
+			exit 2
+		;;
+		* )																									# exit if no files to convert
+			if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
+				input=""
+				. "${sh_echoMsg}" ""
+				. "${sh_echoMsg}" "${REDBOLD}Exiting${NC}, no files found in ${convertDir} to transcode."
+
+				. "${sh_sendNotification}" "Transcode Stopped" "No files to convert"
+
+				exit 1
+			fi	
+		;;
+	esac
+}
+
 function __main__ () {
-																											# exit if no files to convert
-	if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
-		input=""
-		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Exiting, no files found in ${convertDir} to transcode."
-		
-		. "${sh_sendNotification}" "Transcode Stopped" "No files to convert"
-
-		exit 1
-	fi	
-
+	handleSwitches "${@}"
+	
 	time_Stamp "start"																						# start the duration timer
 
 	get_Prefs
@@ -889,6 +925,6 @@ touch "${workingPath}"																		# set the semaphore file to put any addi
 declare -a convertFiles
 convertFiles=( "${convertDir}"/* )												   			# get a list of filenames with path to convert
 
-__main__
+__main__ "${@}"
 
 exit 0

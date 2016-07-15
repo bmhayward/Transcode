@@ -16,16 +16,15 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.3, 06-28-2016"
+	local versStamp="Version 1.1.6, 07-14-2016"
 	
 	loggerTag="transcode.post-update"
-	
-	# From brewAutoUpdate:
+		
+	# From updateTranscode:
 		# readonly libDir="${HOME}/Library"
 		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-	
-	# From updateTranscode:
 		# readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
+		# readonly plistBuddy="/usr/libexec/PlistBuddy"
 		# readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 		# readonly sh_ifError="${appScriptsPath}/_ifError.sh"
 		# fullUpdate - true of false
@@ -116,7 +115,36 @@ function full_Update () {
 }
 
 function patch_Update () {
-	echo
+	local capturedOutput=""
+	local plistDir="${libDir}/LaunchAgents"
+	local plistName="com.videotranscode.gemautoupdate"
+	local plistFile="${plistDir}/${plistName}.plist"
+																							# remove the old gem updater if present
+	capturedOutput=$(launchctl unload "${plistFile}")
+	if [[ "${capturedOutput}" != *"No such file or directory"* ]]; then
+		rm -f "${plistFile}"
+	fi
+																							# install new gem updater if not present
+	plistName="com.videotranscode.gem.check"
+	plistFile="${plistDir}/${plistName}.plist"
+																							
+	if [ ! -e "${plistFile}" ]; then
+		${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+		${plistBuddy} -c 'Add :Disabled bool true' "${plistFile}"
+		${plistBuddy} -c 'Add :EnvironmentVariables dict' "${plistFile}"
+		${plistBuddy} -c 'Add :EnvironmentVariables:PATH string /usr/local/bin:/usr/bin:/usr/sbin' "${plistFile}"
+		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
+		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
+		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
+
+		chmod 644 "${plistFile}"
+		
+		if [ "${versCurrent}" = "1.4.0" ]; then
+																							# need to run updateTranscodeGemsCheck
+			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
+			launchctl load "${plistFile}"													# load the launchAgent
+		fi
+	fi																						
 }
 
 function __main__ () {
