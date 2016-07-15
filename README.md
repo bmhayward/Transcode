@@ -720,6 +720,11 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.1](https://github.com/bmhayward/Transcode/releases/tag/1.4.1)
+Friday, July 15, 2016
+* Third time is a charm for the gem updater code. Completely rewrote how gems are updated.
+* Added colorization to batch.command to make it easier to spot what is going on in the output
+
 ### [1.4.0](https://github.com/bmhayward/Transcode/releases/tag/1.4.0)
 Tuesday, June 28, 2016
 * In some instances, post-update code would not execute and gems would not be checked for update. Completely reworked post-Transcode and gem update code
