@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.6, 06-20-2016"
+	local versStamp="Version 1.1.7, 07-20-2016"
 	
 	readonly waitingPlist="com.videotranscode.ingest.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.ingest.batch.onhold.plist"
@@ -100,7 +100,13 @@ function wait_4StableFolder () {
 	done
 																							# wait for the directory to be stable
 	while [ ${prevSize} != ${newSize} ]; do 												# repeat until these values are the same
-		sleep 60																			# check every 60 seconds after inital start
+		sleepTime=60
+																							# if trancoding is active allow for more time for ingest
+		if [ -e "${prefDir}/com.videotranscode.batch.working.plist" ]; then
+			sleepTime=90
+		fi
+		
+		sleep ${sleepTime}																	# check every ${sleepTime} seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
 		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )								# get new file size

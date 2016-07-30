@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.6.3, 07-10-2016"
+	local versStamp="Version 1.6.5, 07-30-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -313,7 +313,7 @@ function rename_File () {
 			capturedOutput="${capturedOutput//_/ }" 																	# convert any underscores to spaces
 			capturedOutput="${capturedOutput#*+}"																		# remove any plus characters from the front of the string
 			capturedOutput=$(echo ${capturedOutput} | awk '{print tolower($0)}') 										# lowercase the original text
-			capturedOutput=$(echo ${capturedOutput} |  awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
+			capturedOutput=$(echo ${capturedOutput} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
 
 			matchVal=$(echo ${matchVal} | awk '{print tolower($0)}') 													# lowercase the matched text
 
@@ -879,10 +879,26 @@ function handleSwitches () {
 	
 	case "${1}" in
 		*--version* | *-v* )
-			printf "Transcode version ${LIGHTBLUEBOLD}${versCurrent}${NC}\n"
+			printf "\nTranscode ${LIGHTBLUEBOLD}${versCurrent}${NC}\n"
+			printf "Copyright (c) 2016 Brent Hayward\n\n"
+			transcode-video --version
+			printf "\n"
+			
 			exit 2
 		;;
-		* )																									# exit if no files to convert
+		*--help* | *-h* )
+			printf "\n${LIGHTBLUEBOLD}Transcode${NC}, tools to batch transcode and process videos\n\n"
+			printf "Works best with Blu-ray or DVD rip\n"
+			printf "Automatically determines target video bitrate, number of audio tracks, etc.\n\n"
+			printf "Usage: drop .mkv files into /Transcode/Convert to transcode and process\n\n"
+			printf "Other options:\n"
+			echo "-h, --help          display this help and exit"
+			echo "-v, --version       output version information and exit"
+			printf "\n"
+		
+		exit 2
+		;;
+		* )																					# exit if no files to convert
 			if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
 				input=""
 				. "${sh_echoMsg}" ""
@@ -899,7 +915,9 @@ function handleSwitches () {
 function __main__ () {
 	handleSwitches "${@}"
 	
-	time_Stamp "start"																						# start the duration timer
+	printf '\e[8;5;154t'																	# set the Terminal window size to 154x5
+	
+	time_Stamp "start"																		# start the duration timer
 
 	get_Prefs
 	build_Resources
@@ -907,7 +925,7 @@ function __main__ () {
 	transcode_Video
 	post_Processors
 
-	time_Stamp "stop"																						# stop the duration timer
+	time_Stamp "stop"																		# stop the duration timer
 }
 
 
@@ -916,7 +934,6 @@ function __main__ () {
 trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 trap "exit" INT																				# trap user cancelling
 trap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
-printf '\e[8;5;154t'																		# set the Terminal window size to 154x5
 
 define_Constants
 

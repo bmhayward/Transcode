@@ -16,13 +16,13 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.6, 07-14-2016"
+	local versStamp="Version 1.2.8, 07-30-2016"
 	
 	loggerTag="transcode.install"
 	readonly scriptsDirName="com.videotranscode.transcode"
 	
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
-	readonly libDir="${HOME}/Library"	
+	readonly libDir="${HOME}/Library"
 	readonly plistDir="${libDir}/LaunchAgents"
 	readonly scriptsDir="${libDir}/Application Scripts"
 	readonly supportDir="${libDir}/Application Support"
@@ -154,7 +154,7 @@ function create_Plists () {
 
 		chmod 644 "${plistFile}"
 		
-		launchctl load "${plistFile}"																				# load the launchAgent
+		launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"												# load the launchAgent
 	fi
 
 	plistFile="${plistDir}/${plistName[1]}.plist"																	# get the watch folder launch agent
@@ -171,7 +171,7 @@ function create_Plists () {
 
 		chmod 644 "${plistFile}"
 		
-		launchctl load "${plistFile}"																				# load the launchAgent
+		launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"												# load the launchAgent
 	fi
 	
 	plistFile="${plistDir}/${plistName[2]}.plist"																	# get the watch folder launch agent
@@ -188,21 +188,26 @@ function create_Plists () {
 
 		chmod 644 "${plistFile}"
 		
-		launchctl load "${plistFile}"																				# load the launchAgent
+		launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"												# load the launchAgent
 	fi
 	
 	plistFile="${plistDir}/${plistName[3]}.plist"																	# get the watch folder launch agent
 
 	if [ ! -e "${plistFile}" ]; then																				# write out the watch folder LaunchAgent plist to ~/Library/LaunchAgent
 		${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
-		${plistBuddy} -c 'Add :Disabled bool true' "${plistFile}"
+		${plistBuddy} -c 'Add :Disabled bool false' "${plistFile}"
 		${plistBuddy} -c 'Add :EnvironmentVariables dict' "${plistFile}"
 		${plistBuddy} -c 'Add :EnvironmentVariables:PATH string /usr/local/bin:/usr/bin:/usr/sbin' "${plistFile}"
 		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
 		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${scriptsDir}/${scriptsDirName}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
-		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
-
+		${plistBuddy} -c 'Add :RunAtLoad bool false' "${plistFile}"
+		${plistBuddy} -c 'Add :StartCalendarInterval array' "${plistFile}"
+		${plistBuddy} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
+		${plistBuddy} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
+        
 		chmod 644 "${plistFile}"
+		
+		launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"												# load the launchAgent
 	fi
 }
 

@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.7, 07-09-2016"
+	local versStamp="Version 1.3.0, 07-30-2016"
 	
 	loggerTag="transcode.update"
 	
@@ -116,6 +116,7 @@ function update_Transcode () {
 			fi
 
 			. "${sh_echoMsg}" "Updating Transcode from ${versCurrent} to ${versUpdate}." ""
+			. "${sh_sendNotification}" "Transcode Update" "Updated from ${versCurrent} to ${versUpdate}"
 		
 			declare -a updateFiles
 			updateFiles=( "${updaterPath}/${downloadedZipFile%.*}"/* )			# get a list of filenames with path to convert
@@ -144,7 +145,7 @@ function update_Transcode () {
 			
 				case "${fileType}" in
 					sh|app|command )
-						if [ "${fileName}" != "updateTranscode.sh" ]; then
+						if [[ "${fileName}" != "updateTranscode.sh" && "${fileName}" != "updateTranscodeGems.sh" ]]; then
 																				# move to the update location
 							ditto "${i}" "${transcode2Replace}"
 						
@@ -190,11 +191,6 @@ function clean_Up () {
 	find "${appScriptsPath}/" -name "*.sh" -exec chmod +x {} \;
 	find "${workDir}/" -name "*.command" -exec chmod +x {} \;
 	find "${workDir}/Extras/" -name "*.command" -exec chmod +x {} \;
-																				# launchAgent to run updateTranscodeGemsCheck.sh
-	${plistBuddy} -c 'Set :Disabled true' "${plistFile}"																			
-	launchctl unload "${plistFile}"
-	${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
-	launchctl load "${plistFile}"
 }
 
 function __main__ () {

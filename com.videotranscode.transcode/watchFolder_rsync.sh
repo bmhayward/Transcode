@@ -27,7 +27,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.7, 06-20-2016"
+	local versStamp="Version 1.1.8, 07-20-2016"
 	
 	readonly waitingPlist="com.videotranscode.rsync.batch.waiting.plist"
 	readonly onHoldPlist="com.videotranscode.rsync.batch.onhold.plist"
@@ -74,7 +74,7 @@ function wait_4StableFolder () {
 	done
 																							# wait for the directory to be stable
 	while [ ${prevSize} != ${newSize} ]; do 												# repeat until these values are the same
-		sleep 20																			# check every 60 seconds after inital start
+		sleep 20																			# check every 20 seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
 		newSize=$( du -s "${convertDir}" | awk '{print $1}' )								# get new file size

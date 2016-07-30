@@ -16,7 +16,7 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.0.8, 07-14-2016"
+	local versStamp="Version 1.0.9, 07-23-2016"
 	
 	loggerTag="gem.update"
 	
@@ -31,7 +31,31 @@ function define_Constants () {
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-	disableLaunchAgent="false"
+}
+
+function wait4Idle () {
+	# returns: flag true=0 or false=1
+	local idleTime=0
+	local dwellTime=120														# two minutes
+	local waitDuration=28800												# 8 hours
+	local duration=0
+	local returnValue=1
+	
+	SECONDS=0
+																			# wait for two minutes of idle time, but wait no more than the dwell time in total
+	while [[ "${idleTime}" -lt "${dwellTime}" && "${duration}" -lt "${waitDuration}" ]]; do
+		sleep 5
+
+		idleTime=$(ioreg -c IOHIDSystem | awk '/HIDIdleTime/ {print int($NF/1000000000); exit}')
+		
+		duration=${SECONDS}
+	done
+																			# if waited less than 8 hours, OK to proceed
+	if [ "${duration}" -lt "${waitDuration}" ]; then
+		returnValue=0
+	fi
+	
+	return ${returnValue}
 }
 
 function check4Update_Gems () {
@@ -108,44 +132,33 @@ function check4Update_Gems () {
 				${plistBuddy} -c 'Add :msgTxt string "'"${msgTxt}"'"' "${plistFile}"
 				${plistBuddy} -c 'Add :video_transcoding string "'"${vtVers}"'"' "${plistFile}"
 				${plistBuddy} -c 'Add :terminal-notifier string "'"${tnVers}"'"' "${plistFile}"
-
+																			# wait for two minutes of idle time before continuing
+				if wait4Idle ; then
 																			# open Transcode Updater Dialog.app
-				open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
+					/usr/bin/open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
+				fi
 			else
 																			# no semaphore files available
 				msgTxt=""
-				disableLaunchAgent="true"
 			fi
 		else
 			msgTxt="Already up-to-date."
-			disableLaunchAgent="true"
 																			# delete the sempahore file
 			/bin/rm -f "${updateInProgessPath}"
 		fi
 	elif [ ! -e "${updateInProgessPath}" ]; then
 																			# no semaphore files available
 		msgTxt=""
-		disableLaunchAgent="true"
 	else
 		msgTxt="Waiting for update approval, please click Install Update."
+		
+		if wait4Idle ; then
 																			# bring the updater app to the front
-		/usr/bin/open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
+			/usr/bin/open -a "${appScriptsPath}/Transcode Updater.app/Contents/Resources/Gem Updater.app"
+		fi
 	fi
 	
 	. "${sh_echoMsg}" "${msgTxt}" ""
-	
-	if [ "${disableLaunchAgent}" = "true" ]; then
-		disable_launchAgent
-	fi
-}
-
-function disable_launchAgent () {
-	local plistDir="${libDir}/LaunchAgents"
-	local plistName="com.videotranscode.gem.check"
-	local plistFile="${plistDir}/${plistName}.plist"
-																			# turn off launchAgent to run updateTranscodeGemsCheck.sh
-	${plistBuddy} -c 'Set :Disabled true' "${plistFile}"
-	/bin/launchctl unload "${plistFile}"
 }
 
 function __main__ () {

@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.6, 07-14-2016"
+	local versStamp="Version 1.1.8, 07-30-2016"
 	
 	loggerTag="transcode.post-update"
 		
@@ -24,6 +24,7 @@ function define_Constants () {
 		# readonly libDir="${HOME}/Library"
 		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
 		# readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
+		# readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
 		# readonly plistBuddy="/usr/libexec/PlistBuddy"
 		# readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 		# readonly sh_ifError="${appScriptsPath}/_ifError.sh"
@@ -56,6 +57,7 @@ function full_Update () {
 
 	if [[ "${fullUpdate}" == "true" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
 		. "${sh_echoMsg}" "Starting full update..." ""
+		. "${sh_sendNotification}" "Transcode Update" "Starting full update..."
 
 		postPath=$(mktemp -d "/tmp/transcodeFullUpdate_XXXXXXXXXXXX")
 																							# move the compressed resources to /tmp
@@ -135,15 +137,31 @@ function patch_Update () {
 		${plistBuddy} -c 'Add :EnvironmentVariables:PATH string /usr/local/bin:/usr/bin:/usr/sbin' "${plistFile}"
 		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
 		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
-		${plistBuddy} -c 'Add :RunAtLoad bool true' "${plistFile}"
+		${plistBuddy} -c 'Add :RunAtLoad bool false' "${plistFile}"
 
 		chmod 644 "${plistFile}"
 		
-		if [ "${versCurrent}" = "1.4.0" ]; then
+		if[ "${versCurrent}" = "1.4.0" ]; then
 																							# need to run updateTranscodeGemsCheck
 			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
-			launchctl load "${plistFile}"													# load the launchAgent
+			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"					# load the launchAgent
 		fi
+		
+		case "${versCurrent}" in
+			"1.4.1" )
+				. "${sh_sendNotification}" "Transcode Update" "Modifying ${plistName}"
+				
+				launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"	# unload launchAgent
+																							# update the plist
+				${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
+				${plistBuddy} -c 'Set :RunAtLoad bool false' "${plistFile}"
+				${plistBuddy} -c 'Add :StartCalendarInterval array' "${plistFile}"
+				${plistBuddy} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
+				${plistBuddy} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
+
+				launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"				# load the launchAgent
+			;;
+		esac
 	fi																						
 }
 
