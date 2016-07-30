@@ -724,7 +724,7 @@ This scenario makes use of:
 
 ### [1.4.2](https://github.com/bmhayward/Transcode/releases/tag/1.4.2)
 Saturday, July 30, 2016
-* Gem updater starts looking for gem updates at 9:05 a.m.. If an update is found, will wait for two minutes of UI idle time before requesting the update from the user. This behavior will continue for up to eight hours before giving up and trying again the next day.
+* Gem updater now starts looking for gem updates at 9:05 a.m.. If an update is found, will wait for two minutes of UI idle time before requesting the update from the user. This behavior will continue for up to eight hours before giving up and trying again the next day.
 * watchFolder_Ingest is now less agressive if ingest is active.
 * Added Notification Center notifications for updates.
 * Some minor code clean up.
