@@ -722,6 +722,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.3](https://github.com/bmhayward/Transcode/releases/tag/1.4.3)
+Sunday, July 31, 2016
+* Added gem updater removal to uninstallTranscode.command.
+
 ### [1.4.2](https://github.com/bmhayward/Transcode/releases/tag/1.4.2)
 Saturday, July 30, 2016
 * Gem updater now starts looking for gem updates at 9:05 a.m.. If an update is found, will wait for two minutes of UI idle time before requesting the update from the user. The updater wait up to eight hours for two minutes of UI idle time before giving up and trying again the next day.
