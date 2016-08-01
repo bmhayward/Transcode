@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.6.5, 07-30-2016"
+	local versStamp="Version 1.6.6, 07-31-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -665,7 +665,10 @@ function time_Stamp () {
 		timeStamp=$(date +"%r, %D")
 		
 		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Transcode version ${LIGHTBLUEBOLD}${versCurrent}${NC}"
+		. "${sh_echoMsg}" "Transcode ${LIGHTBLUEBOLD}${versCurrent}${NC}"
+		. "${sh_echoMsg}" "Copyright (c) 2016 Brent Hayward"
+		. "${sh_echoMsg}" ""
+		transcode-video --version
 		. "${sh_echoMsg}" ""
 		. "${sh_echoMsg}" "Transcode started @ ${LIGHTGREENBOLD}${timeStamp}${NC}"
 		. "${sh_echoMsg}" "Files to be transcoded in this batch (${#convertFiles[@]}):"

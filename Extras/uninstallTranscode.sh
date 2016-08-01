@@ -18,7 +18,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.1.1, 07-28-2016"
+	local versStamp="Version 1.1.2, 07-30-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	
 	loggerTag="transcode.uninstall"
@@ -118,7 +118,7 @@ function uninstall_launchDaemons () {
 	removeThis[1]="${libDir}/LaunchAgents/com.videotranscode.watchfolder.plist"
 	removeThis[2]="${libDir}/LaunchAgents/com.videotranscode.rsync.watchfolder.plist"
 	removeThis[3]="${libDir}/LaunchAgents/com.videotranscode.ingest.watchfolder.plist"
-	removeThis[4]="${libDir}/LaunchAgents/com.videotranscode.gem.check"	
+	removeThis[4]="${libDir}/LaunchAgents/com.videotranscode.gem.check.plist"	
 	
 	# remove LaunchAgents
 	for i in "${removeThis[@]}"; do

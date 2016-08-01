@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.8, 07-30-2016"
+	local versStamp="Version 1.1.9, 07-31-2016"
 	
 	loggerTag="transcode.post-update"
 		
@@ -146,23 +146,23 @@ function patch_Update () {
 			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
 			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"					# load the launchAgent
 		fi
-		
-		case "${versCurrent}" in
-			"1.4.1" )
-				. "${sh_sendNotification}" "Transcode Update" "Modifying ${plistName}"
-				
-				launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"	# unload launchAgent
-																							# update the plist
-				${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
-				${plistBuddy} -c 'Set :RunAtLoad bool false' "${plistFile}"
-				${plistBuddy} -c 'Add :StartCalendarInterval array' "${plistFile}"
-				${plistBuddy} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
-				${plistBuddy} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
+	fi
+	
+	case "${versCurrent}" in
+		"1.4.1" )
+			. "${sh_sendNotification}" "Transcode Update" "Modifying ${plistName}"
+			
+			launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"	# unload launchAgent
+																						# update the plist
+			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
+			${plistBuddy} -c 'Set :RunAtLoad bool false' "${plistFile}"
+			${plistBuddy} -c 'Add :StartCalendarInterval array' "${plistFile}"
+			${plistBuddy} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
+			${plistBuddy} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
 
-				launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"				# load the launchAgent
-			;;
-		esac
-	fi																						
+			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"				# load the launchAgent
+		;;
+	esac																						
 }
 
 function __main__ () {
