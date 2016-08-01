@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.9, 07-31-2016"
+	local versStamp="Version 1.2.0, 08-01-2016"
 	
 	loggerTag="transcode.post-update"
 		
@@ -141,7 +141,7 @@ function patch_Update () {
 
 		chmod 644 "${plistFile}"
 		
-		if[ "${versCurrent}" = "1.4.0" ]; then
+		if [ "${versCurrent}" = "1.4.0" ]; then
 																							# need to run updateTranscodeGemsCheck
 			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
 			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"					# load the launchAgent
