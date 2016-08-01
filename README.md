@@ -722,6 +722,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.5](https://github.com/bmhayward/Transcode/releases/tag/1.4.5)
+Monday, August 1, 2016
+* Corrected a typo in the 1.4.4 release.
+
 ### [1.4.4](https://github.com/bmhayward/Transcode/releases/tag/1.4.4)
 Monday, August 1, 2016
 * Corrected an issue that prevented Transcode Updater.app from completing.
