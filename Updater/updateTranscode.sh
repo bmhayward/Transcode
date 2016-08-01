@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.3.0, 07-30-2016"
+	local versStamp="Version 1.3.1, 08-01-2016"
 	
 	loggerTag="transcode.update"
 	
@@ -40,6 +40,7 @@ function define_Constants () {
 	
 	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+	readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
 	readonly sh_updatePost="${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodePost.sh"
 	readonly plistBuddy="/usr/libexec/PlistBuddy"
 	readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
@@ -116,7 +117,6 @@ function update_Transcode () {
 			fi
 
 			. "${sh_echoMsg}" "Updating Transcode from ${versCurrent} to ${versUpdate}." ""
-			. "${sh_sendNotification}" "Transcode Update" "Updated from ${versCurrent} to ${versUpdate}"
 		
 			declare -a updateFiles
 			updateFiles=( "${updaterPath}/${downloadedZipFile%.*}"/* )			# get a list of filenames with path to convert
@@ -168,6 +168,7 @@ function update_Transcode () {
 			done
 			
 			. "${sh_echoMsg}" "Update complete." ""
+			. "${sh_sendNotification}" "Transcode Update" "Updated from ${versCurrent} to ${versUpdate}"
 		else
 																				# remove the full update flag
 			fullUpdate="false"
