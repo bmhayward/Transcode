@@ -722,6 +722,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.4](https://github.com/bmhayward/Transcode/releases/tag/1.4.4)
+Monday, August 1, 2016
+* Corrected an issue that prevented Transcode Updater.app from completing.
+
 ### [1.4.3](https://github.com/bmhayward/Transcode/releases/tag/1.4.3)
 Sunday, July 31, 2016
 * Added gem updater removal to uninstallTranscode.command.
