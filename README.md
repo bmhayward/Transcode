@@ -722,6 +722,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.6](https://github.com/bmhayward/Transcode/releases/tag/1.4.6)
+Tuesday, August 3, 2016
+* Corrected an issue where batch.command would sometimes get skipped if updated.
+
 ### [1.4.5](https://github.com/bmhayward/Transcode/releases/tag/1.4.5)
 Monday, August 1, 2016
 * Corrected a typo in the 1.4.4 release.
