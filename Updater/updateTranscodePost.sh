@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.0, 08-01-2016"
+	local versStamp="Version 1.2.2, 08-03-2016"
 	
 	loggerTag="transcode.post-update"
 		
@@ -28,6 +28,7 @@ function define_Constants () {
 		# readonly plistBuddy="/usr/libexec/PlistBuddy"
 		# readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
 		# readonly sh_ifError="${appScriptsPath}/_ifError.sh"
+		# readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
 		# fullUpdate - true of false
 		# SHA1Clean - true or false
 }
@@ -90,6 +91,15 @@ function full_Update () {
 	
 			(( loopCounter++ ))
 		done
+																							# check for the batch.command diff
+		capturedOutput=$(diff --brief "${workDir}/batch.command" "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh")
+
+		if [[ "${capturedOutput}" = *"differ"* ]]; then
+																							# update with the current version of batch.command
+			mv -f "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${workDir}/batch.command"
+			
+			. "${sh_echoMsg}" "==> Updated batch.command" ""
+		fi
 																							# loop through Scripts looking for diffs	
 		declare -a scriptFiles
 		scriptFiles=( "${postPath}/Scripts"/* )												# get a list of filenames with path
@@ -119,7 +129,7 @@ function full_Update () {
 function patch_Update () {
 	local capturedOutput=""
 	local plistDir="${libDir}/LaunchAgents"
-	local plistName="com.videotranscode.gemautoupdate"
+	local plistName="com.videotranscode.gem.check"
 	local plistFile="${plistDir}/${plistName}.plist"
 																							# remove the old gem updater if present
 	capturedOutput=$(launchctl unload "${plistFile}")
@@ -127,7 +137,6 @@ function patch_Update () {
 		rm -f "${plistFile}"
 	fi
 																							# install new gem updater if not present
-	plistName="com.videotranscode.gem.check"
 	plistFile="${plistDir}/${plistName}.plist"
 																							
 	if [ ! -e "${plistFile}" ]; then
@@ -162,6 +171,16 @@ function patch_Update () {
 
 			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"				# load the launchAgent
 		;;
+		
+		"1.4.5" )
+			capturedOutput=$(diff --brief "${workDir}/batch.command" "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh")
+
+			if [[ "${capturedOutput}" = *"differ"* ]]; then
+																								# update with the current version of batch.command
+				mv -f "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${workDir}/batch.command"
+				
+				. "${sh_echoMsg}" "==> Updated ${fileName}" ""
+			fi
 	esac																						
 }
 
