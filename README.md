@@ -713,12 +713,11 @@ This scenario makes use of:
 
 1. Insert a Blu-ray or DVD disc
 2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Select the master title and prepend `^` to the title. This will change all titles to `^{title}`.
-6. Remove `^` from all primary titles to be transcoded. The remaining titles with a leading `^` will be available for later review.
-7. Click `Save selected titles` 
-8. Goto Step 1
+3. Click `Open DVD disc` icon
+4. Select the master title and prepend `^` to the title. This will change all titles to `^{title}`.
+5. Remove `^` from all primary titles to be transcoded. The remaining titles with a leading `^` will be available for later review.
+6. Click `Save selected titles` 
+7. Goto Step 1
 
 ## History
 
