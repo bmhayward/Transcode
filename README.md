@@ -150,8 +150,8 @@ Name content to be Transcoded, using the following conventions:
 Movies: title e.g. WALL-E
 TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
 Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
-Movie Extras: title_(date)#extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney
-TV Specials: title_S00EYY#descriptive name e.g. FUTURAMA_S00E1#Interview with Matt Groening
+Movie Extras: title_(date)%extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney
+TV Specials: title_S00EYY%descriptive name e.g. FUTURAMA_S00E1%Interview with Matt Groening
 Skip renaming & auto-move: @title e.g. @CAPTAIN_AMERICA_THE_FIRST_AVENGER
 Pass-through without transcoding: ^title e.g. ^The_Incredibles_Extras
 Force decomb filter: +title e.g. +FUTURAMA_S2E10
@@ -260,7 +260,7 @@ It is possible to have transcoded “extras” moved to the appropriate collecti
 
 To place an “extra” in the appropriate collection, title the originating content using the following convention:
 ```
-{title name}#{extras tag}-{descriptive name}
+{title name}%{extras tag}-{descriptive name}
 ```
 where the extras tag identifiers are:
 ```
@@ -274,7 +274,7 @@ Trailers
 ```
 For example, the White Christmas DVD contains the featurette, “A Look Back with Rosemary Clooney.” To add this to the White Christmas collection in Plex or iTunes, name the title:
 ```
-WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney.mkv
+WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney.mkv
 ```
 
 The transcoded title will be placed in:
@@ -288,13 +288,13 @@ It is possible to have transcoded “specials” moved to the appropriate collec
 
 To place a “special” in the appropriate collection, title the originating content using the following convention:
 ```
-{title name}_{specials tag}#{descriptive name}
+{title name}_{specials tag}%{descriptive name}
 ```
 where the specials tag identifier is `S00EYY`.
 
 For example, the Futurama Season 1 DVD contains an interview with Matt Groening. To add this to the Futurama collection in Plex or iTunes, name the title:
 ```
-FUTURAMA_S00E1#Interview with Matt Groening.mkv  
+FUTURAMA_S00E1%Interview with Matt Groening.mkv  
 ```
 
 The transcoded title will be placed in:
@@ -389,9 +389,9 @@ Title naming conventions:
 Movies: HAPPY_GILMORE
 TV Shows: FAMILY_GUY_S6E1
 Multi-Episode TV Show: BETTER_CALL_SAUL_S1E1E10
-Extras: INSIDE_OUT_(2015)#Shorts-Lava
+Extras: INSIDE_OUT_(2015)%Shorts-Lava
 Skip renaming & auto-move: @RATATOUILLE_EXTRAS
-Force decomb filter: +ICE_AGE#Behind The Scenes-Making Of
+Force decomb filter: +ICE_AGE%Behind The Scenes-Making Of
 Pass-through without transcoding: ^The_Incredibles_Extras
 ```
 Verify a movie or TV show title:
@@ -485,7 +485,7 @@ Transcode Log Analyzer.app creates a tab-delimited report from HandBrake-generat
 
 Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor 
 --- | --- | --- | --- | --- | --- | ---
-+Aladdin_(1992)#Featurettes-Music_t19.m4v | 05/15/2016 | 10:44:41 | 00:01:17 | 102.0933 | 1817.38 | 21.33
++Aladdin_(1992)%Featurettes-Music_t19.m4v | 05/15/2016 | 10:44:41 | 00:01:17 | 102.0933 | 1817.38 | 21.33
 +FUTURAMA_S03E01.m4v | 04/12/2016 | 06:44:11 | 00:02:38 | 204.952179 | 1428.14 | 13.79
 AIRPLANE_t00.m4v | 03/14/2016 | 13:00:48 | 00:18:34 | 113.191116 | 2247.79 | 17.16
 
@@ -669,7 +669,7 @@ This scenario makes use of:
 2. Open MakeMKV or have it open automatically
 3. Click `Open DVD disc` icon 
 4. Uncheck the title(s) **NOT** to rip
-5. Name the checked title(s) `{title name}#{extras tag}-{descriptive name}` e.g. `WHITE_CHRISTMAS_(1954)#Featurettes-A Look Back with Rosemary Clooney`
+5. Name the checked title(s) `{title name}%{extras tag}-{descriptive name}` e.g. `WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney`
 6. Click `Save selected titles` 
 7. Goto Step 1
 
@@ -720,6 +720,10 @@ This scenario makes use of:
 7. Goto Step 1
 
 ## History
+
+### [1.4.7](https://github.com/bmhayward/Transcode/releases/tag/1.4.7)
+Tuesday, August 16, 2016
+* Moved to % delimiter for 'extras' and 'specials'.
 
 ### [1.4.6](https://github.com/bmhayward/Transcode/releases/tag/1.4.6)
 Tuesday, August 3, 2016
