@@ -16,7 +16,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.2, 08-03-2016"
+	local versStamp="Version 1.2.3, 08-03-2016"
 	
 	loggerTag="transcode.post-update"
 		
@@ -121,6 +121,7 @@ function full_Update () {
 		done
 
 		. "${sh_echoMsg}" "Full update complete." ""
+		. "${sh_sendNotification}" "Transcode Update" "Full update completed"
 																							# delete full update directory from /tmp
 		rm -rf "${postPath}"
 	fi
@@ -131,32 +132,7 @@ function patch_Update () {
 	local plistDir="${libDir}/LaunchAgents"
 	local plistName="com.videotranscode.gem.check"
 	local plistFile="${plistDir}/${plistName}.plist"
-																							# remove the old gem updater if present
-	capturedOutput=$(launchctl unload "${plistFile}")
-	if [[ "${capturedOutput}" != *"No such file or directory"* ]]; then
-		rm -f "${plistFile}"
-	fi
-																							# install new gem updater if not present
-	plistFile="${plistDir}/${plistName}.plist"
-																							
-	if [ ! -e "${plistFile}" ]; then
-		${plistBuddy} -c 'Add :Label string "'"${plistName}"'"' "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
-		${plistBuddy} -c 'Add :Disabled bool true' "${plistFile}"
-		${plistBuddy} -c 'Add :EnvironmentVariables dict' "${plistFile}"
-		${plistBuddy} -c 'Add :EnvironmentVariables:PATH string /usr/local/bin:/usr/bin:/usr/sbin' "${plistFile}"
-		${plistBuddy} -c 'Add :ProgramArguments array' "${plistFile}"
-		${plistBuddy} -c 'Add :ProgramArguments:0 string "'"${appScriptsPath}/Transcode Updater.app/Contents/Resources/updateTranscodeGemsCheck.sh"'"' "${plistFile}"
-		${plistBuddy} -c 'Add :RunAtLoad bool false' "${plistFile}"
 
-		chmod 644 "${plistFile}"
-		
-		if [ "${versCurrent}" = "1.4.0" ]; then
-																							# need to run updateTranscodeGemsCheck
-			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
-			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"					# load the launchAgent
-		fi
-	fi
-	
 	case "${versCurrent}" in
 		"1.4.1" )
 			. "${sh_sendNotification}" "Transcode Update" "Modifying ${plistName}"
@@ -179,7 +155,7 @@ function patch_Update () {
 																								# update with the current version of batch.command
 				mv -f "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${workDir}/batch.command"
 				
-				. "${sh_echoMsg}" "==> Updated ${fileName}" ""
+				. "${sh_echoMsg}" "==> Updated batch.command" ""
 			fi
 	esac																						
 }

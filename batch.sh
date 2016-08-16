@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.6.6, 07-31-2016"
+	local versStamp="Version 1.6.8, 08-16-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -290,9 +290,17 @@ function rename_File () {
 			local labelInfo=""
 			local fileBotName=""
 			
-			tempName="${1%%#*}"																							# get the title name
+			if [[ ${1} == *"#"* ]]; then																				# legacy tag
+				tempName="${1%%#*}"																						# get the title name
+				
+				labelInfo="${1#*#}"																						# get the extras label
+			else
+				tempName="${1%'%'*}"																					# get the title name
+
+				labelInfo="${1#*%}"																						# get the extras label
+			fi
+			
 			tempName="${tempName#*+}"																					# remove any plus characters from the front of the string
-			labelInfo="${1#*#}"																							# get the extras label
 			labelInfo="${labelInfo%%_*}"																				# strip off any trailing _tXX
 
 			capturedOutput=$(filebot -rename "${outDir}/${1}.${outExt}" -non-strict --action test)						# movie, do not actually rename the file, just get the name
@@ -324,33 +332,38 @@ function rename_File () {
 				matchVal=${matchVal//${patternVal}/${replaceVal}}														# replace eY with eYY
 			fi
 			
-			specialDescpt=$(trim ${1##*#})																				# get the description of the of the special
-			specialDescpt=$(echo ${specialDescpt%%_*})																	# remove any underscores
+			if [[ ${1} == *"#"* ]]; then																				# legacy tag
+				specialDescpt=$(trim ${1##*#})																			# get the description of the of the special
+				specialDescpt=$(echo ${specialDescpt%%_*})																# remove any underscores
+			else
+				specialDescpt=$(trim ${1##*%})																			# get the description of the of the special
+				specialDescpt=$(echo ${specialDescpt%%_*})																# remove any underscores				
+			fi
 			
 			capturedOutput="${capturedOutput} - ${matchVal} - ${specialDescpt}.${outExt}"								# final output showTitle - s00eYY - description.ext
 		;;
 	esac
 	
-	renamedFile=${capturedOutput##*[}													# delete the longest match of "[" from the front of capturedOutput 
-	renamedFile=${renamedFile%]*}														# delete the shortest match of "]" from the back of capturedOutput, leaving filename.ext
-	renamedFile=${renamedFile##*/}														# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
+	renamedFile=${capturedOutput##*[}																					# delete the longest match of "[" from the front of capturedOutput 
+	renamedFile=${renamedFile%]*}																						# delete the shortest match of "]" from the back of capturedOutput, leaving filename.ext
+	renamedFile=${renamedFile##*/}																						# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
 	
-	if [[ "${capturedOutput}" =~ (already exists) ]]; then								# duplicate file?
+	if [[ "${capturedOutput}" =~ (already exists) ]]; then																# duplicate file?
 		need2Rename="true"
 		
 		declare -a dupFiles
-		dupFiles=( "${outDir}"/* )														# get a list of filenames in the output directory
+		dupFiles=( "${outDir}"/* )																						# get a list of filenames in the output directory
 		
 		local fileExists=""
-		local loopCounter=2																# start at two
+		local loopCounter=2																								# start at two
 		
 		for i in "${dupFiles[@]}"; do
 			fileExists=${renamedFile%.*}
 			
-			fileExists="${fileExists}_${loopCounter}.${outExt}"							# get the filename to look for
+			fileExists="${fileExists}_${loopCounter}.${outExt}"															# get the filename to look for
 			
 			if [ ! -e "${outDir}/${fileExists}" ]; then
-																						# file does not exist in the output directory, exit the loop
+																														# file does not exist in the output directory, exit the loop
 				break
 			fi
 			
@@ -361,10 +374,10 @@ function rename_File () {
 	fi
 	
 	if [ "${need2Rename}" = "true" ]; then
-		mv -f "${outDir}/${1}.${outExt}" "${outDir}/${renamedFile}"						# rename the file to the correct final name
+		mv -f "${outDir}/${1}.${outExt}" "${outDir}/${renamedFile}"														# rename the file to the correct final name
 	fi
 	
-	echo "${renamedFile}"																# pass back the new filename
+	echo "${renamedFile}"																								# pass back the new filename
 }
 
 function move_Transcoded () {
@@ -590,13 +603,26 @@ function move_Original () {
 			;;
 			
 			extra )
-				local tempName="${fileName%%#*}"							 	# get the title
+				local tempName=""
+				local labelInfo=""
+				local extrasType=""
+				local extraTitle=""
+				
+				if [[ ${fileName} == *"#"* ]]; then								# legacy tag
+					tempName="${fileName%%#*}"								 	# get the title
+
+					labelInfo="${fileName#*#}"									# get the extras label
+				else
+					tempName="${fileName%'%'*}"							 		# get the title
+
+					labelInfo="${fileName#*%}"									# get the extras label
+				fi
+
 				tempName="${tempName#*+}"										# remove any plus characters from the front of the string
 				tempName="${tempName//_/ }"										# replace all underscores with a space
-				
-				local labelInfo="${fileName#*#}"								# get the extras label
-				local extrasType="${labelInfo%%-*}"								# get the extras type
-				local extraTitle="${labelInfo#*-}"								# get the extras title
+
+				extrasType="${labelInfo%%-*}"									# get the extras type
+				extraTitle="${labelInfo#*-}"									# get the extras title
 					
 				tempName=$(echo ${tempName} | awk '{print tolower($0)}') 										# lowercase the original text
 				tempName=$(echo ${tempName} | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')	# capitalize the original text
@@ -763,6 +789,7 @@ function transcode_Video () {
 	local showTitle=""
 	local renamedPath=""
 	local hdbrkOption=''
+	local msgTxt=""
 		
 	input="$(sed -n 1p "${queuePath}")"																				# get the first file to convert
 
@@ -801,7 +828,9 @@ function transcode_Video () {
 	    sed -i '' 1d "${queuePath}" || exit 1  																		# delete the line from the queue file
 		
 		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Transcoding ${LIGHTBLUEBOLD}${input##*/} -${NC}"
+		msgTxt="${input##*/}"																						# remove path
+		msgTxt="${msgTxt//%/%%}"																					# escape %
+		. "${sh_echoMsg}" "Transcoding ${LIGHTBLUEBOLD}${msgTxt##*/} -${NC}"
 		. "${sh_sendNotification}" "Transcoding" "${input##*/}"
 	
 		transcode-video ${outQualityOption} ${outDirOption} ${outExtOption} ${cropOption} ${subTitleOption} ${hdbrkOption} "${input}"	# transcode the file
