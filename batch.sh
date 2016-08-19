@@ -16,7 +16,7 @@
 
 function define_Constants () {
                                                      							# define version number
-	local versStamp="Version 1.6.8, 08-16-2016"
+	local versStamp="Version 1.6.9, 08-19-2016"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	                                                            				# define script name
 	readonly scriptName="batch"
@@ -290,14 +290,14 @@ function rename_File () {
 			local labelInfo=""
 			local fileBotName=""
 			
+			tempName="${1%'%'*}"																						# get the title name
+			
+			labelInfo="${1#*%}"																							# get the extras label
+			
 			if [[ ${1} == *"#"* ]]; then																				# legacy tag
 				tempName="${1%%#*}"																						# get the title name
 				
 				labelInfo="${1#*#}"																						# get the extras label
-			else
-				tempName="${1%'%'*}"																					# get the title name
-
-				labelInfo="${1#*%}"																						# get the extras label
 			fi
 			
 			tempName="${tempName#*+}"																					# remove any plus characters from the front of the string
@@ -309,7 +309,11 @@ function rename_File () {
 			fileBotName="${fileBotName%]*}"																				# delete the shortest match of "]" from the back of capturedOutput, leaving filename.ext
 			fileBotName="${fileBotName##*/}"																			# in case of error in renaming, delete the longest match of "/" from the front of capturedOutput
 			
-			capturedOutput="${fileBotName%.*}#${labelInfo}.${outExt}"													# put the title back together with the extras label
+			capturedOutput="${fileBotName%.*}%${labelInfo}.${outExt}"													# put the title back together with the extras label
+			
+			if [[ ${1} == *"#"* ]]; then																				# legacy tag
+				capturedOutput="${fileBotName%.*}#${labelInfo}.${outExt}"												# put the title back together with the extras label
+			fi
 		;;
 		
 		special* )
@@ -332,14 +336,14 @@ function rename_File () {
 				matchVal=${matchVal//${patternVal}/${replaceVal}}														# replace eY with eYY
 			fi
 			
+			specialDescpt=$(trim ${1##*%})																				# get the description of the of the special
+			
 			if [[ ${1} == *"#"* ]]; then																				# legacy tag
 				specialDescpt=$(trim ${1##*#})																			# get the description of the of the special
-				specialDescpt=$(echo ${specialDescpt%%_*})																# remove any underscores
-			else
-				specialDescpt=$(trim ${1##*%})																			# get the description of the of the special
-				specialDescpt=$(echo ${specialDescpt%%_*})																# remove any underscores				
 			fi
 			
+			specialDescpt=$(echo ${specialDescpt%%_*})																	# remove any underscores
+
 			capturedOutput="${capturedOutput} - ${matchVal} - ${specialDescpt}.${outExt}"								# final output showTitle - s00eYY - description.ext
 		;;
 	esac
@@ -608,14 +612,14 @@ function move_Original () {
 				local extrasType=""
 				local extraTitle=""
 				
+				tempName="${fileName%'%'*}"							 			# get the title
+
+				labelInfo="${fileName#*%}"										# get the extras label
+				
 				if [[ ${fileName} == *"#"* ]]; then								# legacy tag
 					tempName="${fileName%%#*}"								 	# get the title
 
 					labelInfo="${fileName#*#}"									# get the extras label
-				else
-					tempName="${fileName%'%'*}"							 		# get the title
-
-					labelInfo="${fileName#*%}"									# get the extras label
 				fi
 
 				tempName="${tempName#*+}"										# remove any plus characters from the front of the string
@@ -867,21 +871,21 @@ function post_Processors () {
 	. "${sh_echoMsg}" ""
 	. "${sh_echoMsg}" "Moving log files to ${logDir}"
 	
-	find "${outDir}" -name '*.log' -exec mv {} "${logDir}" \;					# move all the log files to Logs
+	find "${outDir}" -name '*.log' -exec mv {} "${logDir}" \;								# move all the log files to Logs
 	
-	if [ "${deleteWhenDone}" == "true" ]; then									# check the deleteWhenDone flag and proceed accordingly
+	if [ "${deleteWhenDone}" == "true" ]; then												# check the deleteWhenDone flag and proceed accordingly
 		. "${sh_echoMsg}" "${REDBOLD}Deleting originals${NC}"
 		
 		for i in "${convertFiles[@]}"; do
-			rm -fr "${i}"														# remove all the original files
+			rm -fr "${i}"																	# remove all the original files
 		done
 	else
 		. "${sh_echoMsg}" "Moving originals to ${originalsDir}"
 		
 		for i in "${convertFiles[@]}"; do
 			if [ -e "${i}" ]; then
-				. "${sh_finderTag}" "${convertedTag}" "${i}"					# set the original file Finder tags to indicate it has been processed
-				move_Original "${i}" "${originalsDir}"							# move all the original files to Originals
+				. "${sh_finderTag}" "${convertedTag}" "${i}"								# set the original file Finder tags to indicate it has been processed
+				move_Original "${i}" "${originalsDir}"										# move all the original files to Originals
 			fi								
 		done
 	fi
