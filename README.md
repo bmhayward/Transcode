@@ -721,6 +721,10 @@ This scenario makes use of:
 
 ## History
 
+### [1.4.8](https://github.com/bmhayward/Transcode/releases/tag/1.4.8)
+Friday, August 19, 2016
+* Correct an issue with the % delimiter causing the files to be renamed with a # symbol.
+
 ### [1.4.7](https://github.com/bmhayward/Transcode/releases/tag/1.4.7)
 Tuesday, August 16, 2016
 * Moved to % delimiter for 'extras' and 'specials'.
