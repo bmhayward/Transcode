@@ -2,8 +2,8 @@
 
 Workflow to batch transcode and process videos
 
-![image](https://github.com/bmhayward/Transcode/blob/master/Demo/label_blue_new.png)
-## Transcode 2.0!
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/new_logo.png)
+## Transcode 2.0
 * Completely rewritten
 * Full support for macOS Sierra
 * UI for managing preferences
