@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/Transcode:/usr/local/Transcode/Library export PATH		# export PATH to Transcode libraries
 
 # set -xv; exec 1>>/tmp/updateTranscodePostTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	updateTranscodePost		
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #
 #
 #	This script runs after updateTranscode as a mechanism to update items outside of updateTranscodes responsbilities
@@ -16,21 +16,19 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.2.3, 08-03-2016"
+	local versStamp="Version 1.3.4, 03-31-2017"
 	
 	loggerTag="transcode.post-update"
 		
 	# From updateTranscode:
-		# readonly libDir="${HOME}/Library"
-		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-		# readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
-		# readonly versCurrent=$(${plistBuddy} -c 'print :CFBundleShortVersionString' "${appScriptsPath}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
-		# readonly plistBuddy="/usr/libexec/PlistBuddy"
-		# readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
-		# readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-		# readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
+		# readonly LIBDIR="${HOME}/Library"
+		# readonly APPSCRIPTSPATH="/usr/local/Transcode"
+		# readonly WORKDIR=$(aliasPath "${LIBDIR}/Application Support/Transcode/Transcode alias")
+		# readonly VERSCURRENT=$(${PLISTBUDDY} -c 'print :CFBundleShortVersionString' "${APPSCRIPTSPATH}/Transcode Updater.app/Contents/Resources/transcodeVersion.plist")
+		# readonly PLISTBUDDY="/usr/libexec/PlistBuddy"
+		# readonly PREFDIR="${LIBDIR}/Preferences"
 		# fullUpdate - true of false
-		# SHA1Clean - true or false
+		# SHA256Clean - true or false
 }
 
 function runAndDisown () {
@@ -48,80 +46,86 @@ function runAndDisown () {
 }
 
 function full_Update () {
-	local waitingPlist="{prefDir}/com.videotranscode.batch.waiting.plist"
-	local onHoldPlist="{prefDir}/com.videotranscode.batch.onhold.plist"
-	local workingPlist="{prefDir}/com.videotranscode.batch.working.plist"
+	local waitingPlist=""
+	local onHoldPlist=""
+	local workingPlist=""
 	local capturedOutput=""
 	local postPath=""
 	local fileName=""
-	local loopCounter=0
+	local i=""
+	
+	waitingPlist="{PREFDIR}/com.videotranscode.batch.waiting.plist"
+	onHoldPlist="{PREFDIR}/com.videotranscode.batch.onhold.plist"
+	workingPlist="{PREFDIR}/com.videotranscode.batch.working.plist"
 
 	if [[ "${fullUpdate}" == "true" ]] && [[ ! -e "${waitingPlist}" || ! -e "${onHoldPlist}" || ! -e "${workingPlist}" ]]; then
-		. "${sh_echoMsg}" "Starting full update..." ""
-		. "${sh_sendNotification}" "Transcode Update" "Starting full update..."
+		. "_echoMsg.sh" "Starting full update..." ""
+		. "_sendNotification.sh" "Transcode Update" "Starting full update..."
 
 		postPath=$(mktemp -d "/tmp/transcodeFullUpdate_XXXXXXXXXXXX")
 																							# move the compressed resources to /tmp
-		ditto "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/vtExtras.zip" "${postPath}"
-		ditto "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/vtScripts.zip" "${postPath}"
+		ditto "${APPSCRIPTSPATH}/Transcode Setup Assistant.app/Contents/Resources/vtExtras.zip" "${postPath}"
+		ditto "${APPSCRIPTSPATH}/Transcode Setup Assistant.app/Contents/Resources/vtScripts.zip" "${postPath}"
 																							# decompress the resources
 		unzip "${postPath}/vtExtras.zip" -d "${postPath}/Extras" >/dev/null
 		unzip "${postPath}/vtScripts.zip" -d "${postPath}/Scripts" >/dev/null
-																							# setup matching arrays to look for Extras
-		declare -a cmdFiles
-		cmdFiles[0]="setupIngestAutoConnect.command"
-		cmdFiles[1]="setupDestinationAutoConnect.command"
-		cmdFiles[2]="uninstallTranscode.command"
 
-		declare -a extrasFiles
-		extrasFiles[0]="sshSource.sh"
-		extrasFiles[1]="sshDestination.sh"
-		extrasFiles[2]="uninstallTranscode.sh"
+		declare -a extrasFiles_a
+		
+		extrasFiles_a[0]="Settings.app"
+		extrasFiles_a[1]="Log Analyzer.app"
 																							# loop through Extras looking for diffs
-		for i in "${extrasFiles[@]}"; do
+		for i in "${extrasFiles_a[@]}"; do
 																							# is it different
-			capturedOutput=$(diff --brief "${postPath}/Extras/${i}" "${workDir}/Extras/${cmdFiles[${loopCounter}]}")
-
-			if [[ "${capturedOutput}" = *"differ"* ]]; then
+			capturedOutput=$(diff --brief "${postPath}/${i}" "${WORKDIR}/${i}")
+		
+			if [[ "${capturedOutput}" == *"differ"* ]]; then
 																							# move and rename the diff script to /Transcode/Extras
-				mv -f "${postPath}/Extras/${i}" "${workDir}/Extras/${cmdFiles[${loopCounter}]}"
-
-				. "${sh_echoMsg}" "==> Updated ${cmdFiles[${loopCounter}]}" ""
+				ditto "${postPath}/${i}" "${WORKDIR}/${i}"
+		
+				. "_echoMsg.sh" "==> Updated ${i}" ""
 			fi
-	
-			(( loopCounter++ ))
 		done
-																							# check for the batch.command diff
-		capturedOutput=$(diff --brief "${workDir}/batch.command" "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh")
-
-		if [[ "${capturedOutput}" = *"differ"* ]]; then
-																							# update with the current version of batch.command
-			mv -f "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${workDir}/batch.command"
-			
-			. "${sh_echoMsg}" "==> Updated batch.command" ""
-		fi
 																							# loop through Scripts looking for diffs	
-		declare -a scriptFiles
-		scriptFiles=( "${postPath}/Scripts"/* )												# get a list of filenames with path
+		declare -a scriptFiles_a
+		declare -a libFiles_a
+		
+		scriptFiles_a=( "${postPath}/Scripts"/* )											# get a list of filenames with path
 
-		for i in "${scriptFiles[@]}"; do
-			fileName=${i##*/}
-	
-			if [ "${i##*.}" = "sh" ]; then
+		for i in "${scriptFiles_a[@]}"; do
+			fileName="${i##*/}"
+																							# only look for non-library scripts
+			if [[ "${fileName##*.}" == "sh" ]] && [[ "${fileName}" != "_"* ]]; then
 																							# is it different
-				capturedOutput=$(diff --brief "${i}" "${appScriptsPath}/${fileName}")
+				capturedOutput=$(diff --brief "${i}" "${APPSCRIPTSPATH}/${fileName}")
 	
-				if [[ "${capturedOutput}" = *"differ"* ]]; then
-																							# copy the diff script to ~/Library/Application Scripts/com.videotranscode.transcode
-					ditto "${i}" "${appScriptsPath}"
+				if [[ "${capturedOutput}" == *"differ"* ]]; then
+																							# copy the diff script to /usr/local/Transcode
+					ditto "${i}" "${APPSCRIPTSPATH}"
 
-					. "${sh_echoMsg}" "==> Updated ${fileName}" ""
+					. "_echoMsg.sh" "==> Updated ${fileName}" ""
 				fi
+			elif [[ "${fileName}" == "_"* ]]; then
+																							# add this file to the array for future processing
+				libFiles_a+=("${i}")
+			fi
+		done
+																							# loop through the Library scripts
+		for i in "${libFiles_a[@]}"; do
+			fileName="${i##*/}"
+			
+			capturedOutput=$(diff --brief "${i}" "${APPSCRIPTSPATH}/Library/${fileName}")		
+			
+			if [[ "${capturedOutput}" == *"differ"* ]]; then
+																							# copy the diff script to /usr/local/Transcode/Library
+				ditto "${i}" "${APPSCRIPTSPATH}/Library"
+
+				. "_echoMsg.sh" "==> Updated ${fileName}" ""
 			fi
 		done
 
-		. "${sh_echoMsg}" "Full update complete." ""
-		. "${sh_sendNotification}" "Transcode Update" "Full update completed"
+		. "_echoMsg.sh" "Full update complete." ""
+		. "_sendNotification.sh" "Transcode Update" "Full update completed"
 																							# delete full update directory from /tmp
 		rm -rf "${postPath}"
 	fi
@@ -129,47 +133,79 @@ function full_Update () {
 
 function patch_Update () {
 	local capturedOutput=""
-	local plistDir="${libDir}/LaunchAgents"
-	local plistName="com.videotranscode.gem.check"
-	local plistFile="${plistDir}/${plistName}.plist"
+	local plistDir=""
+	local plistName=""
+	local plistFile=""
+	local filePath=""
+	
+	plistDir="${LIBDIR}/LaunchAgents"
+	plistName="com.videotranscode.gem.check"
+	plistFile="${plistDir}/${plistName}.plist"
 
-	case "${versCurrent}" in
+	case "${VERSCURRENT}" in
 		"1.4.1" )
-			. "${sh_sendNotification}" "Transcode Update" "Modifying ${plistName}"
+			. "_sendNotification.sh" "Transcode Update" "Modifying ${plistName}"
 			
-			launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"	# unload launchAgent
-																						# update the plist
-			${plistBuddy} -c 'Set :Disabled false' "${plistFile}"
-			${plistBuddy} -c 'Set :RunAtLoad bool false' "${plistFile}"
-			${plistBuddy} -c 'Add :StartCalendarInterval array' "${plistFile}"
-			${plistBuddy} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
-			${plistBuddy} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
+			launchctl unload "${plistFile}" > /dev/null 2>&1 | logger -t "${loggerTag}"		# unload launchAgent
+																							# update the plist
+			${PLISTBUDDY} -c 'Set :Disabled false' "${plistFile}"
+			${PLISTBUDDY} -c 'Set :RunAtLoad bool false' "${plistFile}"
+			${PLISTBUDDY} -c 'Add :StartCalendarInterval array' "${plistFile}"
+			${PLISTBUDDY} -c 'Add :StartCalendarInterval:0:Hour integer 9' "${plistFile}"
+			${PLISTBUDDY} -c 'Add :StartCalendarInterval:1:Minute integer 5' "${plistFile}"
 
-			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"				# load the launchAgent
+			launchctl load "${plistFile}" 2>&1 | logger -t "${loggerTag}"					# load the launchAgent
 		;;
 		
 		"1.4.5" )
-			capturedOutput=$(diff --brief "${workDir}/batch.command" "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh")
+			capturedOutput=$(diff --brief "${WORKDIR}/batch.command" "${APPSCRIPTSPATH}/Transcode Setup Assistant.app/Contents/Resources/batch.sh")
 
-			if [[ "${capturedOutput}" = *"differ"* ]]; then
-																								# update with the current version of batch.command
-				mv -f "${workDir}/Extras/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${workDir}/batch.command"
+			if [[ "${capturedOutput}" == *"differ"* ]]; then
+																							# update with the current version of batch.command
+				mv -f "${APPSCRIPTSPATH}/Transcode Setup Assistant.app/Contents/Resources/batch.sh" "${WORKDIR}/batch.command"
 				
-				. "${sh_echoMsg}" "==> Updated batch.command" ""
+				. "_echoMsg.sh" "==> Updated batch.command" ""
 			fi
+		;;
+		
+		"1.4.8" )
+			filePath="/tmp/transcodePostUpgrade.sh"
+			
+																							# create a shell script
+cat <<EOT >> ${filePath}
+#!/usr/bin/env bash
+
+echo ""
+echo "========================================================================="
+echo "Transcode Update - Terminal-Notifier"
+echo ""
+echo "This update will move Terminal-Notifer from a gem to a brew installation. This will allow for simplified future updating of Terminal-Notifier."
+echo ""
+
+sudo gem uninstall terminal-notifier
+
+brew install terminal-notifier
+
+srm "$0"
+
+exit 0
+EOT
+
+			chmod u+x ${filePath}															# make the shell script executable
+
+			batchCMD="${filePath}"
+
+			open -a Terminal.app ${batchCMD}												# run the shell script from the Terminal to get user approval to complete
+		;;
 	esac																						
-}
-
-function __main__ () {
-	define_Constants
-
-	if [ "${SHA1Clean}" == "true" ]; then
-		full_Update																			# does Transcode need a full update?
-		patch_Update																		# apply and release specific patches
-	fi
 }
 
 
 #----------------------------------------------------------MAIN----------------------------------------------------------------
 																							# Execute
-__main__
+define_Constants
+
+if [[ "${SHA256Clean}" == "true" ]]; then
+	full_Update																				# does Transcode need a full update?
+	patch_Update																			# apply and release specific patches
+fi

@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/Transcode:/usr/local/Transcode/Library export PATH		# export PATH to Transcode libraries
 
 # set -xv; exec 1>>/tmp/brewAutoUpdateTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	brewAutoUpdate			
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #
 #	
 #	This script checks to see if homebrew and installed taps need to be udpated and logs the results to the system log
@@ -16,29 +16,22 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 #-------------------------------------------------------------MAIN------------------------------------------------------------------
 
-# Version 1.0.9, 07-15-2016
+# Version 1.1.3, 03-18-2017
 
-readonly libDir="${HOME}/Library"
-readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-readonly plistBuddy="/usr/libexec/PlistBuddy"
-
-# update brew
+readonly APPSCRIPTSPATH="/usr/local/Transcode"
+																							# update brew
 brew update 2>&1 | logger -t brew.update
-
-# upgrade everything that is installed
+																							# upgrade everything that is installed
 brew upgrade 2>&1 | logger -t brew.upgrade
-
-# keep brew clean
+																							# keep brew clean
 brew cleanup 2>&1 | logger -t brew.cleanup
-
-# update brew-casks
+																							# update brew-casks
 brew cask update 2>&1 | logger -t brew.caskUpdate
-
-# keep brew-casks clean
+																							# keep brew-casks clean
 brew cask cleanup 2>&1 | logger -t brew.caskCleanup
-
-# upgrade Transcode and gems
-ditto "${appScriptsPath}/Transcode Updater.app" "/tmp/Transcode Updater.app"
+																							# copy to /tmp and run from there
+ditto "${APPSCRIPTSPATH}/Transcode Updater.app" "/tmp/Transcode Updater.app"
+																							# upgrade Transcode and gems
 open -a "/tmp/Transcode Updater.app"
 
 exit 0

@@ -1,287 +1,161 @@
 #!/usr/bin/env bash
 
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/Transcode:/usr/local/Transcode/Library export PATH		# export PATH to Transcode libraries
+
 # set -xv; exec 1>>/private/tmp/batch_rsyncTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	batch_rsync		
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #	
 #	
-#	This script is a wrapper to Don Melton's batch script which transcodes DVD and Blu-Ray content.
-#	https://github.com/donmelton/video_transcoding
+#	This script is a library function for the Transcode suite.
+#	It is called by watchFolder_rsync.sh.
 #
 
 
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.8, 05-23-2016"
+	readonly versStamp="Version 1.5.4, 03-20-2017"
 	
 	loggerTag="batch.rsync"
 		
-	readonly outDir="${convertDir}"
+	readonly WORKINGPLIST="com.videotranscode.rsync.batch.working.plist"
 	
-	readonly queuePath="${workDir}/queue_remote.txt"						# workDir is global, from watchFolder_rsync
-	readonly prefPath="${workDir}/Prefs.txt"
-	readonly workingPath="${libDir}/Preferences/${workingPlist}"			# workingPlist is global, from watchFolder_rsync
+	readonly LIBDIR="${HOME}/Library"
+	readonly WORKINGPATH="${LIBDIR}/Preferences/${WORKINGPLIST}"
+																							# sets CONVERTDIR and WORKDIR variables
+	. "_workDir.sh" "${LIBDIR}/LaunchAgents/com.videotranscode.watchfolder.plist"
 	
-	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
-	readonly sh_matchVal="${appScriptsPath}/_matchVal.sh"
-	readonly sh_sendNotification="${appScriptsPath}/_sendNotification.sh"
-	readonly sh_fileType="${appScriptsPath}/_fileType.sh"
-	readonly sh_metadataTag="${appScriptsPath}/_metadataTag.sh"
-	readonly sh_finderTag="${appScriptsPath}/_finderTag.sh"
-	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
-	readonly sh_ifError="${appScriptsPath}/_ifError.sh"
-	
-	# From watchFolder_rsync.sh:
-		# readonly convertDir="${workDir}/Remote"
-		# readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")
-		# readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"	
-}
-
-function read_Prefs () {
-	if [ -e "${prefPath}" ]; then
-		. "${sh_readPrefs}" "${prefPath}"											# read in the preferences from Prefs.txt
-	else
-		. "${sh_echoMsg}" "Pref.txt is missing, exiting..."
-		exit 1
-	fi
+	readonly OUTDIR="${CONVERTDIR}"
+	readonly REMOTEDIR="/usr/local/Transcode/Remote"
+	readonly QUEUEPATH="/tmp/queue_remote.txt"
+	readonly PREFPATH="${LIBDIR}/Preferences/com.videotranscode.preferences.plist"
 }
 
 function pre_Processors () {
-	. "${sh_echoMsg}" "Pre-processing files"
 	local fileNameExt=""
 	local queueValue=""
-	
-	for i in "${convertFiles[@]}"; do
-		if [ ! -d "${i}" ]; then
-			fileNameExt=${i##*/}										# filename with extension
+	local i=""
 
-			queueValue="${convertDir}/${fileNameExt}"
-			echo ${queueValue} >> "${queuePath}"						# write the file path to the queue file
+	. "_echoMsg.sh" "Pre-processing files:"
+	
+	for i in "${convertFiles_a[@]}"; do
+		. "_echoMsg.sh" "${i}"
+		
+		if [[ ! -d "${i}" ]]; then
+			fileNameExt=${i##*/}															# filename with extension
+
+			queueValue="${OUTDIR}/${fileNameExt}"
+			echo "${queueValue}" >> "${QUEUEPATH}"											# write the file path to the queue file
 		fi
 	done
 }
 
-function move_Transcoded () {
-	# ${1}: path of file to move with filename and extension
-	# ${2}: filename with extension
-	# Returns: moved path to the file
-	
-	local movedPath="${1}"
-	local fileType=""
-	
-	fileType=$(. "${sh_fileType}" "${movedPath}")								# get the type of file, movie, tv show, multi episode, extra, skip
-	
-	. "${sh_echoMsg}" "Moving: File type is ${fileType}" ""
-																				# custom path
-	if [ -n "${plexPath}" ]; then
-		 																		# what file type
-		case "${fileType}" in
-			skip )
-				. "${sh_echoMsg}" "Moving: nothing to see here, skipping move" ""
-			;;
-			
-			movie )
-				if [ -z "${movieFormat}" ]; then								# the movie format has not been changed
-					local moviesDir="${plexPath}/Movies"
-					if [ ! -d "${moviesDir}" ]; then							# create the Movies directory
-				  		mkdir -p "${moviesDir}"
-					fi
-					
-					local movieFldrPath="${moviesDir}/${2%.*}"					# create the movie titles directory
-					if [ ! -d "${movieFldrPath}" ]; then
-						mkdir -p "${movieFldrPath}"
-					fi
-					
-					mv -f "${1}" "${movieFldrPath}"								# move the transcoded file to its final destination
-				
-					movedPath="${movieFldrPath}/${2}"
-				fi
-			;;
-				
-			tvshow*|multi* )
-				if [ "${tvShowFormat}" == "{n} - {'s'+s.pad(2)}e{e.pad(2)} - {t}" ]; then 	# TV Show format has not been changed
-					local tvDir="${plexPath}/TV Shows"
-					local showTitle="${2}"
-					local showDir=""
-					local seasonDir=""
-					local season=""
-					local matchVal=""
-					
-					matchVal="${fileType##*/}"										# get the matchVal passed back from sh_fileType
-					
-					if [[ "${matchVal}" =~ ([s][0-9]+) ]]; then						# need to use the if statement to get the season number from the matchVal
-						season=${BASH_REMATCH[1]}									# get only SXX
-						season=${season//[^0-9]/}									# get only the numbers, strip the 's' out
-						season=$(echo ${season} | sed 's/^0*//') 					# remove leading zero's
-					fi
-					
-					showTitle="${showTitle%${matchVal}*}"							# remove the matched value from the showTitle
-					showTitle="${showTitle% - *}"				
-				
-					if [ ! -d "${tvDir}" ]; then									# create the TV Show directory if it does not exist
-				  		mkdir -p "${tvDir}"
-					fi
-				
-					showDir="${tvDir}/${showTitle}"									# create the show's title directory if it does not exist
-					if [ ! -d "${showDir}" ]; then
-				  		mkdir -p "${showDir}"
-					fi
-				
-					seasonDir="${showDir}/Season ${season}"							# create the season directory if it does not exist
-					if [ ! -d "${seasonDir}" ]; then
-				  		mkdir -p "${seasonDir}"
-					fi
-			
-					mv -f "${1}" "${seasonDir}"										# move the transcoded file to its final destination
-				
-					movedPath="${seasonDir}/${1##*/}"
-				fi
-			;;
-			
-		extra )
-			local tempName="${2%%#*}"												# get the title
-			local labelInfo="${2#*#}"												# get the extras label
-			local extrasType="${labelInfo%%-*}"										# get the extras type
-			local extraTitle="${labelInfo#*-}"										# get the extras title
-		
-			if [ -z "${movieFormat}" ]; then										# the movie format has not been changed
-				local moviesDir="${plexPath}/Movies"
-				if [ ! -d "${moviesDir}" ]; then									# create the Movies directory
-			  		mkdir -p "${moviesDir}"
-				fi
-				
-				local movieFldrPath="${moviesDir}/${tempName}"
-				if [ ! -d "${movieFldrPath}" ]; then								# create the movie titles directory
-					mkdir -p "${movieFldrPath}"
-				fi
-				
-				local extrasFldrPath="${movieFldrPath}/${extrasType}"		
-				if [ ! -d "${extrasFldrPath}" ]; then								# create the extras directory
-					mkdir -p "${extrasFldrPath}"
-				fi				
-				
-				mv -f "${1}" "${extrasFldrPath}/${extraTitle}"						# move the transcoded file to its final destination
-			
-				movedPath="${extrasFldrPath}/${extraTitle}"
-			fi
-		;;
-		
-		special* )
-			if [ "${tvShowFormat}" == "{n} - {'s'+s.pad(2)}e{e.pad(2)} - {t}" ]; then 	# TV Show format has not been changed
-				local tvDir="${plexPath}/TV Shows"
-				local showTitle="${2}"
-				local showDir=""
-				local seasonDir=""
-				local season=""
-				local matchVal=""
-			
-				matchVal="${fileType##*/}"										# get the matchVal passed back from sh_fileType
-			
-				if [[ "${matchVal}" =~ ([s][0]+) ]]; then						# need to use the if statement to get the season number from the matchVal
-					season=${BASH_REMATCH[1]}									# get only SXX
-					season=${season//[^0-9]/}									# get only the numbers, strip the 's' out
-					season=$(echo ${season} | sed 's/^0*//') 					# remove leading zero's
-				fi
-			
-				showTitle="${showTitle%${matchVal}*}"							# remove the matched value from the showTitle
-				showTitle="${showTitle% - *}"				
-		
-				if [ ! -d "${tvDir}" ]; then									# create the TV Show directory if it does not exist
-			  		mkdir -p "${tvDir}"
-				fi
-		
-				showDir="${tvDir}/${showTitle}"									# create the show's title directory if it does not exist
-				if [ ! -d "${showDir}" ]; then
-			  		mkdir -p "${showDir}"
-				fi
-		
-				seasonDir="${showDir}/Specials"									# create the specials directory if it does not exist
-				if [ ! -d "${seasonDir}" ]; then
-			  		mkdir -p "${seasonDir}"
-				fi
-	
-				mv -f "${1}" "${seasonDir}"										# move the transcoded file to its final destination
-		
-				movedPath="${seasonDir}/${1##*/}"
-			fi
-		;;
-		esac
-	fi
-	
-	echo "${movedPath}"
-}
-
 function rsync_Process () {
 	local titleName=""
-	local applyTag=""
 	local fileType=""
 	local showTitle=""
 	local renamedPath=""
-	
-	input="$(sed -n 1p "${queuePath}")"																	# get the first file to convert
+	local msg=""
+	local movieFormat_=""
+	local tvFormat_=""
+	local completedPath_=""
+	local outExt_=""
+	local prefValues=""
+	local saveIFS=""
+																							# read in the preferences
+	prefValues=$(. "_readPrefs.sh" "${PREFPATH}" "MovieRenameFormat" "TVRenameFormat" "CompletedDirectoryPath" "OutputFileExt")
 
-	while [ "${input}" ]; do
-	    titleName="$(basename "${input}" | sed 's/\.[^.]*$//')" 										# get the title of the video, no file extension
-		showTitle="${input##*/}"																		# get the title of the video including extension
-	    fileType="unknown"																				# file type is unknown
+	declare -a keyValue_a
+
+	saveIFS=${IFS}
+	IFS=':' read -r -a keyValue_a <<< "${prefValues}" 										# convert string to array based on :
+	IFS=${saveIFS}																			# restore IFS
+
+	movieFormat_="${keyValue_a[0]}"
+	tvFormat_="${keyValue_a[1]}"
+	completedPath_="${keyValue_a[2]}"
+	outExt_="${keyValue_a[3]}"
+	
+	input="$(sed -n 1p "${QUEUEPATH}")"														# get the first file to convert
+
+	while [[ "${input}" ]]; do
+	    titleName="$(basename "${input}" | sed 's/\.[^.]*$//')" 							# get the title of the video, no file extension
+		showTitle="${input##*/}"															# get the title of the video including extension
+	    fileType="unknown"																	# file type is unknown
 	    
-		. "${sh_echoMsg}" "Processing remote title ${showTitle}"
+		. "_echoMsg.sh" ""
+		. "_echoMsg.sh" "Processing remote title: ${showTitle}"
 		
 	    if [[ "${titleName}" =~ ([s][0-9]+[e][0-9]+) ]]; then
-   			fileType="tvshow"																			# TV show
-   			applyTag=${tvTag}
+   			fileType="tvshow"																# TV show
    		else
-   			fileType="movie"																			# Movie
-   			applyTag=${movieTag}
+   			fileType="movie"																# Movie
    		fi
 
-		. "${sh_echoMsg}" "${showTitle} file type: ${fileType}"
+		. "_echoMsg.sh" "File type: ${fileType}"
+  																							# delete the line from the queue file
+	 	sed -i '' 1d "${QUEUEPATH}" || exit 1
+		
+		if [[ "${showTitle}" == *"^"* ]]; then
+																							# skipped file
+			msg="Moved ${showTitle} to ${OUTDIR%/*}/Completed/Originals"
+																							# move the skipped file to /Originals
+			mv -f "${REMOTEDIR}/${showTitle}" "${OUTDIR%/*}/Completed/Originals"
+			
+		elif [[ "${showTitle}" == *".log"* ]]; then
+			msg="Moved ${showTitle} to ${OUTDIR%/*}/Logs"
+																							# move the log file to /Logs
+			mv -f "${REMOTEDIR}/${showTitle}" "${OUTDIR%/*}/Logs"
+		
+		elif [[ "${showTitle}" != *"${outExt_}"* ]]; then
+			msg="Moved ${showTitle} to ${OUTDIR%/*}/Completed/Originals"
 
-	 	sed -i '' 1d "${queuePath}" || exit 1  															# delete the line from the queue file
-	   		
-		renamedPath="${outDir}/${showTitle}"															# renamed file with full path
-											
-		. "${sh_metadataTag}" "${renamedPath}" "title" "${showTitle}"									# set the file 'title' metadata
+			. "_moveOriginal.sh" "${REMOTEDIR}/${showTitle}" "${OUTDIR%/*}/Completed/Originals"
+			
+		else
+																							# renamed file with full path
+			renamedPath="${REMOTEDIR}/${showTitle}"
+			  																				# move the transcoded file to final location if flag is set
+			renamedPath=$(. "_moveTranscoded.sh" "${renamedPath}" "${completedPath_}" "${movieFormat_}" "${tvFormat_}")
+			
+			msg="Moved ${showTitle} to ${renamedPath}"
+		fi
 		
-		renamedPath=$(move_Transcoded "${renamedPath}" "${showTitle}")									# move the transcoded file to final location if flag is set
-		
-		. "${sh_echoMsg}" "Moved ${showTitle} to ${renamedPath}"
-		
-		. "${sh_finderTag}" "${applyTag}" "${renamedPath}"												# set Finder tags after final move
-		
-		input="$(sed -n 1p "${queuePath}")"																# get the next file to process
+		. "_echoMsg.sh" "${msg}"
+	
+		input="$(sed -n 1p "${QUEUEPATH}")"													# get the next file to process
 	done	
 }
 
 function clean_Up () {
 																							# delete the semaphore file so processing can be started again
-	rm -f "${workingPath}"
+	rm -f "${WORKINGPATH}"
 																							# process was halted, need to remove the last file and log that was not finished transcoding
-	if [ ! -z "${input}" ]; then		
-		. "${sh_sendNotification}" "Processing Cancelled"
+	if [[ ! -z "${input}" ]]; then		
+		. "_sendNotification.sh" "Processing Cancelled"
 	fi
 																							# remove the queue file
-	if [ -e "${queuePath}" ]; then
-	    rm -f "${queuePath}"
+	if [[ -e "${QUEUEPATH}" ]]; then
+	    rm -f "${QUEUEPATH}"
 	fi
 }
 
-function __main__ () {
+function ___main___ {
+	. "_echoMsg.sh" ""
 																							# exit if no files to convert
-	if [ ${#convertFiles[@]} -gt 0 ] && [ "${convertFiles[0]}" == "${convertDir}/*" ]; then
+	if [[ ${#convertFiles_a[@]} -gt 0 ]] && [[ "${convertFiles_a[0]}" == "${REMOTEDIR}/*" ]]; then
 		input=""
-		. "${sh_echoMsg}" ""
-		. "${sh_echoMsg}" "Exiting, no files found in ${convertDir} to process."
+
+		. "_echoMsg.sh" "Exiting, no files found in ${REMOTEDIR} to process."
 
 		exit 1
 	fi	
 
-	read_Prefs
 	pre_Processors
-	rsync_Process
+	rsync_Process	
 }
 
 
@@ -289,15 +163,15 @@ function __main__ () {
 																							# execute
 trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 trap "exit" INT																				# trap user cancelling
-ttrap '. "${sh_ifError}" ${LINENO} $?' ERR													# trap errors
+trap '. "_ifError.sh" ${LINENO} $?' ERR														# trap errors
 
 define_Constants
 
-touch "${workingPath}"																		# set the semaphore file to put any additional processing on hold
+touch "${WORKINGPATH}"																		# set the semaphore file to put any additional processing on hold
 
-declare -a convertFiles
-convertFiles=( "${convertDir}"/* )												   			# get a list of filenames with path to convert
+declare -a convertFiles_a
+convertFiles_a=( "${REMOTEDIR}"/* )												   			# get a list of filenames with path to convert
 
-__main__
+___main___
 
 exit 0

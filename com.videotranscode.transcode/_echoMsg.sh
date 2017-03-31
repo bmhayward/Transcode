@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+# PATH variable is set by the calling function!
+
 # set -xv; exec 1>>/private/tmp/_echoMsgTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	_echoMsg		
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #	
 #	
 #	This script is a library function for the Transcode suite
@@ -15,43 +17,75 @@
 
 function echo_Msg () {
 	# ${1}: message to echo
-	# ${2}: flag to suppress echo
+	# ${2}: flag to suppress echo (optional)
 	# loggerTag is defined as global in the calling script
 	
-	local lightBlue='\033[0;36m'
-	local lightBlueBold='\033[1;36m'
-	local lightGreen='\033[0;32m'
-	local lightGreenBold='\033[1;32m'
-	local lightYellow='\033[0;93m'
-	local lightYellowBold='\033[1;93m'
-	local lightMagenta='\033[0;95m'
-	local lightMagentaBold='\033[1;95m'
-	local whiteBold='\033[1;37m'
-	local redPlain='\033[0;91m'
-	local redBold='\033[1;91m'
-	local noColor='\033[0m'
+	declare -a colorCode_a
+
+	colorCode_a[0]="[0m"		# noColor
+	colorCode_a[1]="[1;36m"		# lightBlueBold
+	colorCode_a[2]="[1;95m"		# lightMagentaBold
+	colorCode_a[3]="[0;36m"		# lightBlue
+	colorCode_a[4]="[0;95m"		# lightMagenta
+	colorCode_a[5]="[1;32m"		# lightGreenBold
+	colorCode_a[6]="[0;32m"		# lightGreen
+	colorCode_a[7]="[1;93m"		# lightYellowBold
+	colorCode_a[8]="[0;93m"		# lightYellow
+	colorCode_a[9]="[1;37m"		# whiteBold
+	colorCode_a[10]="[1;91m"	# redBold
+	colorCode_a[11]="[0;91m"	# redPlain
+
+	local lightBlueBold=$'\033'${colorCode_a[1]}
+	local lightMagentaBold=$'\033'${colorCode_a[2]}
+	local lightBlue=$'\033'${colorCode_a[3]}
+	local lightMagenta=$'\033'${colorCode_a[4]}
+	local lightGreen=$'\033'${colorCode_a[6]}
+	local lightGreenBold=$'\033'${colorCode_a[5]}
+	local lightYellow=$'\033'${colorCode_a[8]}
+	local lightYellowBold=$'\033'${colorCode_a[7]}
+	local whiteBold=$'\033'${colorCode_a[9]}
+	local redPlain=$'\033'${colorCode_a[11]}
+	local redBold=$'\033'${colorCode_a[10]}
+	local noColor=$'\033'${colorCode_a[0]}	
 	local msgTxt=""
+	local charCount=""
+	local logLocation=""
+	local dateStamp=""
 	
-	if [ $# -eq 1 ]; then
-		printf "${1}\n"											# echo to the Terminal
+	logLocation="${HOME}/Library/Logs/Transcode.log"
+	dateStamp=$(/bin/date +%Y-%m-%d\ %H:%M:%S)
+
+	msgTxt="${1//%/%%}"																		# escape %
+		
+	if [[ $# -eq 1 ]]; then
+		printf '%s\n' "${msgTxt}"															# echo to the Terminal
+	fi
+		
+	if [[ "${1}" == *"${lightBlue:5}"* || "${1}" == *"${lightGreen:5}"* || "${1}" == *"${lightYellow:5}"* || "${1}" == *"${whiteBold:5}"* || "${1}" == *"${redPlain:5}"* || "${1}" == *"${lightBlueBold:5}"* || "${1}" == *"${lightGreenBold:5}"* || "${1}" == *"${lightYellowBold:5}"* || "${1}" == *"${redBold:5}"* || "${1}" == *"${lightMagenta:5}"* || "${1}" == *"${lightMagentaBold:5}"* ]]; then
+		for i  in "${colorCode_a[@]}"; do
+																							# strip out the color code
+			msgTxt="${msgTxt//${i}}"
+																							# find out how many color codes are left
+			charCount=$(echo "${msgTxt}" | grep -o "\[" | wc -l)
+
+			if [[ "${charCount}" -eq "0" ]]; then
+																							# no color codes left, exit early
+				break
+			fi
+		done
 	fi
 	
-	msgTxt="${1}"
-	
-	if [[ "${1}" = *"${lightBlue:4}"* || "${1}" = *"${lightGreen:4}"* || "${1}" = *"${lightYellow:4}"* || "${1}" = *"${whiteBold:4}"* || "${1}" = *"${redPlain:4}"* || "${1}" = *"${noColor:4}"* || "${1}" = *"${lightBlueBold:4}"* || "${1}" = *"${lightGreenBold:4}"* || "${1}" = *"${lightYellowBold:4}"* || "${1}" = *"${redBold:4}"* || "${1}" = *"${lightMagenta:4}"* || "${1}" = *"${lightMagentaBold:4}"* ]]; then
-		msgTxt="${1#*m}"										# strip out any color code tags
-		msgTxt="${msgTxt%[*}"
-	fi
-	
-    printf "${msgTxt}\n" 2>&1 | logger -t "${loggerTag}"		# echo to syslog
+    printf '%s\n' "${msgTxt}" 2>&1 | logger -t "${loggerTag}"								# echo to syslog
+	printf '%s  %s: %s\n' "${dateStamp}"  "${loggerTag}" "${msgTxt}" >> "${logLocation}"	# echo to ~/Library/Logs
 }
 
-function __main__ () {
-	echo_Msg "${@}"
-}
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 07-10-2016
+# Version 1.1.9, 02-07-2017
 
-__main__ "${@}"
+if [[ $# -lt 1 ]]; then
+	echo_Msg ""									# just echo a blank line
+else
+	echo_Msg "${@}"
+fi

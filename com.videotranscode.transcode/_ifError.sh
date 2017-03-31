@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
+# PATH variable is set by the calling function!
 
 # set -xv; exec 1>>/tmp/_ifErrorTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	_ifError		
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #	
 #	
 #	This script is a library function for the Transcode suite
@@ -15,14 +15,18 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
-function if_Error () {
+function __if_Error__ () {
 	# ${1}: last line of error occurrence
 	# ${2}: error code of last command
 
-	local lastLine="${1}"
-	local lastErr="${2}"
-	local currentScript=$(basename -- "${0}")
-																		# if lastErr > 0 then echo error msg and log
+	local lastLine=""
+	local lastErr=""
+	local currentScript=""
+	
+	lastLine="${1}"
+	lastErr="${2}"
+	currentScript=$(basename -- "${0}")
+																							# if lastErr > 0 then echo error msg and log
 	if [[ ${lastErr} -gt 0 ]]; then
 		echo 2>&1 | logger -t "${loggerTag}"
 		echo ""
@@ -38,12 +42,9 @@ function if_Error () {
 	fi
 }
 
-function __main__ () {
-	if_Error "${@}"
-}
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.0, 05-23-2016
+# Version 1.0.3, 02-07-2017
 
-__main__ "${@}"
+__if_Error__ "${@}"

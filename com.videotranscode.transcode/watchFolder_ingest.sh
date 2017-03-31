@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export PATH
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/Transcode:/usr/local/Transcode/Library export PATH		# export PATH to Transcode libraries
 
 # set -xv; exec 1>>/tmp/watchFolder_ingestTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	watchFolder_ingest
-#	Copyright (c) 2016 Brent Hayward
+#	Copyright (c) 2016-2017 Brent Hayward
 #
 #	
 #	This script watches a folder for files and executes once all file additions have completed
@@ -27,36 +27,50 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:${HOME}/Library/Scripts export
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-	local versStamp="Version 1.1.7, 07-20-2016"
+	local versStamp="Version 1.4.6, 03-24-2017"
 	
-	readonly waitingPlist="com.videotranscode.ingest.batch.waiting.plist"
-	readonly onHoldPlist="com.videotranscode.ingest.batch.onhold.plist"
-	readonly workingPlist="com.videotranscode.ingest.batch.working.plist"
-
-	readonly libDir="${HOME}/Library"
-	readonly prefDir="${libDir}/Preferences"
-	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
+	readonly LIBDIR="${HOME}/Library"
+	readonly PREFDIR="${LIBDIR}/Preferences"
+	readonly APPSCRIPTSPATH="/usr/local/Transcode"
 	
-	readonly prefPath="${workDir}/Prefs.txt"
-	readonly onHoldPath="${prefDir}/${onHoldPlist}"
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
+	readonly WAITINGPLIST="com.videotranscode.ingest.batch.waiting.plist"
+	readonly ONHOLDPLIST="com.videotranscode.ingest.batch.onhold.plist"
+	readonly WORKINGPLIST="com.videotranscode.ingest.batch.working.plist"
+	readonly MOVEDWORKINGPLIST="com.videotranscode.ingest.moved.working.plist"
+	readonly WATCHMOVEDPLIST="com.videotranscode.watchfolders.moved.plist"
 	
-	readonly batchCMD="${libDir}/Application Scripts/com.videotranscode.transcode/batch_ingest.sh"			# get the path to batch_ingest.command
+	readonly MOVEDWORKINGPATH="${LIBDIR}/Preferences/${MOVEDWORKINGPLIST}"
 	
-	readonly sh_readPrefs="${appScriptsPath}/_readPrefs.sh"
+	. "_workDir.sh" "${LIBDIR}/LaunchAgents/com.videotranscode.watchfolder.plist"			# returns CONVERTDIR and WORKDIR variables
+	
+	readonly PREFPATH="${LIBDIR}/Preferences/com.videotranscode.preferences.plist"
+	readonly ONHOLDPATH="${PREFDIR}/${ONHOLDPLIST}"
+	
+	readonly BATCHCMD="${APPSCRIPTSPATH}/batch_ingest.sh"									# get the path to batch_ingest.command
+	
+	ingestPath_=$(. "_readPrefs.sh" "${PREFPATH}" "IngestDirectoryPath")					# read in the preferences from Prefs.txt
 }
 
-function read_Prefs () {
-	if [ -e "${prefPath}" ]; then		
-		. "${sh_readPrefs}" "${prefPath}"											# read in the preferences from Prefs.txt
-	else
-		echo "Pref.txt is missing, exiting..." 2>&1 | logger -t batch.ingest
-		exit 1
+function moved_Check () {
+	local plistFile=""
+	
+	if [[ ! -e "${ingestPath_}" ]] && [[ ! -e "${PREFDIR}/${MOVEDWORKINGPLIST}" ]]; then
+		plistFile="${LIBDIR}/LaunchAgents/${WATCHMOVEDPLIST}"
+																							# set the semaphore
+		touch "${MOVEDWORKINGPATH}"
+		printf '%s\n' "${ingestPath_}" >> "${MOVEDWORKINGPATH}"
+
+		launchctl unload -w "${plistFile}" 2>&1												# unload the LaunchAgent
+		sleep .1
+		launchctl load -w "${plistFile}" 2>&1												# load the LaunchAgent to force the reload of the LaunchAgent
+		
+		echo "Ingest moved, updating location"
+		exit 0		
 	fi
 }
 
 function wait_4StableFolder () {
-	local waitingPath="${prefDir}/${waitingPlist}"
+	local waitingPath="${PREFDIR}/${WAITINGPLIST}"
 	
 	touch "${waitingPath}"																	# create the waiting plist
 	
@@ -67,9 +81,11 @@ function wait_4StableFolder () {
 	local sleepTime=20
 	local diffTime=0
 																							# if trancoding is active allow for more time for ingest
-	if [ -e "${prefDir}/com.videotranscode.batch.working.plist" ]; then
+	if [[ -e "${PREFDIR}/${WORKINGPLIST}" ]]; then
 		upperLimit=3
 		sleepTime=30
+	else
+		. "_sendNotification.sh" "Transcode" "Scanning Ingest folder…"
 	fi
 																							# check quickly to see if the directory has stabilized before moving to a longer wait period
 	for ((i=1; i<=upperLimit; i++)); do
@@ -78,38 +94,38 @@ function wait_4StableFolder () {
 		diffTime=$((sleepTime / upperLimit))
 		sleepTime=$((sleepTime - diffTime))													# decrease the wait time
 		
-		if [ ${i} -ne 1 ]; then
+		if [[ ${i} -ne 1 ]]; then
 			tmpSize=${newSize} 																# move to intermediate value
 		fi
 		
-		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )								# get new file size
+		newSize=$( du -s "${ingestPath_}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 																							# sleep a little longer if first loop through and file size is 0, just to make sure we are not waiting on the DVD reader
 		if [[ ${i} -eq 1 && ${newSize} -eq 0 ]]; then
 			sleep 10
-			newSize=$( du -s "${ingestPath}" | awk '{print $1}' )							# get new file size
+			newSize=$( du -s "${ingestPath_}" | awk '{print $1}' )							# get new file size
 		fi
 																							# check to see if the directory stabilized or is empty
 		shopt -s nullglob dotglob															# include hidden files												
-		dirEmpty=("${ingestPath}/"*)
+		dirEmpty=("${ingestPath_}/"*)
 				
-		if [[ ${prevSize} -eq ${newSize} ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then
+		if [[ ${prevSize} -eq ${newSize} ]] || [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" == ".DS_Store" ]]; then
 			prevSize=${newSize}																# need to set incase we got here because the directory was empty
 			break
 		fi
 	done
 																							# wait for the directory to be stable
-	while [ ${prevSize} != ${newSize} ]; do 												# repeat until these values are the same
+	while [[ ${prevSize} != ${newSize} ]]; do 												# repeat until these values are the same
 		sleepTime=60
 																							# if trancoding is active allow for more time for ingest
-		if [ -e "${prefDir}/com.videotranscode.batch.working.plist" ]; then
+		if [[ -e "${PREFDIR}/com.videotranscode.batch.working.plist" ]]; then
 			sleepTime=90
 		fi
 		
 		sleep ${sleepTime}																	# check every ${sleepTime} seconds after inital start
 
 		tmpSize=${newSize} 																	# move to intermediate value
-		newSize=$( du -s "${ingestPath}" | awk '{print $1}' )								# get new file size
+		newSize=$( du -s "${ingestPath_}" | awk '{print $1}' )								# get new file size
 		prevSize=${tmpSize}
 	done	
 	
@@ -117,32 +133,32 @@ function wait_4StableFolder () {
 }
 
 function wait_4Working2Complete () {
-	local workingPath="${prefDir}/${workingPlist}"
+	local workingPath="${PREFDIR}/${WORKINGPLIST}"
 	
-	touch "${onHoldPath}"																	# create the on hold plist
+	touch "${ONHOLDPATH}"																	# create the on hold plist
 	
-	while [ -e "${workingPath}" ]; do 														# repeat until the on hold plist is deleted
+	while [[ -e "${workingPath}" ]]; do 														# repeat until the on hold plist is deleted
 		sleep 20 																			# check every 20 seconds
 	done	
 }
 
 function clean_Up () {
-	shopt -s nullglob dotglob     																# include hidden files
-	dirEmpty=("${ingestPath}/"*)
-																								# if the Ingest directory is empty
-	if [ ${#dirEmpty[@]} -gt 0 ]; then
-		if [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" = ".DS_Store" ]]; then				# if the Ingest directory has only 1 file and it is .DS_Store
-																								# remove any left over semaphore files
-			if [ -e "${prefDir}/com.videotranscode.ingest.batch.waiting.plist" ]; then
-				rm -f "${prefDir}/com.videotranscode.ingest.batch.waiting.plist"
+	shopt -s nullglob dotglob     															# include hidden files
+	dirEmpty=("${ingestPath_}/"*)
+																							# if the Ingest directory is empty
+	if [[ ${#dirEmpty[@]} -gt 0 ]]; then
+		if [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" == ".DS_Store" ]]; then			# if the Ingest directory has only 1 file and it is .DS_Store
+																							# remove any left over semaphore files
+			if [[ -e "${PREFDIR}/${WAITINGPLIST}" ]]; then
+				rm -f "${PREFDIR}/${WAITINGPLIST}"
 			fi
 
-			if [ -e "${prefDir}/com.videotranscode.ingest.batch.onhold.plist" ]; then
-				rm -f "${prefDir}/com.videotranscode.ingest.batch.onhold.plist"
+			if [[ -e "${PREFDIR}/${ONHOLDPLIST}" ]]; then
+				rm -f "${PREFDIR}/${ONHOLDPLIST}"
 			fi
 
-			if [ -e "${prefDir}/com.videotranscode.ingest.batch.working.plist" ]; then
-				rm -f "${prefDir}/com.videotranscode.ingest.batch.working.plist"
+			if [[ -e "${PREFDIR}/${WORKINGPLIST}" ]]; then
+				rm -f "${PREFDIR}/${WORKINGPLIST}"
 			fi
 		fi
 	fi
@@ -150,34 +166,34 @@ function clean_Up () {
 
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
-																								# execute
-trap clean_Up INT TERM EXIT																		# always run clean_Up regardless of how the script terminates
+																							# execute
+trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of how the script terminates
 
 define_Constants
-read_Prefs
 
-if [ -e "${prefDir}/${waitingPlist}" ] || [ -e "${prefDir}/${onHoldPlist}" ]; then				# no need to hang around		
+moved_Check
+
+if [[ -e "${PREFDIR}/${WAITINGPLIST}" ]] || [[ -e "${PREFDIR}/${ONHOLDPLIST}" ]] || [[ -e "${PREFDIR}/${WATCHMOVEDPLIST}" ]]; then
+																							# no need to hang around		
 	echo "Nothing to see, here. Exiting..."
 	exit 0
 fi
 
-if [ -e "${prefDir}/${workingPlist}" ]; then
-	wait_4Working2Complete																		# wait for the current transcode process to complete
+if [[ -e "${PREFDIR}/${WORKINGPLIST}" ]]; then
+	wait_4Working2Complete																	# wait for the current transcode process to complete
 fi
 
-if [ -e "${onHoldPath}" ]; then																	# need to remove the on hold plist
-	rm -f "${onHoldPath}"
+if [[ -e "${ONHOLDPATH}" ]]; then																# need to remove the on hold plist
+	rm -f "${ONHOLDPATH}"
 fi
 
-wait_4StableFolder																				# wait for all file additions to complete
+wait_4StableFolder																			# wait for all file additions to complete
 
-shopt -s nullglob dotglob     																	# include hidden files
-dirEmpty=("${ingestPath}/"*)
-																								# if the Convert directory is not empty
-if [ ${#dirEmpty[@]} -gt 0 ]; then
-	if [[ ${#dirEmpty[@]} -eq 1 && "${dirEmpty[0]##*/}" != ".DS_Store" ]] || [[ ${#dirEmpty[@]} -gt 1 ]]; then	# if the Convert directory has only 1 file and it is not .DS_Store												
-		. "${batchCMD}" || exit 1																# execute batch_ingest.sh
-	fi
+shopt -s nullglob dotglob     																# include hidden files
+dirEmpty=("${ingestPath_}/"*)
+																							# if the Convert directory is not empty
+if [[ ${#dirEmpty[@]} -gt 1 ]]; then											
+	/bin/bash "${BATCHCMD}"																	# execute batch_ingest.sh
 fi
 
 exit 0

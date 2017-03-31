@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+# PATH variable is set by the calling function!
+
 # set -xv; exec 1>>/private/tmp/_writePrefsTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	_writePrefs		
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #	
 #	
 #	This script is a library function for the Transcode suite
@@ -14,54 +16,125 @@
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function write_Prefs () {
-	declare -a passedArgs
-
-	passedArgs=("${@}")
-		
-	local outExtPref="mkv"														# get the transcode file extension
-	local deleteWhenDonePref="false"											# what to do with the original files when done
-	local movieTagPref="purple,Movie,VT"										# Finder tags for movie files
-	local tvTagPref="orange,TV Show,VT"											# Finder tags for TV show files
-	local convertedTagPref="blue,Converted"										# Finder tags for original files that have been transcoded		
-	local renameFilePref="auto"													# whether or not to auto-rename files
-	local movieFormatPref=""													# movie rename format
-	local tvShowFormatPref="{n} - {'"'"'s'"'"'+s.pad(2)}e{e.pad(2)} - {t}"		# TV show rename format
-	local plexPathPref=""														# where to put the transcoded files in Plex
-	local sshUserPref=""														# get the ssh username
-	local rsyncPathPref=""														# get the path to the rsync Remote directory
-	local ingestPathPref=""														# get the path to the ingest directory
-	local extrasTagPref="yellow,Extra,VT"										# Finder tags for Extra show files
-	local outQualityPref=""														# Output quality setting to use
-	local tlaHelper="Numbers.app"												# Transcode Log Analyzer helper app
+	# ${1}: path to the preferences file
+	# ${2}: item(s) to be written to the preferences file. These are passed individually as [keyValue]:[prefValue] e.g. "OutputFileExt:m4v"
 	
-	if [ ${#passedArgs[@]} -gt 1 ]; then
-																				# new values were passed
-		outExtPref="${passedArgs[1]}"											# get the transcode file extension
-		deleteWhenDonePref="${passedArgs[2]}"									# what to do with the original files when done
-		movieTagPref="${passedArgs[3]}"											# Finder tags for movie files
-		tvTagPref="${passedArgs[4]}"											# Finder tags for TV show files
-		convertedTagv="${passedArgs[5]}"										# Finder tags for original files that have been transcoded		
-		renameFilePref="${passedArgs[6]}"										# whether or not to auto-rename files
-		movieFormatPref="${passedArgs[7]}"										# movie rename format
-		tvShowFormatPref="${passedArgs[8]}"										# TV show rename format
-		plexPathPref="${passedArgs[9]}"											# where to put the transcoded files in Plex
-		sshUserPref="${passedArgs[10]}"											# get the ssh username
-		rsyncPathPref="${passedArgs[11]}"										# get the path to the rsync Remote directory
-		ingestPathPref="${passedArgs[12]}"										# get the path to the ingest directory
-		extrasTagPref="${passedArgs[13]}"										# Finder tags for Extra show files
-		outQualityPref="${passedArgs[14]}"										# Output quality setting to use
-		tlaHelper="${passedArgs[15]}"											# Transcode Log Analyzer helper app
+	local plistBuddy=""
+	local plistFile=""
+	local workDir=""
+	local loopCounter=0
+	local keyValue=""
+	local prefValue=""
+	local i=""
+	local j=0
+		
+	plistBuddy="/usr/libexec/PlistBuddy"
+	
+	if [[ $# -lt 1 ]]; then
+		. "_echoMsg.sh" "Usage: $(basename "${0}") path to the preferences.plist not passed, exiting..."
+	    exit 1
 	fi
 	
-	printf "${outExtPref}\n${deleteWhenDonePref}\n${movieTagPref}\n${tvTagPref}\n${convertedTagPref}\n${renameFilePref}\n${movieFormatPref}\n${tvShowFormatPref}\n${plexPathPref}\n${sshUserPref}\n${rsyncPathPref}\n${ingestPathPref}\n${extrasTagPref}\n${outQualityPref}\n${tlaHelper}" >> "${passedArgs[0]}"
+	declare -a passedArgs_a
+	declare -a renameFormatPath_a
+	
+	renameFormatPath_a[0]="${LIBDIR}/Application Support/Transcode/Movie Format.txt"
+	renameFormatPath_a[1]="${LIBDIR}/Application Support/Transcode/TV Format.txt"
+
+	passedArgs_a=("${@}")
+	
+	plistFile="${passedArgs_a[0]}"
+																							# create the preference key array
+	declare -a prefKey_a
+	
+	prefKey_a[0]="OutputFileExt"
+	prefKey_a[1]="DeleteOriginal"
+	prefKey_a[2]="MovieTags"
+	prefKey_a[3]="TVTags"
+	prefKey_a[4]="OriginalFileTags"
+	prefKey_a[5]="AutoRename"
+	prefKey_a[6]="MovieRenameFormat"
+	prefKey_a[7]="TVRenameFormat"
+	prefKey_a[8]="CompletedDirectoryPath"
+	prefKey_a[9]="sshUser"
+	prefKey_a[10]="RemoteDirectoryPath"
+	prefKey_a[11]="IngestDirectoryPath"
+	prefKey_a[12]="ExtrasTags"
+	prefKey_a[13]="OutputQuality"
+	prefKey_a[14]="TLAHelperApp"
+	prefKey_a[15]="LogTags"
+	prefKey_a[16]="DeleteAfterRemote"
+	prefKey_a[17]="ShowCropPreview"
+	prefKey_a[18]="AddAllAudio"
+	prefKey_a[19]="AudioWidth"
+
+	if [[ ${#passedArgs_a[@]} -eq 1 ]]; then
+		if [[ -e "${plistFile}" ]]; then
+																							# remove the existing preference file
+		   rm -f "${plistFile}"
+		fi	
+																							# get the current path to /Transcode
+		workDir=$(. "/usr/local/Transcode/Library/_aliasPath.sh" "${HOME}/Library/Application Support/Transcode/Transcode alias")
+																							# write out a new preference file
+		declare -a defaultValue_a															# create the preference default key value array
+
+		defaultValue_a[0]="m4v"																# get the transcode file extension
+		defaultValue_a[1]="false"															# what to do with the original files when done
+		defaultValue_a[2]="purple, Movie, VT"												# Finder tags for movie files
+		defaultValue_a[3]="orange, TV Show, VT"												# Finder tags for TV show files
+		defaultValue_a[4]="blue, Converted"													# Finder tags for original files that have been transcoded
+		defaultValue_a[5]="true"															# whether or not to auto-rename files
+		defaultValue_a[6]=""																# movie rename format
+		defaultValue_a[7]='{n} - {'\''s'\''+s.pad(2)}e{e.pad(2)} - {t}'						# TV show rename format
+		defaultValue_a[8]="${workDir}/Completed"											# where to output the transcoded files
+		defaultValue_a[9]=""																# get the ssh username
+		defaultValue_a[10]=""																# get the path to the rsync Remote directory
+		defaultValue_a[11]="${workDir}/Convert"												# get the path to the ingest directory
+		defaultValue_a[12]="yellow, Extra, VT"												# Finder tags for Extra show files
+		defaultValue_a[13]="quick"															# Output quality setting to use											
+		defaultValue_a[14]="Numbers.app"													# Log Analyzer helper app
+		defaultValue_a[15]="log, VT"														# Finder tags for log files
+		defaultValue_a[16]="false"															# transcoded files after remote delivery
+		defaultValue_a[17]="false"															# show video preview if cropping is detected
+		defaultValue_a[18]="false"															# add all additional audio tracks
+		defaultValue_a[19]="stereo"															# additional audio track widths
+		
+		${plistBuddy} -c "Add :Label string com.videotranscode.prefs" "${plistFile}"; cat "${plistFile}" > /dev/null 2>&1
+		
+		for i in "${prefKey_a[@]}"; do
+				${plistBuddy} -c "Add :${i} string ${defaultValue_a[${loopCounter}]}" "${plistFile}"
+			
+			((++loopCounter))
+		done
+		
+		j=6
+		for i in "${renameFormatPath_a[@]}"; do
+			if [[ -e "${i}" ]]; then
+				rm -f "${i}"
+			fi
+																							# need to save the rename formats for movies and tv out to a separate text files
+			printf "${defaultValue_a[${j}]}" >> "${i}"
+			((++j))
+		done
+	else
+																							# write out the passed preferences
+		for i in "${passedArgs_a[@]}"; do
+																							# the first value in the array passedArgs_a is the path to the preferences plist, so need to skip that one
+			if [[ ${loopCounter} -gt 0 ]]; then
+				keyValue="${i%%:*}"
+				prefValue="${i##*:}"
+																							# save to the plist
+				${plistBuddy} -c "Set :${keyValue} ${prefValue}" "${plistFile}"
+			fi
+
+			((++loopCounter))
+		done
+	fi
 }
 
-function __main__ () {
-	write_Prefs "${@}"
-}
 
 #-------------------------------------------------------------MAIN-------------------------------------------------------------------
 
-# Version 1.0.2, 05-10-2016
+# Version 1.3.7, 03-29-2017
 
-__main__ "${@}"
+write_Prefs "${@}"

@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/Transcode:/usr/local/Transcode/Library export PATH		# export PATH to Transcode libraries
 
 # set -xv; exec 1>>/private/tmp/uninstallTranscodeTraceLog 2>&1
 
 #-----------------------------------------------------------------------------------------------------------------------------------																		
 #	uninstallTranscode
-#	Copyright (c) 2016 Brent Hayward		
+#	Copyright (c) 2016-2017 Brent Hayward		
 #	
 #	
 #	This script uninstalls Transcode's infrastructure. It does not remove the Transcode folder, as there may be items 
@@ -17,18 +17,16 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin export PATH
 #----------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 
 function define_Constants () {
-                                                     							# define version number
-	local versStamp="Version 1.1.2, 07-30-2016"
+                                                     										# define version number
+	local versStamp="Version 1.2.5, 03-31-2017"
 	readonly scriptVers="${versStamp:8:${#versStamp}-20}"
 	
 	loggerTag="transcode.uninstall"
 	
-	readonly libDir="${HOME}/Library"
-	readonly workDir=$(aliasPath "${libDir}/Application Support/Transcode/Transcode alias")					# get the path to the Transcode folder
+	readonly LIBDIR="${HOME}/Library"
+	readonly APPSCRIPTSPATH="${LIBDIR}/Application Scripts/com.videotranscode.transcode"
 	
-	readonly appScriptsPath="${libDir}/Application Scripts/com.videotranscode.transcode"
-
-	readonly sh_echoMsg="${appScriptsPath}/_echoMsg.sh"
+	updateThis="0"																			# all by default
 }
 
 function echo_Msg () {
@@ -36,21 +34,25 @@ function echo_Msg () {
 	# ${2}: flag to suppress echo
 	# loggerTag is defined as global in the calling script
 	
-	if [ $# -eq 1 ]; then
-		echo "${1}"											# echo to the Terminal
+	if [[ $# -eq 1 ]]; then
+		echo "${1}"																			# echo to the Terminal
 	fi
 	
-    echo "${1}" 2>&1 | logger -t "${loggerTag}"				# echo to syslog
+    echo "${1}" 2>&1 | logger -t "${loggerTag}"												# echo to syslog
 }
 
 function if_Error () {
 	# ${1}: last line of error occurrence
 	# ${2}: error code of last command
 
-	local lastLine="${1}"
-	local lastErr="${2}"
-	local currentScript=$(basename -- "${0}")
-																		# if lastErr > 0 then echo error msg and log
+	local lastLine=""
+	local lastErr=""
+	local currentScript=""
+	
+	lastLine="${1}"
+	lastErr="${2}"
+	currentScript=$(basename -- "${0}")
+																							# if lastErr > 0 then echo error msg and log
 	if [[ ${lastErr} -gt 0 ]]; then
 		echo 2>&1 | logger -t "${loggerTag}"
 		echo ""
@@ -71,183 +73,275 @@ function uninstall_Confirm () {
 	echo_Msg "========================================================================="
 	echo_Msg "Uninstall Transcode"
 	
-    # call with a prompt string or use a default
-    read -r -p "${1:-Are you sure? [Yn]} " response
+    																						# call with a prompt string or use a default
+    read -r -p "${1:-Are you sure [Y]? [Command-period to cancel]} " response
     case ${response} in
         [Y]|[Y][E][S] )
 			# just continue
 			echo_Msg ""
             echo_Msg "Uninstalling Transcode..."
 			echo_Msg ""
-            ;;
+		;;
+		
+		[1] )
+			# just continue
+			echo ""
+			echo "Uninstalling Transcode script support..."
+			
+			updateThis="1"
+		;;
+		
+		[2] )
+			# just continue
+			echo ""
+			echo "Uninstalling Transcode LaunchAgents..."
+
+			updateThis="2"
+		;;
+		
+		[3] )
+			# just continue
+			echo ""
+			echo "Uninstalling Transcode preferences..."
+
+			updateThis="3"
+		;;
+		
+		[4] )
+			# just continue
+			echo ""
+			echo "Uninstalling Transcode Finder Services..."
+
+			updateThis="4"
+		;;
+		
+		[5] )
+			# just continue
+			echo ""
+			echo "Uninstalling brew casks..."
+
+			updateThis="5"
+        ;;
+
+		[6] )
+			# just continue
+			echo ""
+			echo "Uninstalling brew packages..."
+
+			updateThis="6"
+		;;
+		
+		[7] )
+			# just continue
+			echo ""
+			echo "Uninstalling ruby gems..."
+
+			updateThis="7"
+		;;
+		
+		[8] )
+			# just continue
+			echo ""
+			echo "Uninstalling commandline tools..."
+
+			updateThis="8"
+        ;;
+
+		[9] )
+			# just continue
+			echo ""
+			echo "Uninstalling brew casks and brew package tools..."
+
+			updateThis="9"
+        ;;
+
+		[10] )
+			# just continue
+			echo ""
+			echo "Uninstalling brew casks, brew packages and gem tools..."
+
+			updateThis="10"
+        ;;
+
         * )
-			# bail out
-            exit 1
-            ;;
+																							# bail out
+			exit 1
+		;;
     esac
 }
 
 function uninstall_scriptSupport () {
-	declare -a removeThis
-	
-	# remove script support
-	removeThis[0]="${libDir}/Application Scripts/com.videotranscode.transcode"
-	removeThis[1]="${libDir}/Application Support/Transcode"
-	removeThis[2]="/usr/local/bin/aliasPath"
-	
-	# remove preferences
-	for i in "${removeThis[@]}"; do
-		if [ -d "${i}" ]; then
-			echo_Msg "Removing ${i}"
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "1" ]]; then
+		declare -a removeThis_a
+																							# remove script support
+		removeThis_a[0]="/usr/local/Transcode"
+		removeThis_a[1]="${LIBDIR}/Application Support/Transcode"
+																							# remove preferences
+		for i in "${removeThis_a[@]}"; do
+			if [[ -d "${i}" ]]; then
+				echo_Msg "Removing ${i}"
 				
-			rm -rf "${i}"
-		elif [ -e "${i}" ]; then
-			echo_Msg "Removing ${i}"
+				rm -rf "${i}"
+			elif [[ -e "${i}" ]]; then
+				echo_Msg "Removing ${i}"
 					
-			rm -f "${i}"
-		fi
-	done
+				rm -f "${i}"
+			fi
+		done
+	fi
 }
 
-function uninstall_launchDaemons () {
-	local captureOutput=""
+function uninstall_launchAgents () {
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "2" ]]; then
+		declare -a removeThis_a
 	
-	declare -a removeThis
-	
-	removeThis[0]="${libDir}/LaunchAgents/com.videotranscode.brewautoupdate.plist"
-	removeThis[1]="${libDir}/LaunchAgents/com.videotranscode.watchfolder.plist"
-	removeThis[2]="${libDir}/LaunchAgents/com.videotranscode.rsync.watchfolder.plist"
-	removeThis[3]="${libDir}/LaunchAgents/com.videotranscode.ingest.watchfolder.plist"
-	removeThis[4]="${libDir}/LaunchAgents/com.videotranscode.gem.check.plist"	
-	
-	# remove LaunchAgents
-	for i in "${removeThis[@]}"; do
-		echo_Msg "Unloading LaunchAgent and removing ${i}"
+		removeThis_a[0]="${LIBDIR}/LaunchAgents/com.videotranscode.brewautoupdate.plist"
+		removeThis_a[1]="${LIBDIR}/LaunchAgents/com.videotranscode.completed.watchfolder.plist"
+		removeThis_a[2]="${LIBDIR}/LaunchAgents/com.videotranscode.gem.check.plist"
+		removeThis_a[3]="${LIBDIR}/LaunchAgents/com.videotranscode.ingest.watchfolder.plist"
+		removeThis_a[4]="${LIBDIR}/LaunchAgents/com.videotranscode.rsync.watchfolder.plist"
+		removeThis_a[5]="${LIBDIR}/LaunchAgents/com.videotranscode.watchFolder.plist"
+		removeThis_a[6]="${LIBDIR}/LaunchAgents/com.videotranscode.watchfolders.moved.plist"
+																							# remove LaunchAgents
+		for i in "${removeThis_a[@]}"; do
+			echo_Msg "Unloading LaunchAgent and removing ${i}"
 		
-		capturedOutput=$(launchctl unload "${i}")
-		if [[ "${capturedOutput}" != *"No such file or directory"* ]]; then
-			rm -f "${i}"
-		fi
-	done 
+			capturedOutput=$(launchctl unload "${i}")
+			if [[ "${capturedOutput}" != *"No such file or directory"* ]]; then
+				rm -f "${i}"
+			fi
+		done
+	fi
 }
 
 function uninstall_preferenceFiles () {
-	declare -a removeThis
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "3" ]]; then
+		declare -a removeThis_a
 	
-	removeThis[0]="${libDir}/Preferences/com.videotranscode.batch.waiting.plist"
-	removeThis[1]="${libDir}/Preferences/com.videotranscode.batch.onhold.plist"
-	removeThis[2]="${libDir}/Preferences/com.videotranscode.batch.working.plist"
-	removeThis[3]="${libDir}/Preferences/com.videotranscode.rsync.batch.waiting.plist"
-	removeThis[4]="${libDir}/Preferences/com.videotranscode.rsync.batch.onhold.plist"
-	removeThis[5]="${libDir}/Preferences/com.videotranscode.rsync.batch.working.plist"
-	removeThis[6]="${libDir}/Preferences/com.videotranscode.ingest.batch.waiting.plist"
-	removeThis[7]="${libDir}/Preferences/com.videotranscode.ingest.batch.onhold.plist"
-	removeThis[8]="${libDir}/Preferences/com.videotranscode.ingest.batch.working.plist"
-	removeThis[9]="${libDir}/Preferences/com.videotranscode.gem.update.plist"
-	removeThis[10]="${libDir}/Preferences/com.videotranscode.transcode.update.plist"	
-	removeThis[11]="${libDir}/Preferences/com.videotranscode.transcode.full.update.plist"
-	removeThis[12]="${libDir}/Preferences/com.videotranscode.gem.update.inprogress.plist"
+		removeThis_a[0]="${LIBDIR}/Preferences/com.videotranscode.batch.onhold.plist"
+		removeThis_a[1]="${LIBDIR}/Preferences/com.videotranscode.batch.waiting.plist"
+		removeThis_a[2]="${LIBDIR}/Preferences/com.videotranscode.batch.working.plist"
+		removeThis_a[3]="${LIBDIR}/Preferences/com.videotranscode.completed.moved.working.plist"
+		removeThis_a[4]="${LIBDIR}/Preferences/com.videotranscode.gem.update.inprogress.plist"
+		removeThis_a[5]="${LIBDIR}/Preferences/com.videotranscode.gem.update.plist"
+		removeThis_a[6]="${LIBDIR}/Preferences/com.videotranscode.ingest.batch.onhold.plist"
+		removeThis_a[7]="${LIBDIR}/Preferences/com.videotranscode.ingest.batch.waiting.plist"
+		removeThis_a[8]="${LIBDIR}/Preferences/com.videotranscode.ingest.batch.working.plist"
+		removeThis_a[9]="${LIBDIR}/Preferences/com.videotranscode.ingest.moved.working.plist"
+		removeThis_a[10]="${LIBDIR}/Preferences/com.videotranscode.rsync.batch.onhold.plist"	
+		removeThis_a[11]="${LIBDIR}/Preferences/com.videotranscode.rsync.batch.waiting.plist"
+		removeThis_a[12]="${LIBDIR}/Preferences/com.videotranscode.rsync.batch.working.plist"
+		removeThis_a[13]="${LIBDIR}/Preferences/com.videotranscode.transcode.full.update.plist"
+		removeThis_a[14]="${LIBDIR}/Preferences/com.videotranscode.transcode.moved.working.plist"
+		removeThis_a[15]="${LIBDIR}/Preferences/com.videotranscode.transcode.update.plist"
+		removeThis_a[16]="${LIBDIR}/Preferences/com.videotranscode.preferences.plist"		
+																							# remove preferences
+		for i in "${removeThis_a[@]}"; do
+			if [[ -e "${i}" ]]; then
+				echo_Msg "Removing ${i}"
 	
-	# remove preferences
-	for i in "${removeThis[@]}"; do
-		if [ -e "${i}" ]; then
-			echo_Msg "Removing ${i}"
-	
-			rm -f "${i}"
-		fi
-	done
+				rm -f "${i}"
+			fi
+		done
+	fi
 }
 
 function uninstall_finderServices () {
-	declare -a removeThis
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "4" ]]; then
+		declare -a removeThis_a
 	
-	removeThis[0]="${libDir}/Services/Transcode • Update Finder Info.workflow"
-	removeThis[1]="${libDir}/Services/Transcode • Set Ingest Path.workflow"
-	removeThis[2]="${libDir}/Services/Transcode • Set Output Destination.workflow"
-	removeThis[3]="${libDir}/Services/Transcode • Transmogrify Video.workflow"
+		removeThis_a[0]="${LIBDIR}/Services/Transcode • Update Finder Info.workflow"
+		removeThis_a[1]="${LIBDIR}/Services/Transcode • Transmogrify Video.workflow"
+																							# remove the Finder Services
+		for i in "${removeThis_a[@]}"; do
+			if [[ -e "${i}" ]]; then
+				echo_Msg "Removing Finder Service ${i}"
 	
-	# remove the Finder Services
-	for i in "${removeThis[@]}"; do
-		if [ -e "${i}" ]; then
-			echo_Msg "Removing Finder Service ${i}"
-	
-			rm -rf "${i}"
-		fi
-	done
+				rm -rf "${i}"
+			fi
+		done
+	fi
 }
 
 function uninstall_brewPkgs () {
-	declare -a removeThis
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "6" ]] || [[ "${updateThis}" == "9" ]] || [[ "${updateThis}" == "10" ]]; then
+		declare -a removeThis_a
 	
-	removeThis[0]="atomicparsley"
-	removeThis[1]="ffmpeg"
-	removeThis[2]="mkvtoolnix"
-	removeThis[3]="mp4v2"
-	removeThis[4]="mplayer"
-	removeThis[5]="rsync"
-	removeThis[6]="tag"
-	removeThis[7]="ssh-copy-id"
-	
-	# brew, remove if in place
-	for i in "${removeThis[@]}"; do
-		if [[ ${installedBrews} = *"${i}"* ]]; then
-			echo_Msg "Removing brew ${i}"
+		removeThis_a[0]="atomicparsley"
+		removeThis_a[1]="ffmpeg"
+		removeThis_a[2]="mkvtoolnix"
+		removeThis_a[3]="mp4v2"
+		removeThis_a[4]="mplayer"
+		removeThis_a[5]="rsync"
+		removeThis_a[6]="tag"
+		removeThis_a[7]="ssh-copy-id"
+		removeThis_a[8]="terminal-notifier"
+		removeThis_a[9]="handbrake"
+																							# brew, remove if in place
+		for i in "${removeThis_a[@]}"; do
+			if [[ ${installedBrews} == *"${i}"* ]]; then
+				echo_Msg "Removing brew ${i}"
 			
-			brew uninstall ${i}
-		fi
-	done
+				brew uninstall ${i}
+			fi
+		done
+	fi
 }
 
 function uninstall_brewCasks (){
-	declare -a removeThis
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "5" ]] || [[ "${updateThis}" == "9" ]] || [[ "${updateThis}" == "10" ]]; then
+		declare -a removeThis_a
 	
-	removeThis[0]="filebot"
-	removeThis[1]="handbrakecli"
-	removeThis[2]="java"
+		removeThis_a[0]="filebot"
+		removeThis_a[1]="java"
 	
-	installedCasks=$(brew cask list)
-	
-	# brew, remove caskroom/cask/brew-cask if in place
-	for i in "${removeThis[@]}"; do
-		if [[ ${installedCasks} = *"${i}"* ]]; then
-			echo_Msg "Removing brew-cask ${i}"
+		installedCasks=$(brew cask list)
+																							# brew, remove caskroom/cask/brew-cask if in place
+		for i in "${removeThis_a[@]}"; do
+			if [[ ${installedCasks} == *"${i}"* ]]; then
+				echo_Msg "Removing brew-cask ${i}"
 			
-			brew cask uninstall ${i}
-		fi
-	done
+				brew cask uninstall ${i}
+			fi
+		done
+	fi
 }
 
 function uninstall_rubyGems () {
-	declare -a removeThis
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "7" ]] || [[ "${updateThis}" == "10" ]]; then
+		declare -a removeThis_a
 	
-	removeThis[0]="video_transcoding"
-	removeThis[1]="terminal-notifier"
+		removeThis_a[0]="video_transcoding"
+																							# ruby, remove gems if in place
+		installedGems=$(gem list)
 	
-	# ruby, remove gems if in place
-	installedGems=$(gem list)
-	
-	for i in "${removeThis[@]}"; do
-		if [[ ${installedGems} = *"${i}"* ]]; then
-			echo_Msg "Removing gem ${i}"
+		for i in "${removeThis_a[@]}"; do
+			if [[ ${installedGems} == *"${i}"* ]]; then
+				echo_Msg "Removing gem ${i}"
 			
-			sudo gem uninstall ${i}
-		fi
-	done
+				sudo gem uninstall ${i}
+			fi
+		done
 	
-	if [[ ${installedBrews} = *"ruby"* ]]; then
-		echo_Msg "Removing brew ruby"
+		if [[ ${installedBrews} == *"ruby"* ]]; then
+			echo_Msg "Removing brew ruby"
 		
-		brew rm ruby
+			brew rm ruby
+		fi
 	fi
 }
 
 function uninstall_commandLineTools () {
-	local removeThis="/Library/Developer/CommandLineTools"
+	local removeThis=""
 	
-	if [ -d "${removeThis}" ]; then
-		echo_Msg "Removing ${removeThis}"
+	if [[ "${updateThis}" == "0" ]] || [[ "${updateThis}" == "8" ]]; then
+		removeThis="/Library/Developer/CommandLineTools"
+	
+		if [[ -d "${removeThis}" ]]; then
+			echo_Msg "Removing ${removeThis}"
 		
-		sudo rm -rf "${removeThis}"
+			sudo rm -rf "${removeThis}"
+		fi
 	fi
 }
 
@@ -260,7 +354,7 @@ function clean_Up () {
 function __main__ () {
 	uninstall_Confirm
 	uninstall_scriptSupport
-	uninstall_launchDaemons
+	uninstall_launchAgents
 	uninstall_preferenceFiles
 	uninstall_finderServices
 	uninstall_brewCasks
@@ -272,8 +366,8 @@ function __main__ () {
 	
 	uninstall_commandLineTools
 	
-	echo
-	echo_Msg "Transcode infrastructure was succesfully uninstalled.\nThe Transcode folder has been left in place."
+	echo_Msg ""
+	echo_Msg "Transcode was succesfully uninstalled.\nThe Transcode folder has been left in place."
 }
 
 
@@ -283,6 +377,9 @@ trap clean_Up INT TERM EXIT																	# always run clean_Up regardless of 
 trap "exit" INT																				# trap user cancelling
 trap 'if_Error ${LINENO} $?' ERR															# trap errors
 printf '\e[8;24;130t'																		# set the Terminal window size to 148x24
+echo -n -e "\033]0;Uninstall Transcode\007"													# set the Terminal window title
+printf "\033c"																				# clear the Terminal screen
+
 
 define_Constants
 
