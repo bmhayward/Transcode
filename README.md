@@ -429,9 +429,9 @@ A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transc
 
 ## History
 
-### [2.0.0]
+### [2.0.0](https://github.com/bmhayward/Transcode/releases/tag/2.0.0)
 Friday, March 31, 2017
-* Version 2.0 release!
+* Version 2.0 released!
 
 ### [1.4.8](https://github.com/bmhayward/Transcode/releases/tag/1.4.8)
 Friday, August 19, 2016
