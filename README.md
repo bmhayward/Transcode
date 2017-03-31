@@ -64,7 +64,7 @@ One installer and the Terminal will launch:
 
 To uninstall Transcode:
 ```
-Double-click uninstallTranscode.command in /Transcode/Extras
+Double-click Uninstaller.command in /usr/local/Transcode
 ```
 
 ## Usage
