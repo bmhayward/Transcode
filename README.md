@@ -285,7 +285,7 @@ Tag definitions can be added, edited, or deleted in Settings app.
 
 ### Auto-Update
 
-Transcode checks for updates everyday at 3 a.m.. Updates process include; installed brews, brew casks, Ruby gems and Transcode itself. If a Ruby gem update (`transcode-video`) is found, an update dialog is presented asking to proceed with the update.
+Transcode checks for updates everyday at 3 a.m.. Updating includes; installed brews, brew casks, Ruby gems and Transcode itself. If a Ruby gem update (`transcode-video`) is found, an update dialog is presented asking to proceed with the update.
 
 To view a list of updates or general Transcode logging, open the Console.app and search for ‘brew.’, ‘gem.’, ’batch.’, or ‘ transcode.’. The Transcode log file is located in `~/Library/Logs/transcode.log`.
 
