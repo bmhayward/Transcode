@@ -290,9 +290,9 @@ To view a list of updates or general Transcode logging, open the Console.app and
 
 ### Preferences
 
-Transcode’s preferences can be modified to tailor your workflow. Preferences are contained in a plist file located in `~/Library/Preferences/com.videotranscode.preferences.plist`.
+Transcode’s preferences can be modified to tailor your workflow. Preferences are contained in a plist file located in `~/Library/Preferences/com.videotranscode.preferences.plist` and can be set using Settings app.
 
-Preferences can be set using Settings app.
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/Settings.png)
 
 ### MakeMKV
 
