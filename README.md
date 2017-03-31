@@ -18,8 +18,6 @@ Transcode provides a workflow that automates the batch transcoding of Blu-ray Di
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
-* [Guide](#guide)
-* [Workflows](#workflows)
 * [History](#history)
 * [Acknowledgements](#acknowledgements)
 
