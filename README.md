@@ -296,7 +296,7 @@ Preferences can be set using Settings app.
 
 ### MakeMKV
 
-MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray or DVD disc, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file `.mkv`.
+MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray or DVD disc, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file (`.mkv`).
 
 #### MakeMKV tips
 
