@@ -177,7 +177,7 @@ Transcode converts content by adding `.mkv` files to:
 /Transcode/Convert
 ```
 
-#### Remote transcode
+### Remote transcode
 
 Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
 
