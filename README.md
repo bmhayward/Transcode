@@ -1,12 +1,18 @@
-[![Join the chat at https://gitter.im/bmhayward/Transcode](https://badges.gitter.im/bmhayward/Transcode.svg)](https://gitter.im/bmhayward/Transcode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 # Transcode
 
-Tools to batch transcode and process videos
+Workflow to batch transcode and process videos
 
-![image](https://github.com/bmhayward/Transcode/blob/master/Demo/Transcode_Convert_90x300.gif)
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/label_blue_new.png)
+## Transcode 2.0!
+* Completely rewritten
+* Full support for macOS Sierra
+* UI for managing preferences
+* UI for managing cropping when multiple possible crops are detected
+* Apply multiple transcode quality options to source files for quality comparisons
+* Many other improvements
 
 ## About
-Transcode is a set of tools to batch transcode Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. Transcode is a wrapper that builds upon [Don Melton's](https://github.com/donmelton/video_transcoding) exceptional video transcoding toolset.
+Transcode provides a workflow that automates the batch transcoding of Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. The Transcode workflow is built around [Don Melton's](https://github.com/donmelton/video_transcoding) exceptional video transcoding toolset.
 
 * [About](#about)
 * [Requirements](#requirements)
@@ -24,15 +30,14 @@ Most of the tools in this package require other software to function properly.
 
 Transcode Setup Assistant will install these command line programs:
 
-* `aliasPath`
 * `atomicparsely`
 * `ffmpeg`
 * `filebot`
 * `handbrakecli`
-* `Homebrew`
 * `Java`
 * `mkvtoolnix`
-* `mplayer`
+* `mp4v2`
+* `mpv`
 * `rsync`
 * `ruby`
 * `tag`
@@ -40,7 +45,7 @@ Transcode Setup Assistant will install these command line programs:
 * `transcode_video`
 * `Xcode command-line tools`
 
-In addition, a Blu-ray or DVD [reader](https://www.amazon.com/Samsung-External-Blu-ray-SE-506CB-RSBD/dp/B00JJGFRIQ/ref=pd_sim_147_4?ie=UTF8&dpID=21l0PtOb6GL&dpSrc=sims&preST=_AC_UL160_SR160,160_&refRID=02K1BF563A1RE2C79GV5) is recommended.
+In addition, a Blu-ray or DVD is recommended.
 
 ## Installation
 Download the [latest release](https://github.com/bmhayward/Transcode/releases).
@@ -69,15 +74,13 @@ Drop `.mkv` files into:
 ```
 /Transcode/Convert
 ```
-to automatically batch convert video files.
+to automatically batch transcode video files.
 
 Transcoding will start after all content has been copied to the Convert folder.
 
-### Batch Transcoding
+### Workflow
 
 Transcode uses a batch queue mechanism to manage content for transcoding. As content is added to the Convert folder, a ```watchFolder``` LaunchAgent waits for the Convert folder size to stabilize.
-
-Once the Convert folder has stabilized, ```watchFolder``` launches ```batch.command``` from the Transcode folder to begin transcoding.
 
 Depending upon how content is being added to the Convert folder, `watchFolder` will wait:
 ```
@@ -87,53 +90,19 @@ a maximum of 60 seconds after folder stabilization to start transcoding
 If content is added while transcoding is active, `watchFolder` will create a new batch queue for the added content. The new batch queue will start once the active queue has completed.
 This queueing process allows for content to be continuously streamed or copied to the Convert folder.
 
-To stop the transcode process:
-```
-1. Select the transcode process Terminal window
-2. Press command-period
-```
-To restart a transcode process:
-```
-Double-click batch.command in the Transcode folder
-or
-Drag files out of and back into the Convert folder
-```
 ### Compression
 
-The `transcode-video tool`, used by Transcode, configures the [x264 video encoder](http://www.videolan.org/developers/x264.html) within HandBrake to provide a [constrained variable bitrate (CVBR)](https://en.wikipedia.org/wiki/Variable_bitrate) mode. This automatically targets bitrates appropriate for different input resolutions.
-
-Input resolution | Target video bitrate
---- | ---
-1080p or Blu-ray video | 8000 Kbps
-720p | 4000 Kbps
-480i, 576p or DVD video | 2000 Kbps
+Transcode uses the `transcode-video tool` to convert audio and video. By default, Transcode uses the `transcode-video` --quick video quality option. This setting can be modified in Settings>Output quality. Entering comma separated values into the Output quality field, allows the transcoding of video with multiple quality settings.
 
 When audio transcoding is required, it is done in an [AAC format](https://en.wikipedia.org/wiki/Advanced_Audio_Coding) and, if the original is [multi-channel surround sound](https://en.wikipedia.org/wiki/Surround_sound), in [Dolby Digital AC-3 format](https://en.wikipedia.org/wiki/Dolby_Digital).
 
-Input channels | AAC track | AC-3 track
---- | --- | ---
-Mono | 80 Kbps | none
-Stereo | 160 Kbps | none
-Surround | 160 Kbps | 640 Kbps with 5.1 channels
-
-### Reducing output size
-
-If reducing output size is more important than quality, change the Transcode output quality preference to `small`, in Transcode’s preferences. The video bitrate targets will be lowered 33-37 percent depending upon the video resolution of the input.
-
-For additional details, see this discussion of [reducing output size](https://github.com/donmelton/video_transcoding#reducing-output-size).
-
-### Improving performance
-
-If increased video encoding speed is important, change the Transcode output quality preference to `quick`, in Transcode’s preferences. This will trade some precision for a 45-50 percent increase in video encoding speed. Note, output files are slightly larger when using the `quick` option, since the loss of precision is also a loss of efficiency.
-
-For additional details, see this discussion of [improving performance](https://github.com/donmelton/video_transcoding#improving-performance).
-
-### Auto-Cropping
+### Cropping
 
 Cropping provides faster transcoding and higher quality as there are fewer pixels to read and write.
 
 Transcode uses the `detect-crop tool`, part of the `transcode-video` toolset, to determine the optimal video cropping bounds.
 Transcode auto-crops all content.
+If the `detect-crop tool` detects multiple possible cropping options, a live preview of the options can be presented. If only a single cropping option is detected, the video will be auto-cropped.
 
 For additional details, see this discussion of the [detect-crop tool](https://github.com/donmelton/video_transcoding#cropping).
 
@@ -147,7 +116,7 @@ For additional details, see this discussion about [understanding audio](https://
 
 Name content to be Transcoded, using the following conventions:
 ```
-Movies: title e.g. WALL-E
+Movies: title_(Year of release) e.g. WALL-E
 TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
 Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
 Movie Extras: title_(date)%extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney
@@ -166,7 +135,7 @@ Where for TV Shows/Specials:
 
 Transcode auto-renames transcoded files based on matches from the [TheMovieDB](https://www.themoviedb.org) and the [TheTVDB](http://thetvdb.com). A transcoded files ‘title’ metadata tag is also set to the renamed movie or TV show.
 
-Transcode auto-renames transcoded files using these formats:
+Transcode auto-renames transcoded files into these formats:
 ```
 Movies: Name (Year of Release).ext
 TV Shows: Name - sXXeYY - Episode Name.ext
@@ -176,7 +145,7 @@ Extras/Specials: Descriptive Name.ext
 
 For example, if the original filename of a movie is:
 ```
-WALL-E_t00.mkv
+WALL-E_(2008)_t00.mkv
 ```
 the transcoded movie filename is:
 ```
@@ -209,20 +178,17 @@ Transcode converts content by adding `.mkv` files to:
 /Transcode/Convert
 ```
 
-#### Multi-volume ingest
-
-Transcode can use separate volumes on the same system to ingest and transcode content.
-
-To set an ingest folder on a secondary volume, `control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu.
-
 #### Remote transcode
 
 Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
 
 To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode destination:
 ```
-1. Double-click /Transcode/Extras/setupDestinationAutoConnect.command on the Transcode destination
-2. Double-click /Transcode/Extras/setupIngestAutoConnect.command on the Transcode ingest source(s)
+1. Install Transcode on the remote ingest destination
+2. At the remote ingest destination, select Settings>Accept transcode from remote sources
+3. At the ingest source, select Settings>Send transcode to remote destination
+4. Enter Settings>SSH username
+5. Enter Settings>SSH address
 ```
 
 ### File Moving
@@ -238,17 +204,17 @@ Log files are moved to /Transcode/Logs
 
 #### Custom transcode destination
 
-Transcoded content can be automatically moved to to a destination other than the Completed folder, e.g. 
-`/Media/Plex`, `/iTunes Media`, etc.
+Transcoded content can be automatically moved to a destination other than the Completed folder, e.g. 
+`/Plex`, `/iTunes Media`, etc.
 
-To set a custom output destination, `control-click` the destination folder in the Finder and select `Transcode • Set Output Destination` from the Finder Services menu.
+To set a custom output destination, drag or select the output folder in Settings>Completed folder.
 
 After setting the output destination, Transcode will automatically move content to the following custom destination:
 ```
-Movies: /root/Movies/{Movie Title}
-Movie Extras: /root/Movies/{Movie Title}/{Extras Tag}
-TV Shows: /root/TV Shows/{Show Title}/{Season #}
-TV Specials: /root/TV Shows/{Show Title}/{Season #}/Specials
+Movies: /{custom}/Movies/{Movie Title}
+Movie Extras: /{custom}/Movies/{Movie Title}/{Extras Tag}
+TV Shows: /{custom}/TV Shows/{Show Title}/{Season #}
+TV Specials: /{custom}/TV Shows/{Show Title}/{Season #}/Specials
 ```
 where the `Movies`, `TV Shows`, `Extras` or `Specials` folders and subfolders are created as needed.
 
@@ -304,7 +270,7 @@ The transcoded title will be placed in:
 
 ### Finder Tags
 
-Transcode applies Finder tags to both the original files (`.mkv`) and the transcoded files (`.mkv`, `.m4v` or `.mp4`). This makes it easy to locate any file touched by Transcode.
+Transcode applies Finder tags to both the original files (`.mkv`), the transcoded files (`.mkv`, `.m4v` or `.mp4`), and the log files (`.log`). This makes it easy to locate any file touched by Transcode.
 
 By default, the following Finder tags are applied:
 ```
@@ -312,66 +278,33 @@ Originals: Blue and Converted
 Movies: Purple, Movie and VT
 TV Shows: Orange, TV Show and VT
 Extras/Specials: Yellow, Extra and VT
+Logs: log, VT, and [video quality option], e.g. log, VT, --quick
 ```
 Finder tags and ‘title’ metadata tags can be set in bulk with the `Transcode • Update Finder Info` Finder Service. This provides individual or mass file tagging via the Finder’s Services menu.
 
-Tag definitions can be added, edited or deleted in Transcode’s preferences.
+Tag definitions can be added, edited, or deleted in Settings app.
 
 ### Auto-Update
 
-Transcode updates the installed brews, brew casks, Ruby gems and Transcode itself everyday at 3 a.m.. If a gem update is found, an update dialog is presented asking to proceed with the specific gem update.
+Transcode checks for updates everyday at 3 a.m.. Updates process include; installed brews, brew casks, Ruby gems and Transcode itself. If a Ruby gem update (`transcode-video`) is found, an update dialog is presented asking to proceed with the update.
 
-To see a list of applied updates, open the Console.app and search for ‘brew.’, ‘gem.’ or ‘transcode.’.
-
-## Guide
-
-### Preparing Media for Transcoding
-
-Don Melton’s four rules for preparing media for transcoding:
-
-1. Use [MakeMKV](http://www.makemkv.com/download/) to rip Blu-ray Discs and DVDs.
-2. Rip each selected video as a single Matroska format `.mkv` file.
-3. Look for forced subtitles and isolate them in their own track.
-4. Convert lossless audio tracks to [FLAC format](https://en.wikipedia.org/wiki/FLAC).
-
-For additional details, see this discussion of the [rationale](https://github.com/donmelton/video_transcoding#rationale) of video transcoding.
+To view a list of updates or general Transcode logging, open the Console.app and search for ‘brew.’, ‘gem.’, ’batch.’, or ‘ transcode.’. The Transcode log file is located in `~/Library/Logs/transcode.log`.
 
 ### Preferences
 
-Transcode’s preferences can be modified to tailor your workflow. The preference file is a plain text file located in `/Transcode/Prefs.txt`.
+Transcode’s preferences can be modified to tailor your workflow. Preferences are contained in a plist file located in `~/Library/Preferences/com.videotranscode.preferences.plist`.
 
-The preference file contains the following:
-```
-Transcoded file extension, default: m4v can also be mkv or mp4
-Delete original file, default: false can be true to auto-delete
-Movie Finder tags, comma separated, default: purple,Movie,VT
-TV Show Finder tags, comma separated, default: orange,TV Show,VT
-Original file Finder tags, comma separated, default: blue,Converted
-Auto-rename files, default: auto can also be movie, tv, or off
-Movie rename format, default: blank
-TV Show rename format, default: {n} - {'s'+s.pad(2)}e{e.pad(2)} - {t}
-Transcode completed move path, default: blank
-ssh username, default: blank
-Transcode remote folder path, default: blank
-Transcode ingest folder path, default: blank
-Extras Finder tags, comma separated, default: yellow,Extra,VT
-Output quality, default: blank
-Transcode Log Analyzer helper app, default: Numbers.app
-```
+Preferences can be set using Settings app.
 
 ### MakeMKV
 
-MakeMKV is a free, try before you buy tool, that runs on most desktop computer platforms like OS X, Windows and Linux.
-
-MakeMKV was designed to decrypt and extract a video track, usually the main feature of a disc and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format `.mkv` file, which it does really, really well.
-
-MakeMKV is not pretty and not particularly easy to use, but once you get the hang of it, you can rip video exactly the way you want.
+MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray or DVD disc, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file `.mkv`.
 
 #### MakeMKV tips
 
 After inserting a disc:
 ```
-Click the Open DVD disc icon to load a discs titles
+Click the Open [Blu-ray or DVD] disc icon to load a discs titles
 ```
 To have MakeMKV automatically load a Blu-ray Disc or DVD:
 ```
@@ -384,9 +317,9 @@ Selecting the titles Description in the main area
 Select Properties>Name
 Edit Name field in the Properties area
 ```
-Title naming conventions:
+Title naming conventions used with Transcode:
 ```
-Movies: HAPPY_GILMORE
+Movies: HAPPY_GILMORE_(1996)
 TV Shows: FAMILY_GUY_S6E1
 Multi-Episode TV Show: BETTER_CALL_SAUL_S1E1E10
 Extras: INSIDE_OUT_(2015)%Shorts-Lava
@@ -394,7 +327,7 @@ Skip renaming & auto-move: @RATATOUILLE_EXTRAS
 Force decomb filter: +ICE_AGE%Behind The Scenes-Making Of
 Pass-through without transcoding: ^The_Incredibles_Extras
 ```
-Verify a movie or TV show title:
+Verify a movie or TV show title before naming:
 ```
 Movies: go to TheMovieDB (https://www.themoviedb.org) website
 TV Shows: go to TheTVDB (thetvdb.com) website
@@ -479,9 +412,9 @@ operators:
   * 		- alias for "&", logical and
 ```
 
-### Transcode Log Analyzer
+### Log Analyzer
 
-Transcode Log Analyzer.app creates a tab-delimited report from HandBrake-generated `.log` files.
+Transcode Log Analyzer creates a tab-delimited report from HandBrake-generated `.log` files.
 
 Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor 
 --- | --- | --- | --- | --- | --- | ---
@@ -489,237 +422,18 @@ Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor
 +FUTURAMA_S03E01.m4v | 04/12/2016 | 06:44:11 | 00:02:38 | 204.952179 | 1428.14 | 13.79
 AIRPLANE_t00.m4v | 03/14/2016 | 13:00:48 | 00:18:34 | 113.191116 | 2247.79 | 17.16
 
-By default, reports are created from `.log` files located in `/Transcode/Logs` and the report opened with Numbers.app. Drag-n-drop individual log files or a folder of log files onto Transcode Log Analyzer.app to create log specific reports.
+Open or drag-n-drop individual log files or a folder of log files onto Log Analyzer to create log specific reports.
 
-The application used to open reports can be modified via Transcode’s preferences.
+The application used to open reports can be modified in Transcode’s preference plist.
 
-## Workflows
-### Out-of-Box
-
-This scenario makes use of:
-* default transcode destination `/Transcode/Completed` 
-* default ingest location `/Transcode/Convert` 
-* default FLAC audio encoding
-* default rename formatting
-* default Finder tagging
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode
-2. Download [MakeMKV](www.makemkv.com/download/)
-3. Download [VLC](www.videolan.org/index.html)
-4. Open MakeMKV
-5. Select `MakeMKV>Preferences>Video>Custom` 
-6. Click `Set output folder` 
-7. Select `/Transcode/Convert`
-8. Select `MakeMKV>Preferences>General`
-9. Check `Expert mode` 
-10. Select `MakeMKV>Preferences>Advanced` 
-11. Select `Default profile: FLAC` 
-12. Click Apply
-13. Click OK
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
-6. Click `Save selected titles`
-7. Goto Step 1
-
-### Custom Destination
-
-This scenario makes use of:
-* Plex or iTunes as the transcode output destination
-* default ingest location /Transcode/Convert 
-* default FLAC audio encoding
-* default rename formatting
-* default Finder tagging
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode
-2. Download [MakeMKV](http://www.makemkv.com/download/)
-3. Download [VLC](http://www.videolan.org/index.html)
-4. Open MakeMKV
-5. Select `MakeMKV>Preferences>Video>Custom` 
-6. Click `Set output folder` 
-7. Select `/Transcode/Convert`
-8. Select `MakeMKV>Preferences>General`
-9. Check `Expert mode` 
-10. Select `MakeMKV>Preferences>Advanced` 
-11. Select `Default profile: FLAC` 
-12. Click Apply
-13. Click OK
-14. `Control-click` the transcode destination folder in the Finder and select `Transcode • Set Output Destination` from the Finder Services menu
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
-6. Click `Save selected titles` 
-7. Goto Step 1
-
-### Multi-volume Ingest
-
-This scenario makes use of:
-* default transcode destination /Transcode/Completed 
-* multi-volume ingest
-* default FLAC audio encoding
-* default rename formatting
-* default Finder tagging
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode
-2. Create an ingest folder on the secondary volume
-3. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
-4. Download [MakeMKV](http://www.makemkv.com/download/)
-5. Download [VLC](http://www.videolan.org/index.html)
-6. Open MakeMKV
-7. Select `MakeMKV>Preferences>General`
-8. Check `Expert mode` 
-9. Select `MakeMKV>Preferences>Advanced` 
-10. Select `Default profile: FLAC` 
-11. Click Apply
-12. Click OK
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
-6. Click `Save selected titles` 
-7. Goto Step 1
-
-### Remote Transcode
-
-This scenario makes use of:
-* remote transcode
-* default ingest location `/Transcode/Convert`
-* default FLAC audio encoding
-* default rename formatting
-* default Finder tagging
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode on the destination
-2. Double-click `setupDestinationAutoConnect.command` in `/Transcode/Extras` on the Transcode `destination`
-3. Open Transcode Setup Assistant to install Transcode on the source
-4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode `source`
-5. Download [MakeMKV](http://www.makemkv.com/download/)
-6. Download [VLC](http://www.videolan.org/index.html)
-7. Open MakeMKV
-8. Select `MakeMKV>Preferences>Video>Custom` 
-9. Click `Set output folder` 
-10. Select `/Transcode/Convert` on both the source and destination
-11. Select `MakeMKV>Preferences>General` 
-12. Check `Expert mode` 
-13. Select `MakeMKV>Preferences>Advanced` 
-14. Select `Default profile: FLAC` 
-15. Click Apply
-16. Click OK
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Provide a name for the checked title(s) by editing each title or edit the master title to change all titles
-6. Click `Save selected titles` 
-7. Goto Step 1
-
-### Extras
-
-This scenario makes use of:
-* ‘extras tag’ file naming
-* default transcode destination /Transcode/Completed 
-* default ingest location /Transcode/Convert 
-* default FLAC audio encoding
-* default rename formatting
-* default Finder tagging
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode
-2. Download [MakeMKV](http://www.makemkv.com/download/)
-3. Download [VLC](http://www.videolan.org/index.html)
-4. Open MakeMKV
-5. Select `MakeMKV>Preferences>Video>Custom` 
-6. Click `Set output folder` 
-7. Select `/Transcode/Convert`
-8. Select `MakeMKV>Preferences>General`
-9. Check `Expert mode` 
-10. Select `MakeMKV>Preferences>Advanced` 
-11. Select `Default profile: FLAC` 
-12. Click Apply
-13. Click OK
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon 
-4. Uncheck the title(s) **NOT** to rip
-5. Name the checked title(s) `{title name}%{extras tag}-{descriptive name}` e.g. `WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney`
-6. Click `Save selected titles` 
-7. Goto Step 1
-
-### The Whole Enchilada
-
-This scenario makes use of:
-* remote transcode
-* multi-volume ingest
-* Plex or iTunes as the transcode output destination
-* default FLAC audio encoding
-* English language pre-selection of titles
-* no subtitles pre-selection
-* default rename formatting
-* default Finder tagging
-* pass-through without transcoding for later review
-
-#### Setup
-
-1. Open Transcode Setup Assistant to install Transcode on the `destination`
-2. Double-click `setupDestinationAutoConnect.command` in `/Transcode/Extras` on the Transcode destination
-3. Open Transcode Setup Assistant to install Transcode on the `source`
-4. Double-click `setupSourceAutoConnect.command` in `/Transcode/Extras` on the Transcode source
-5. Create an ingest folder on the secondary volume of a Transcode source and/or destination. Both source and destination can be used for ingest.
-6. `Control-click` the ingest folder in the Finder and select `Transcode • Set Ingest Path` from the Finder Services menu
-7. Download [MakeMKV](http://www.makemkv.com/download/)
-8. Download [VLC](http://www.videolan.org/index.html)
-9. Open MakeMKV
-10. Select `MakeMKV>Preferences>Language`
-11. Select `Interface language: eng: English` 
-12. Select `Preferred language: eng: English` 
-13. Select `MakeMKV>Preferences>General` 
-14. Check `Expert mode`
-15. Select `MakeMKV>Preferences>Advanced`
-16. Select `Default profile: FLAC`
-17. Add `-sel:subtitle` to the Default selection rule. It should now look like: `sel:all,+sel:(favlang|nolang|single),-sel:(havemulti|havecore),-sel:mvcvideo,-sel:subtitle,=100:all,-10:favlang` 
-18. Click Apply
-19. Click OK
-20. `Control-click` the destination folder, on the Transcode destination and in the Finder select `Transcode • Set Output Destination` from the Finder Services menu
-
-#### Use
-
-1. Insert a Blu-ray or DVD disc
-2. Open MakeMKV or have it open automatically
-3. Click `Open DVD disc` icon
-4. Select the master title and prepend `^` to the title. This will change all titles to `^{title}`.
-5. Remove `^` from all primary titles to be transcoded. The remaining titles with a leading `^` will be available for later review.
-6. Click `Save selected titles` 
-7. Goto Step 1
+## Acknowledgements
+A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
 
 ## History
+
+### [2.0.0]
+Friday, March 31, 2017
+* Version 2.0 release!
 
 ### [1.4.8](https://github.com/bmhayward/Transcode/releases/tag/1.4.8)
 Friday, August 19, 2016
@@ -874,6 +588,3 @@ Tuesday, May 10, 2016
 Sunday, May 8, 2016
 
 * Initial project version
-
-## Acknowledgements
-A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
