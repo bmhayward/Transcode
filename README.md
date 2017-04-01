@@ -295,8 +295,6 @@ Transcode’s preferences can be modified to tailor your workflow. ![image](http
 
 Preferences are contained in a plist file located in `~/Library/Preferences/com.videotranscode.preferences.plist` and can be set using Settings app.
 
-![image](https://github.com/bmhayward/Transcode/blob/master/Demo/Settings.png)
-
 ### MakeMKV
 
 MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray or DVD disc, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file (`.mkv`).
