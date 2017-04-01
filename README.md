@@ -15,35 +15,11 @@ Workflow to batch transcode and process videos
 Transcode provides a workflow that automates the batch transcoding of Blu-ray Discs and DVDs into a smaller, more portable format while remaining high enough quality to be mistaken for the originals. The Transcode workflow is built around [Don Melton's](https://github.com/donmelton/video_transcoding) exceptional video transcoding toolset.
 
 * [About](#about)
-* [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
-* [History](#history)
 * [Acknowledgements](#acknowledgements)
-
-## Requirements
-OS X 10.11 El Capitan or later.
-
-Most of the tools in this package require other software to function properly.
-
-Transcode Setup Assistant will install these command line programs:
-
-* `atomicparsely`
-* `ffmpeg`
-* `filebot`
-* `handbrakecli`
-* `Java`
-* `mkvtoolnix`
-* `mp4v2`
-* `mpv`
-* `rsync`
-* `ruby`
-* `tag`
-* `terminal-notifier`
-* `transcode_video`
-* `Xcode command-line tools`
-
-In addition, a Blu-ray or DVD player is recommended.
+* [Requirements](#requirements)
+* [History](#history)
 
 ## Installation
 Download the [latest release](https://github.com/bmhayward/Transcode/releases).
@@ -424,6 +400,28 @@ The application used to open reports can be modified in Transcode’s preference
 
 ## Acknowledgements
 A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
+
+## Requirements
+OS X 10.11 El Capitan or later.
+
+Most of the tools in this package require other software to function properly.
+
+Transcode Setup Assistant will install these command line programs:
+
+* `atomicparsely`
+* `ffmpeg`
+* `filebot`
+* `handbrakecli`
+* `Java`
+* `mkvtoolnix`
+* `mp4v2`
+* `mpv`
+* `rsync`
+* `ruby`
+* `tag`
+* `terminal-notifier`
+* `transcode_video`
+* `Xcode command-line tools`
 
 ## History
 
