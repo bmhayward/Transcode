@@ -28,7 +28,7 @@ Launch Transcode Setup Assistant:
 ```
 Select the location for the Transcode folder
 ```
-One installer and the Terminal will launch:
+After selecting the Transcode folder location, the Terminal will launch:
 ```
 1. Complete the installation of the Xcode command-line tools
 2. Select the open Terminal window once Xcode has been installed
@@ -256,7 +256,7 @@ Logs: log, VT, and [video quality option], e.g. log, VT, --quick
 ```
 Finder tags and ‘title’ metadata tags can be set in bulk with the `Transcode • Update Finder Info` Finder Service. This provides individual or mass file tagging via the Finder’s Services menu.
 
-Tag definitions can be added, edited, or deleted in Settings app.
+Tag definitions can be added, edited, or deleted in the Settings app.
 
 ### Auto-Update
 
@@ -283,7 +283,7 @@ After inserting a disc:
 ```
 Click the Open [Blu-ray or DVD] disc icon to load a discs titles
 ```
-To have MakeMKV automatically load a Blu-ray Disc or DVD:
+To have MakeMKV automatically load a DVD:
 ```
 Open System Preferences>CDs & DVDs
 Select When you insert a video DVD: Open MakeMKV
@@ -391,7 +391,7 @@ operators:
 
 ### Log Analyzer
 
-Transcode Log Analyzer creates a tab-delimited report from HandBrake-generated `.log` files.
+The Log Analyzer app creates a tab-delimited report from HandBrake-generated `.log` files.
 
 Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor 
 --- | --- | --- | --- | --- | --- | ---
@@ -399,9 +399,9 @@ Title | Created | @ | time | speed (fps) | bitrate (kbps) | ratefactor
 +FUTURAMA_S03E01.m4v | 04/12/2016 | 06:44:11 | 00:02:38 | 204.952179 | 1428.14 | 13.79
 AIRPLANE_t00.m4v | 03/14/2016 | 13:00:48 | 00:18:34 | 113.191116 | 2247.79 | 17.16
 
-Open or drag-n-drop individual log files or a folder of log files onto Log Analyzer to create log specific reports.
+Open or drag-n-drop individual log files or a folder of log files onto the Log Analyzer app to create log specific reports.
 
-The application used to open reports can be modified in Transcode’s preference plist.
+The application used to open Log Analyzer reports can be modified in Transcode’s preference plist.
 
 ## Acknowledgements
 A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
