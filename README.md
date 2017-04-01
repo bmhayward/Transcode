@@ -95,7 +95,6 @@ When audio transcoding is required, it is done in an [AAC format](https://en.wik
 Cropping provides faster transcoding and higher quality as there are fewer pixels to read and write.
 
 Transcode uses the `detect-crop tool`, part of the `transcode-video` toolset, to determine the optimal video cropping bounds.
-Transcode auto-crops all content.
 If the `detect-crop tool` detects multiple possible cropping options, a live preview of the options can be presented. If only a single cropping option is detected, the video will be auto-cropped.
 
 For additional details, see this discussion of the [detect-crop tool](https://github.com/donmelton/video_transcoding#cropping).
@@ -282,7 +281,10 @@ Tag definitions can be added, edited, or deleted in Settings app.
 
 Transcode checks for updates everyday at 3 a.m.. Updating includes; installed brews, brew casks, Ruby gems and Transcode itself. If a Ruby gem update (`transcode-video`) is found, an update dialog is presented asking to proceed with the update.
 
-To view a list of updates or general Transcode logging, open the Console.app and search for ‘brew.’, ‘gem.’, ’batch.’, or ‘ transcode.’. The Transcode log file is located in `~/Library/Logs/transcode.log`.
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/ready_2_upgrade.png)
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/upgrade_completed.png)
+
+To view a list of updates or general Transcode logging, open the Console app and search for ‘brew.’, ‘gem.’, ’batch.’, or ‘ transcode.’. The Transcode log file is located in `~/Library/Logs/transcode.log`.
 
 ### Preferences
 
