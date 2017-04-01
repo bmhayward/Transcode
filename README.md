@@ -24,7 +24,7 @@ Transcode provides a workflow that automates the batch transcoding of Blu-ray Di
 ## Installation
 Download the [latest release](https://github.com/bmhayward/Transcode/releases).
 
-Launch Transcode Setup Assistant:
+Launch the Transcode Setup Assistant app:
 ```
 Select the location for the Transcode folder
 ```
