@@ -156,7 +156,7 @@ To set an ingest folder, drag or select the ingest folder in Settings>Ingest fol
 
 Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
 
-To setup trusted `auto-ssh` between a Transcode ingest source and a Transcode destination:
+To setup remote ingest:
 ```
 1. Install Transcode on the remote ingest destination
 2. At the remote ingest destination, select Settings>Accept transcode from remote sources
