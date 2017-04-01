@@ -150,6 +150,7 @@ Transcode converts content by adding `.mkv` files to:
 ```
 /Transcode/Convert
 ```
+To set an ingest folder, drag or select the ingest folder in Settings>Ingest folder.
 
 ### Remote transcode
 
