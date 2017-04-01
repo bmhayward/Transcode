@@ -430,6 +430,10 @@ Transcode Setup Assistant will install these command line programs:
 
 ## History
 
+### [2.0.1](https://github.com/bmhayward/Transcode/releases/tag/2.0.1)
+Saturday, April 1, 2017
+* Added time_date stamp to log file names.
+
 ### [2.0.0](https://github.com/bmhayward/Transcode/releases/tag/2.0.0)
 Friday, March 31, 2017
 * Version 2.0 released!
