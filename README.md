@@ -62,7 +62,11 @@ This queueing process allows for content to be continuously streamed or copied t
 ### Compression
 
 Transcode uses the `transcode-video tool` to convert audio and video. By default, Transcode uses the 
-`transcode-video --quick` quality option. This setting can be modified in Settings>Output quality. Entering comma separated values into the Output quality field, allows the transcoding of video with multiple quality settings.
+`transcode-video --quick` quality option. This setting can be modified in Settings>Output quality.
+
+Entering comma separated values into the Output quality field, allows the transcoding of video with multiple quality settings.
+
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/output_quality_setting.png)
 
 When audio transcoding is required, it is done in an [AAC format](https://en.wikipedia.org/wiki/Advanced_Audio_Coding) and, if the original is [multi-channel surround sound](https://en.wikipedia.org/wiki/Surround_sound), in [Dolby Digital AC-3 format](https://en.wikipedia.org/wiki/Dolby_Digital).
 
