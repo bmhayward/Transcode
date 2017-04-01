@@ -62,11 +62,6 @@ One installer and the Terminal will launch:
 6. Safari has opened the download page for two additional tools you may find helpful, MakeMKV and VLC
 ```
 
-To uninstall Transcode:
-```
-Double-click Uninstaller.command in /usr/local/Transcode
-```
-
 ## Usage
 Drop `.mkv` files into:
 ```
