@@ -20,7 +20,7 @@ function define_Constants () {
 	local versStamp=""	
 	local minOS=""
                                                      										# define version number
-	versStamp="Version 2.9.5, 03-23-2017"
+	versStamp="Version 2.9.6, 04-01-2017"
 	minOS="10.11"
 																							# verify the minimum supported OS
 	# . "_versionCheck.sh" "${minOS}"
@@ -565,12 +565,17 @@ function rename_LogFile () {
 	local origLog=""
 	local logPath=""
 	local logTags=""
+	local dateTimeStamp=""
+	
+	dateTimeStamp=$(date +"%H%M%S_%m%d%Y")
+	
+%H%M%S%m%d%Y
 	
 	logTags="${logTag_},${2}"
 																							# construct the new log filename
 	fileName="${1##*/}"
 	origLog="${OUTDIR}/${fileName%.*}.${outExt_}.log"
-	logPath="${LOGDIR}/${fileName%.*}.${outExt_}.${2}.log"
+	logPath="${LOGDIR}/${fileName%.*}.${outExt_}.${2}.${dateTimeStamp}.log"
 																							# add the log file path to the array
 	logFiles_a+=("${logPath}")
 																							# rename the log file
