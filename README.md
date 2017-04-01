@@ -43,7 +43,7 @@ Transcode Setup Assistant will install these command line programs:
 * `transcode_video`
 * `Xcode command-line tools`
 
-In addition, a Blu-ray or DVD is recommended.
+In addition, a Blu-ray or DVD player is recommended.
 
 ## Installation
 Download the [latest release](https://github.com/bmhayward/Transcode/releases).
