@@ -77,6 +77,8 @@ Cropping provides faster transcoding and higher quality as there are fewer pixel
 Transcode uses the `detect-crop tool`, part of the `transcode-video` toolset, to determine the optimal video cropping bounds.
 If the `detect-crop tool` detects multiple possible cropping options, a live preview of the options can be presented. If only a single cropping option is detected, the video will be auto-cropped.
 
+![image](https://github.com/bmhayward/Transcode/blob/master/Demo/crop_selection.png)
+
 For additional details, see this discussion of the [detect-crop tool](https://github.com/donmelton/video_transcoding#cropping).
 
 ### Audio
@@ -89,7 +91,7 @@ For additional details, see this discussion about [understanding audio](https://
 
 Name content to be Transcoded, using the following conventions:
 ```
-Movies: title_(Year of release) e.g. WALL-E
+Movies: title_(Year of release) e.g. WALL-E_2008
 TV Show: title_SXXEYY e.g. ANIMANIACS_S2E11
 Multi-Episode TV Show: title_SXXEYYEZZ e.g. TWIN_PEAKS_S1E1E8
 Movie Extras: title_(date)%extras tag-descriptive name e.g. WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney
@@ -152,7 +154,7 @@ Transcode converts content by adding `.mkv` files to:
 ```
 To set an ingest folder, drag or select the ingest folder in Settings>Ingest folder.
 
-### Remote transcode
+### Remote Ingest
 
 Transcode can accept transcoded content (`.mkv`, `.m4v` or `.mp4` files) from remote Transcode ingest sources. This allows off-loading or parallel transcoding of content. Transcode accomplishes this by connecting to the Transcode destination using `rsync` over `ssh`.
 
@@ -219,7 +221,7 @@ WHITE_CHRISTMAS_(1954)%Featurettes-A Look Back with Rosemary Clooney.mkv
 
 The transcoded title will be placed in:
 ```
-/root/Movies/White Christmas (1954)/Featurettes/A Look Back with Rosemary Clooney.m4v 
+/Movies/White Christmas (1954)/Featurettes/A Look Back with Rosemary Clooney.m4v 
 ```
 
 #### TV specials
@@ -239,7 +241,7 @@ FUTURAMA_S00E1%Interview with Matt Groening.mkv
 
 The transcoded title will be placed in:
 ```
-/root/TV Shows/Futurama/Specials/Futurama s00e01 - Interview with Matt Groening.m4v 
+/TV Shows/Futurama/Specials/Futurama s00e01 - Interview with Matt Groening.m4v 
 ```
 
 ### Finder Tags
@@ -293,16 +295,6 @@ Prior to transcoding a title, you can change a titles name by:
 Selecting the titles Description in the main area
 Select Properties>Name
 Edit Name field in the Properties area
-```
-Title naming conventions used with Transcode:
-```
-Movies: HAPPY_GILMORE_(1996)
-TV Shows: FAMILY_GUY_S6E1
-Multi-Episode TV Show: BETTER_CALL_SAUL_S1E1E10
-Extras: INSIDE_OUT_(2015)%Shorts-Lava
-Skip renaming & auto-move: @RATATOUILLE_EXTRAS
-Force decomb filter: +ICE_AGE%Behind The Scenes-Making Of
-Pass-through without transcoding: ^The_Incredibles_Extras
 ```
 Verify a movie or TV show title before naming:
 ```
