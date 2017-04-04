@@ -85,6 +85,8 @@ For additional details, see this discussion of the [detect-crop tool](https://gi
 
 The `transcode-video` tool, used by Transcode, selects the first audio track in the input as the main audio track. This is the first track in the output and the default track for playback. The main audio track is transcoded in AAC format and, if the original is multi-channel surround sound, in Dolby Digital AC-3 format. Any additional audio tracks are only transcoded in AAC format.
 
+Additional audio tracks can be added by selecting Settings>Add other audio tracks. The additional audio track width is defined by selecting the width in Settings>Audio track width.
+
 For additional details, see this discussion about [understanding audio](https://github.com/donmelton/video_transcoding#understanding-audio).
 
 ### File Naming
@@ -277,7 +279,7 @@ The preference file is a plist located in `~/Library/Preferences/com.videotransc
 
 ### MakeMKV
 
-MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray or DVD disc, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file (`.mkv`).
+MakeMKV is a tool designed to decrypt and extract a video track from a Blu-ray Disc or DVD, and convert it into a single [Matroska](https://github.com/donmelton/video_transcoding#why-a-single-mkv-file) format file (`.mkv`).
 
 #### MakeMKV tips
 
@@ -393,7 +395,12 @@ AIRPLANE_t00.m4v | 03/14/2016 | 13:00:48 | 00:18:34 | 113.191116 | 2247.79 | 17.
 
 Open or drag-n-drop individual log files or a folder of log files onto the Log Analyzer app to create log specific reports.
 
-The application used to open Log Analyzer reports can be modified in Transcode’s preference plist.
+To select an application to open Log Analyzer reports:
+```
+Launch the Log Analyzer app while holding down the option-key
+Select the application
+Click Choose
+```
 
 ## Acknowledgements
 A huge “thank you” to [@donmelton](https://github.com/donmelton/video_transcoding) and the developers of the other tools used by this package.
